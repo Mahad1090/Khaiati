@@ -8,6 +8,7 @@ type LanguageContextValue = {
   dir: "ltr" | "rtl";
   t: typeof translations["en"];
   toggleLanguage: () => void;
+  setLanguage: (language: Language) => void;
 };
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
@@ -66,6 +67,7 @@ export function LanguageProvider({
         dir: dirFor(language),
         t: translations[language],
         toggleLanguage,
+        setLanguage,
       }}
     >
       {children}
