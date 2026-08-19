@@ -23,21 +23,7 @@ export const metadata: Metadata = {
     "Khaiati — bespoke tailoring and fine fabrics. Custom shirts, vests, coats, pants, and jackets crafted to measure.",
   generator: "v0.app",
   icons: {
-    icon: [
-      { url: "/logo.png", type: "image/png" },
-      {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
-      },
-    ],
+    icon: "/logo.png",
     apple: "/logo.png",
   },
 };

@@ -28,9 +28,9 @@ export function Header() {
             <Image
               src="/logo.png"
               alt="Khaiati"
-              width={64}
-              height={64}
-              className="h-12 w-12 md:h-16 md:w-16 object-contain"
+              width={80}
+              height={80}
+              className="h-16 w-16 md:h-20 md:w-20 object-contain"
               priority
             />
             <h1 className="font-serif text-xl md:text-2xl tracking-[0.2em] text-foreground">
