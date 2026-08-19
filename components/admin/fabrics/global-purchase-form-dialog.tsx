@@ -38,10 +38,12 @@ import { SupplierPicker } from "@/components/admin/suppliers/supplier-picker";
 import { purchaseSchema, type PurchaseInput, paymentTypes, paymentTypeLabels } from "@/lib/validation/fabric";
 import { createPurchase } from "@/lib/actions/fabric-transactions";
 import { formatMoney } from "@/lib/format";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function GlobalPurchaseFormDialog() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const form = useForm<PurchaseInput>({
     resolver: zodResolver(purchaseSchema),
@@ -73,7 +75,7 @@ export function GlobalPurchaseFormDialog() {
       toast.error(result.error);
       return;
     }
-    toast.success(`Purchase ${result.data.purchase_no} recorded`);
+    toast.success(`${t.fabrics.purchaseRecorded} ${result.data.purchase_no} ${t.fabrics.purchaseRecordedSuffix}`);
     setOpen(false);
     form.reset();
     router.refresh();
@@ -84,12 +86,12 @@ export function GlobalPurchaseFormDialog() {
       <DialogTrigger asChild>
         <Button>
           <Plus className="h-4 w-4" />
-          Record Purchase
+          {t.fabrics.recordPurchase}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Record Fabric Purchase</DialogTitle>
+          <DialogTitle>{t.fabrics.recordFabricPurchase}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -98,7 +100,7 @@ export function GlobalPurchaseFormDialog() {
               name="fabric_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Fabric</FormLabel>
+                  <FormLabel>{t.suppliers.fabric}</FormLabel>
                   <FormControl>
                     <FabricPicker value={field.value} onChange={(id) => field.onChange(id)} />
                   </FormControl>
@@ -111,7 +113,7 @@ export function GlobalPurchaseFormDialog() {
               name="supplier_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Supplier</FormLabel>
+                  <FormLabel>{t.fabrics.supplierCol}</FormLabel>
                   <FormControl>
                     <SupplierPicker value={field.value} onChange={(id) => field.onChange(id)} />
                   </FormControl>
@@ -125,7 +127,7 @@ export function GlobalPurchaseFormDialog() {
                 name="company_bill_number"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Company Bill #</FormLabel>
+                    <FormLabel>{t.fabrics.companyBillNo}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -138,7 +140,7 @@ export function GlobalPurchaseFormDialog() {
                 name="color"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Color</FormLabel>
+                    <FormLabel>{t.fabrics.color}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -153,7 +155,7 @@ export function GlobalPurchaseFormDialog() {
                 name="price_per_meter"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price / Meter</FormLabel>
+                    <FormLabel>{t.fabrics.priceMeter}</FormLabel>
                     <FormControl>
                       <Input type="number" min={0} step="0.01" {...field} />
                     </FormControl>
@@ -166,7 +168,7 @@ export function GlobalPurchaseFormDialog() {
                 name="size_meters"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Size (meters)</FormLabel>
+                    <FormLabel>{t.fabrics.sizeMeters}</FormLabel>
                     <FormControl>
                       <Input type="number" min={0} step="0.01" {...field} />
                     </FormControl>
@@ -176,14 +178,14 @@ export function GlobalPurchaseFormDialog() {
               />
             </div>
             <p className="text-sm text-muted-foreground">
-              Purchase total: <span className="text-foreground">{formatMoney(totalPrice)}</span>
+              {t.fabrics.purchaseTotal} <span className="text-foreground">{formatMoney(totalPrice)}</span>
             </p>
             <FormField
               control={form.control}
               name="sale_price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Intended Sale Price / Meter</FormLabel>
+                  <FormLabel>{t.fabrics.intendedSalePrice}</FormLabel>
                   <FormControl>
                     <Input type="number" min={0} step="0.01" {...field} />
                   </FormControl>
@@ -197,7 +199,7 @@ export function GlobalPurchaseFormDialog() {
                 name="purchase_date"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Purchase Date</FormLabel>
+                    <FormLabel>{t.fabrics.purchaseDate}</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>
@@ -210,7 +212,7 @@ export function GlobalPurchaseFormDialog() {
                 name="payment_type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Payment Type</FormLabel>
+                    <FormLabel>{t.fabrics.paymentType}</FormLabel>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger className="w-full">
@@ -234,7 +236,7 @@ export function GlobalPurchaseFormDialog() {
               name="amount_paid"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Amount Paid Now (leave 0 for full credit)</FormLabel>
+                  <FormLabel>{t.fabrics.amountPaidNow}</FormLabel>
                   <FormControl>
                     <Input type="number" min={0} step="0.01" {...field} />
                   </FormControl>
@@ -247,7 +249,7 @@ export function GlobalPurchaseFormDialog() {
               name="note"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Note</FormLabel>
+                  <FormLabel>{t.adminCommon.note}</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
@@ -256,7 +258,7 @@ export function GlobalPurchaseFormDialog() {
             />
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save Purchase"}
+                {form.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t.fabrics.savePurchase}
               </Button>
             </DialogFooter>
           </form>

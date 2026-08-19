@@ -14,10 +14,12 @@ import {
 import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { getFabricReport } from "@/lib/actions/reports";
 import { formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 export default async function FabricReportsPage() {
+  const { t } = await getServerLanguage();
   let fabrics;
   try {
     fabrics = await getFabricReport();
@@ -30,29 +32,29 @@ export default async function FabricReportsPage() {
       <Button asChild variant="ghost" size="sm" className="w-fit">
         <Link href="/admin/reports">
           <ArrowLeft className="h-4 w-4" />
-          Back to reports
+          {t.reports.backToReports}
         </Link>
       </Button>
-      <h1 className="font-serif text-2xl">Fabric Reports</h1>
+      <h1 className="font-serif text-2xl">{t.reports.fabricReportsTitle}</h1>
 
       {fabrics.length === 0 ? (
         <Card>
-          <CardContent className="py-8 text-center text-sm text-muted-foreground">No fabrics yet.</CardContent>
+          <CardContent className="py-8 text-center text-sm text-muted-foreground">{t.reports.noFabricsYet}</CardContent>
         </Card>
       ) : (
         <div className="overflow-x-auto rounded-md border border-border">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Fabric #</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Color</TableHead>
-                <TableHead>Supplier</TableHead>
-                <TableHead className="text-right">Purchased (m)</TableHead>
-                <TableHead className="text-right">Sold (m)</TableHead>
-                <TableHead className="text-right">Remaining (m)</TableHead>
-                <TableHead className="text-right">Cost/Meter</TableHead>
-                <TableHead className="text-right">Sale Price</TableHead>
+                <TableHead>{t.reports.fabricNo}</TableHead>
+                <TableHead>{t.reports.name}</TableHead>
+                <TableHead>{t.reports.color}</TableHead>
+                <TableHead>{t.reports.supplier}</TableHead>
+                <TableHead className="text-right">{t.reports.purchasedM}</TableHead>
+                <TableHead className="text-right">{t.reports.soldM}</TableHead>
+                <TableHead className="text-right">{t.reports.remainingM}</TableHead>
+                <TableHead className="text-right">{t.reports.costMeter}</TableHead>
+                <TableHead className="text-right">{t.reports.salePrice}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

@@ -16,8 +16,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { addWorkerAdvance } from "@/lib/actions/workers";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function AdvanceFormDialog({ workerId }: { workerId: string }) {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
@@ -39,7 +41,7 @@ export function AdvanceFormDialog({ workerId }: { workerId: string }) {
         toast.error(result.error);
         return;
       }
-      toast.success("Advance recorded");
+      toast.success(t.workers.advanceRecorded);
       setOpen(false);
       setAmount("");
       setReason("");
@@ -54,34 +56,34 @@ export function AdvanceFormDialog({ workerId }: { workerId: string }) {
       <DialogTrigger asChild>
         <Button variant="outline">
           <Plus className="h-4 w-4" />
-          Record Advance
+          {t.workers.recordAdvance}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Record Advance Salary</DialogTitle>
+          <DialogTitle>{t.workers.recordAdvanceSalary}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <Label>Amount</Label>
+            <Label>{t.workers.amount}</Label>
             <Input type="number" min={0} step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} />
           </div>
           <div>
-            <Label>Date</Label>
+            <Label>{t.workers.date}</Label>
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
           </div>
           <div>
-            <Label>Salary Period</Label>
-            <Input value={period} onChange={(e) => setPeriod(e.target.value)} placeholder="e.g. August 2026" />
+            <Label>{t.workers.salaryPeriod}</Label>
+            <Input value={period} onChange={(e) => setPeriod(e.target.value)} placeholder={t.workers.salaryPeriodPlaceholder} />
           </div>
           <div>
-            <Label>Reason</Label>
-            <Input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Optional" />
+            <Label>{t.workers.reason}</Label>
+            <Input value={reason} onChange={(e) => setReason(e.target.value)} placeholder={t.adminCommon.optionalNote} />
           </div>
         </div>
         <DialogFooter>
           <Button onClick={submit} disabled={submitting || !amount}>
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save Advance"}
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t.workers.saveAdvance}
           </Button>
         </DialogFooter>
       </DialogContent>

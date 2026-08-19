@@ -21,6 +21,7 @@ import {
 import { orderStatusLabels, type OrderStatus } from "@/lib/validation/order";
 import { garmentTypeLabels, type GarmentType } from "@/lib/validation/design";
 import { formatDate, formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,7 @@ export default async function CustomerDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const { t } = await getServerLanguage();
 
   let customer;
   let history;
@@ -47,7 +49,7 @@ export default async function CustomerDetailPage({
       <Button asChild variant="ghost" size="sm" className="w-fit">
         <Link href="/admin/customers">
           <ArrowLeft className="h-4 w-4" />
-          Back to customers
+          {t.customers.backToCustomers}
         </Link>
       </Button>
 
@@ -67,10 +69,10 @@ export default async function CustomerDetailPage({
             mode="edit"
             customerId={customer.id}
             defaultValues={{ name: customer.name, phone: customer.phone, note: customer.note ?? "" }}
-            trigger={<Button variant="outline">Edit</Button>}
+            trigger={<Button variant="outline">{t.customers.edit}</Button>}
           />
           <Button asChild>
-            <Link href={`/admin/orders/new?customer=${customer.id}`}>New Order</Link>
+            <Link href={`/admin/orders/new?customer=${customer.id}`}>{t.customers.newOrder}</Link>
           </Button>
         </div>
       </div>
@@ -79,7 +81,7 @@ export default async function CustomerDetailPage({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total Orders
+              {t.customers.totalOrders}
             </CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-2xl">{customer.totalOrders}</CardContent>
@@ -87,7 +89,7 @@ export default async function CustomerDetailPage({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total Paid
+              {t.customers.totalPaid}
             </CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-2xl">
@@ -97,7 +99,7 @@ export default async function CustomerDetailPage({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Outstanding Balance
+              {t.customers.outstandingBalance}
             </CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-2xl">
@@ -107,11 +109,11 @@ export default async function CustomerDetailPage({
       </div>
 
       <div>
-        <h2 className="mb-3 font-serif text-lg">Order History</h2>
+        <h2 className="mb-3 font-serif text-lg">{t.customers.orderHistory}</h2>
         {history.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-center text-sm text-muted-foreground">
-              No orders yet.
+              {t.customers.noOrdersYet}
             </CardContent>
           </Card>
         ) : (
@@ -119,13 +121,13 @@ export default async function CustomerDetailPage({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Order #</TableHead>
-                  <TableHead>Garments</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Order Date</TableHead>
-                  <TableHead>Due Date</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
-                  <TableHead className="text-right">Balance</TableHead>
+                  <TableHead>{t.customers.orderNo}</TableHead>
+                  <TableHead>{t.customers.garments}</TableHead>
+                  <TableHead>{t.customers.status}</TableHead>
+                  <TableHead>{t.customers.orderDate}</TableHead>
+                  <TableHead>{t.customers.dueDate}</TableHead>
+                  <TableHead className="text-right">{t.customers.total}</TableHead>
+                  <TableHead className="text-right">{t.customers.balance}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

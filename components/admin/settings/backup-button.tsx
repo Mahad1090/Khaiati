@@ -5,8 +5,10 @@ import { toast } from "sonner";
 import { Download, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createBackup } from "@/lib/actions/backup";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function BackupButton() {
+  const { t } = useLanguage();
   const [busy, setBusy] = useState(false);
 
   async function run() {
@@ -24,7 +26,7 @@ export function BackupButton() {
       a.download = result.data.filename;
       a.click();
       URL.revokeObjectURL(url);
-      toast.success("Backup downloaded");
+      toast.success(t.settingsPage.backupDownloaded);
     } finally {
       setBusy(false);
     }
@@ -33,7 +35,7 @@ export function BackupButton() {
   return (
     <Button variant="outline" onClick={run} disabled={busy}>
       {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-      Run Manual Backup
+      {t.settingsPage.runManualBackup}
     </Button>
   );
 }

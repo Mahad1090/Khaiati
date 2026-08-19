@@ -13,17 +13,19 @@ import { ProductFormDialog } from "@/components/admin/marketplace/product-form-d
 import { AvailabilityToggle } from "@/components/admin/marketplace/availability-toggle";
 import { listMyProducts, setProductAvailable } from "@/lib/actions/products";
 import { formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 export default async function ProductsPage() {
+  const { t } = await getServerLanguage();
   let products;
   try {
     products = await listMyProducts();
   } catch (err) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-2xl">Products</h1>
+        <h1 className="font-serif text-2xl">{t.marketplace.productsTitle}</h1>
         <DbUnconfigured detail={err instanceof Error ? err.message : undefined} />
       </div>
     );
@@ -33,8 +35,8 @@ export default async function ProductsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-serif text-2xl">Products</h1>
-          <p className="text-sm text-muted-foreground">Fabric and product listings for your storefront.</p>
+          <h1 className="font-serif text-2xl">{t.marketplace.productsTitle}</h1>
+          <p className="text-sm text-muted-foreground">{t.marketplace.productsSubtitle}</p>
         </div>
         <ProductFormDialog />
       </div>
@@ -42,7 +44,7 @@ export default async function ProductsPage() {
       {products.length === 0 ? (
         <Card>
           <CardContent className="py-10 text-center text-sm text-muted-foreground">
-            No products yet.
+            {t.marketplace.noProductsYet}
           </CardContent>
         </Card>
       ) : (
@@ -50,13 +52,13 @@ export default async function ProductsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>#</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Color</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-                <TableHead className="text-right">Stock</TableHead>
-                <TableHead>Available</TableHead>
+                <TableHead>{t.marketplace.hashCol}</TableHead>
+                <TableHead>{t.marketplace.name}</TableHead>
+                <TableHead>{t.marketplace.category}</TableHead>
+                <TableHead>{t.marketplace.color}</TableHead>
+                <TableHead className="text-right">{t.marketplace.price}</TableHead>
+                <TableHead className="text-right">{t.marketplace.stock}</TableHead>
+                <TableHead>{t.marketplace.available}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { listFabrics, type FabricRow } from "@/lib/actions/fabrics";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function FabricPicker({
   value,
@@ -22,6 +23,7 @@ export function FabricPicker({
   value: string;
   onChange: (id: string, fabric: FabricRow) => void;
 }) {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<FabricRow[]>([]);
@@ -44,16 +46,16 @@ export function FabricPicker({
               {selected.name} · {selected.fabric_no}
             </span>
           ) : (
-            <span className="text-muted-foreground">Search fabric...</span>
+            <span className="text-muted-foreground">{t.fabrics.searchFabricPlaceholder}</span>
           )}
           <ChevronsUpDown className="h-4 w-4 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command shouldFilter={false}>
-          <CommandInput placeholder="Search fabrics..." value={query} onValueChange={setQuery} />
+          <CommandInput placeholder={t.fabrics.searchPlaceholder} value={query} onValueChange={setQuery} />
           <CommandList>
-            <CommandEmpty>No fabrics found.</CommandEmpty>
+            <CommandEmpty>{t.fabrics.noneFound}</CommandEmpty>
             <CommandGroup>
               {results.map((f) => (
                 <CommandItem

@@ -14,10 +14,12 @@ import { AddPurchasePaymentDialog } from "@/components/admin/fabrics/add-purchas
 import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { getOutstandingDebts } from "@/lib/actions/fabric-transactions";
 import { formatDate, formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 async function DebtsTable({ q }: { q: string }) {
+  const { t } = await getServerLanguage();
   let rows;
   try {
     rows = await getOutstandingDebts(q);
@@ -29,7 +31,7 @@ async function DebtsTable({ q }: { q: string }) {
     return (
       <Card>
         <CardContent className="py-10 text-center text-sm text-muted-foreground">
-          No outstanding supplier debts.
+          {t.fabrics.noneDebtsFound}
         </CardContent>
       </Card>
     );
@@ -40,14 +42,14 @@ async function DebtsTable({ q }: { q: string }) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Purchase #</TableHead>
-            <TableHead>Supplier</TableHead>
-            <TableHead>Fabric</TableHead>
-            <TableHead>Bill #</TableHead>
-            <TableHead>Purchase Date</TableHead>
-            <TableHead className="text-right">Total</TableHead>
-            <TableHead className="text-right">Paid</TableHead>
-            <TableHead className="text-right">Outstanding</TableHead>
+            <TableHead>{t.fabrics.purchaseNo}</TableHead>
+            <TableHead>{t.fabrics.supplierCol}</TableHead>
+            <TableHead>{t.suppliers.fabric}</TableHead>
+            <TableHead>{t.fabrics.billNo}</TableHead>
+            <TableHead>{t.fabrics.purchaseDateCol}</TableHead>
+            <TableHead className="text-right">{t.fabrics.total}</TableHead>
+            <TableHead className="text-right">{t.suppliers.paid}</TableHead>
+            <TableHead className="text-right">{t.fabrics.outstanding}</TableHead>
             <TableHead />
           </TableRow>
         </TableHeader>
@@ -86,21 +88,22 @@ export default async function SupplierDebtsPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q = "" } = await searchParams;
+  const { t } = await getServerLanguage();
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-2xl">Supplier Debts</h1>
+        <h1 className="font-serif text-2xl">{t.fabrics.debtsTitle}</h1>
         <p className="text-sm text-muted-foreground">
-          Fabric purchases on credit with an outstanding balance — pay them down in installments.
+          {t.fabrics.debtsSubtitle}
         </p>
       </div>
 
       <Suspense>
-        <SearchBox placeholder="Search by supplier or bill #..." />
+        <SearchBox placeholder={t.fabrics.searchBySupplierOrBill} />
       </Suspense>
 
-      <Suspense fallback={<p className="text-sm text-muted-foreground">Loading...</p>}>
+      <Suspense fallback={<p className="text-sm text-muted-foreground">{t.fabrics.loading}</p>}>
         <DebtsTable q={q} />
       </Suspense>
     </div>

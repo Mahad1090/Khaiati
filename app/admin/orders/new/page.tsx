@@ -5,6 +5,7 @@ import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { OrderForm } from "@/components/admin/orders/order-form";
 import { listDesigns } from "@/lib/actions/designs";
 import { getCustomerById } from "@/lib/actions/customers";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,7 @@ export default async function NewOrderPage({
   searchParams: Promise<{ customer?: string }>;
 }) {
   const { customer } = await searchParams;
+  const { t } = await getServerLanguage();
 
   let designs;
   let initialCustomer = null;
@@ -31,13 +33,13 @@ export default async function NewOrderPage({
       <Button asChild variant="ghost" size="sm" className="w-fit">
         <Link href="/admin/orders">
           <ArrowLeft className="h-4 w-4" />
-          Back to orders
+          {t.orders.backToOrders}
         </Link>
       </Button>
       <div>
-        <h1 className="font-serif text-2xl">New Order</h1>
+        <h1 className="font-serif text-2xl">{t.orders.createOrderTitle}</h1>
         <p className="text-sm text-muted-foreground">
-          Create a garment order with measurements and financials.
+          {t.orders.createOrderSubtitle}
         </p>
       </div>
       <OrderForm designs={designs} initialCustomer={initialCustomer} />

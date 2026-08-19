@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { BackupButton } from "@/components/admin/settings/backup-button";
 import { roles, roleLabels, rolePermissions, type Capability } from "@/lib/permissions";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
@@ -36,18 +37,19 @@ const allCapabilities: Capability[] = [
   "backup:run",
 ];
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const { t } = await getServerLanguage();
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-2xl">Settings</h1>
-        <p className="text-sm text-muted-foreground">Environment status, roles, and backups.</p>
+        <h1 className="font-serif text-2xl">{t.settingsPage.title}</h1>
+        <p className="text-sm text-muted-foreground">{t.settingsPage.subtitle}</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Environment</CardTitle>
-          <CardDescription>Checked from server environment variables — values are never shown.</CardDescription>
+          <CardTitle className="text-base">{t.settingsPage.environment}</CardTitle>
+          <CardDescription>{t.settingsPage.environmentDesc}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
           {envChecks.map((c) => {
@@ -60,11 +62,11 @@ export default function SettingsPage() {
                 </div>
                 {configured ? (
                   <span className="flex items-center gap-1 text-sm text-foreground">
-                    <CheckCircle2 className="h-4 w-4 text-accent" /> Configured
+                    <CheckCircle2 className="h-4 w-4 text-accent" /> {t.settingsPage.configured}
                   </span>
                 ) : (
                   <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <XCircle className="h-4 w-4" /> Not set
+                    <XCircle className="h-4 w-4" /> {t.settingsPage.notSet}
                   </span>
                 )}
               </div>
@@ -75,10 +77,9 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Roles &amp; Permissions</CardTitle>
+          <CardTitle className="text-base">{t.settingsPage.rolesPermissions}</CardTitle>
           <CardDescription>
-            Intended model per the requirements — not yet enforced, since it requires Supabase Auth to be
-            configured and wired into each server action. See{" "}
+            {t.settingsPage.rolesPermissionsDesc}{" "}
             <code className="rounded bg-muted px-1 py-0.5">lib/permissions.ts</code>.
           </CardDescription>
         </CardHeader>
@@ -87,7 +88,7 @@ export default function SettingsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Capability</TableHead>
+                  <TableHead>{t.settingsPage.capability}</TableHead>
                   {roles.map((r) => (
                     <TableHead key={r} className="text-center">
                       {roleLabels[r]}
@@ -118,21 +119,19 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Backup &amp; Restore</CardTitle>
+          <CardTitle className="text-base">{t.settingsPage.backupRestore}</CardTitle>
           <CardDescription>
-            Manual backup runs <code className="rounded bg-muted px-1 py-0.5">pg_dump</code> against{" "}
-            <code className="rounded bg-muted px-1 py-0.5">DATABASE_URL</code>. Disabled by default —
-            requires <code className="rounded bg-muted px-1 py-0.5">ENABLE_BACKUP_ACTION=true</code>, which
-            should only be set once this page is behind an administrator-only route.
+            {t.settingsPage.backupDescPre} <code className="rounded bg-muted px-1 py-0.5">pg_dump</code> {t.settingsPage.backupDescMid1}{" "}
+            <code className="rounded bg-muted px-1 py-0.5">DATABASE_URL</code>{t.settingsPage.backupDescMid2}{" "}
+            <code className="rounded bg-muted px-1 py-0.5">ENABLE_BACKUP_ACTION=true</code>{t.settingsPage.backupDescEnd}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <BackupButton />
           <div className="rounded-md border border-dashed border-border p-4 text-sm text-muted-foreground">
-            <p className="mb-1 font-medium text-foreground">Restore</p>
+            <p className="mb-1 font-medium text-foreground">{t.settingsPage.restore}</p>
             <p>
-              Restoring overwrites live data, so it isn&apos;t exposed as a one-click web action. To restore, an
-              administrator runs:
+              {t.settingsPage.restoreDesc}
             </p>
             <pre className="mt-2 overflow-x-auto rounded bg-muted p-2 text-xs">
               psql "$DATABASE_URL" &lt; khaiati-backup-YYYY-MM-DD.sql

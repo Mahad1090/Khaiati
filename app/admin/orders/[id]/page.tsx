@@ -20,6 +20,7 @@ import { getOrderDetail } from "@/lib/actions/orders";
 import { garmentTypeLabels, type GarmentType } from "@/lib/validation/design";
 import { measurementFieldLabels, garmentMeasurementFields } from "@/lib/validation/measurements";
 import { formatDate, formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +30,7 @@ export default async function OrderDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const { t } = await getServerLanguage();
 
   let order;
   try {
@@ -43,7 +45,7 @@ export default async function OrderDetailPage({
       <Button asChild variant="ghost" size="sm" className="w-fit">
         <Link href="/admin/orders">
           <ArrowLeft className="h-4 w-4" />
-          Back to orders
+          {t.orders.backToOrders}
         </Link>
       </Button>
 
@@ -65,25 +67,25 @@ export default async function OrderDetailPage({
       <div className="grid gap-4 sm:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Order Date</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.orders.orderDate}</CardTitle>
           </CardHeader>
           <CardContent>{formatDate(order.order_date)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Due Date</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.orders.dueDate}</CardTitle>
           </CardHeader>
           <CardContent>{formatDate(order.due_date)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Price</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.orders.totalPrice}</CardTitle>
           </CardHeader>
           <CardContent>{formatMoney(order.totalPrice)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Balance</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.orders.balance}</CardTitle>
           </CardHeader>
           <CardContent className="flex items-center justify-between">
             <span>{formatMoney(order.balance)}</span>
@@ -96,14 +98,14 @@ export default async function OrderDetailPage({
       {order.note && (
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Order Note</CardTitle>
+            <CardTitle className="text-sm">{t.orders.orderNote}</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">{order.note}</CardContent>
         </Card>
       )}
 
       <div className="space-y-4">
-        <h2 className="font-serif text-lg">Garments</h2>
+        <h2 className="font-serif text-lg">{t.orders.garments}</h2>
         {order.items.map((item) => {
           const gt = item.garment_type as GarmentType;
           const fields = garmentMeasurementFields[gt] ?? [];
@@ -118,12 +120,12 @@ export default async function OrderDetailPage({
                     </span>
                   )}
                 </CardTitle>
-                <Badge variant="outline">Qty {item.quantity}</Badge>
+                <Badge variant="outline">{t.orders.qty} {item.quantity}</Badge>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-muted-foreground">
-                  <span>Price/piece: {formatMoney(item.price_per_piece)}</span>
-                  <span>Total: {formatMoney(item.total_price)}</span>
+                  <span>{t.orders.pricePerPiece} {formatMoney(item.price_per_piece)}</span>
+                  <span>{t.orders.total}: {formatMoney(item.total_price)}</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {fields.map((f) => (
@@ -133,7 +135,7 @@ export default async function OrderDetailPage({
                     </div>
                   ))}
                 </div>
-                {item.note && <p className="text-sm text-muted-foreground">Note: {item.note}</p>}
+                {item.note && <p className="text-sm text-muted-foreground">{t.orders.note} {item.note}</p>}
               </CardContent>
             </Card>
           );
@@ -142,13 +144,13 @@ export default async function OrderDetailPage({
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="font-serif text-lg">Payments</h2>
+          <h2 className="font-serif text-lg">{t.orders.payments}</h2>
           <AddPaymentDialog orderId={order.id} balance={order.balance} />
         </div>
         {order.payments.length === 0 ? (
           <Card>
             <CardContent className="py-6 text-center text-sm text-muted-foreground">
-              No payments recorded yet.
+              {t.orders.noPaymentsYet}
             </CardContent>
           </Card>
         ) : (
@@ -156,9 +158,9 @@ export default async function OrderDetailPage({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Note</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead>{t.orders.date}</TableHead>
+                  <TableHead>{t.adminCommon.note}</TableHead>
+                  <TableHead className="text-right">{t.orders.amount}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

@@ -5,6 +5,7 @@ import { RequestPlanButton } from "@/components/admin/subscriptions/request-plan
 import { getMySubscription, listPlans } from "@/lib/actions/subscriptions";
 import { paymentStatusLabels, type PaymentStatus } from "@/lib/validation/subscription";
 import { formatDate, formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
@@ -17,13 +18,14 @@ const statusVariant: Record<PaymentStatus, "default" | "secondary" | "outline" |
 };
 
 export default async function MySubscriptionPage() {
+  const { t } = await getServerLanguage();
   let current, plans;
   try {
     [current, plans] = await Promise.all([getMySubscription(), listPlans()]);
   } catch (err) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-2xl">Subscription</h1>
+        <h1 className="font-serif text-2xl">{t.platformAdmin.mySubscriptionTitle}</h1>
         <DbUnconfigured detail={err instanceof Error ? err.message : undefined} />
       </div>
     );
@@ -34,14 +36,14 @@ export default async function MySubscriptionPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-2xl">Subscription</h1>
-        <p className="text-sm text-muted-foreground">Your Khaiati platform plan.</p>
+        <h1 className="font-serif text-2xl">{t.platformAdmin.mySubscriptionTitle}</h1>
+        <p className="text-sm text-muted-foreground">{t.platformAdmin.mySubscriptionSubtitle}</p>
       </div>
 
       {current && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Current Plan</CardTitle>
+            <CardTitle className="text-base">{t.platformAdmin.currentPlan}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="flex items-center gap-3">
@@ -51,12 +53,12 @@ export default async function MySubscriptionPage() {
               </Badge>
             </div>
             <p className="text-sm text-muted-foreground">
-              {formatMoney(current.price)} · Started {formatDate(current.start_date)}
-              {current.expiry_date && <> · Expires {formatDate(current.expiry_date)}</>}
+              {formatMoney(current.price)} · {t.platformAdmin.started} {formatDate(current.start_date)}
+              {current.expiry_date && <> · {t.platformAdmin.expires} {formatDate(current.expiry_date)}</>}
             </p>
             {current.payment_status === "pending" && (
               <p className="text-sm text-muted-foreground">
-                Awaiting payment confirmation from Khaiati. We&apos;ll follow up with payment instructions.
+                {t.platformAdmin.awaitingPayment}
               </p>
             )}
           </CardContent>
@@ -64,11 +66,11 @@ export default async function MySubscriptionPage() {
       )}
 
       <div className="space-y-3">
-        <h2 className="font-serif text-lg">{current ? "Change Plan" : "Choose a Plan"}</h2>
+        <h2 className="font-serif text-lg">{current ? t.platformAdmin.changePlan : t.platformAdmin.chooseAPlan}</h2>
         {activePlans.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-center text-sm text-muted-foreground">
-              No plans available yet.
+              {t.platformAdmin.noPlansAvailable}
             </CardContent>
           </Card>
         ) : (
@@ -78,8 +80,8 @@ export default async function MySubscriptionPage() {
                 <CardHeader>
                   <CardTitle className="font-serif text-xl">{p.name}</CardTitle>
                   <CardDescription>
-                    {formatMoney(p.price)} / {p.duration_days} days
-                    {Number(p.commission_rate) > 0 && <> · {p.commission_rate}% commission</>}
+                    {formatMoney(p.price)} / {p.duration_days} {t.platformAdmin.days}
+                    {Number(p.commission_rate) > 0 && <> · {p.commission_rate}% {t.platformAdmin.commission}</>}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

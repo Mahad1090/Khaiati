@@ -15,10 +15,12 @@ import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { getOrderReport } from "@/lib/actions/reports";
 import { orderStatusLabels, type OrderStatus } from "@/lib/validation/order";
 import { formatDate, formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 export default async function OrderReportsPage() {
+  const { t } = await getServerLanguage();
   let orders;
   try {
     orders = await getOrderReport();
@@ -31,44 +33,44 @@ export default async function OrderReportsPage() {
       <Button asChild variant="ghost" size="sm" className="w-fit">
         <Link href="/admin/reports">
           <ArrowLeft className="h-4 w-4" />
-          Back to reports
+          {t.reports.backToReports}
         </Link>
       </Button>
-      <h1 className="font-serif text-2xl">Order Reports</h1>
+      <h1 className="font-serif text-2xl">{t.reports.orderReportsTitle}</h1>
 
       <div className="grid gap-4 sm:grid-cols-4">
         <Card>
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">All Orders</p>
+            <p className="text-sm text-muted-foreground">{t.reports.allOrders}</p>
             <p className="font-serif text-2xl">{orders.all.length}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Completed</p>
+            <p className="text-sm text-muted-foreground">{t.reports.completed}</p>
             <p className="font-serif text-2xl">{orders.completed.length}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Incomplete</p>
+            <p className="text-sm text-muted-foreground">{t.reports.incomplete}</p>
             <p className="font-serif text-2xl">{orders.incomplete.length}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Overdue</p>
+            <p className="text-sm text-muted-foreground">{t.reports.overdue}</p>
             <p className="font-serif text-2xl text-destructive">{orders.overdue.length}</p>
           </CardContent>
         </Card>
       </div>
 
       <div>
-        <h2 className="mb-2 font-serif text-lg">Overdue Orders</h2>
+        <h2 className="mb-2 font-serif text-lg">{t.reports.overdueOrders}</h2>
         {orders.overdue.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-center text-sm text-muted-foreground">
-              No overdue orders.
+              {t.reports.noOverdueOrders}
             </CardContent>
           </Card>
         ) : (
@@ -76,11 +78,11 @@ export default async function OrderReportsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Order #</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Due Date</TableHead>
-                  <TableHead className="text-right">Balance</TableHead>
+                  <TableHead>{t.reports.orderNo}</TableHead>
+                  <TableHead>{t.reports.customer}</TableHead>
+                  <TableHead>{t.reports.status}</TableHead>
+                  <TableHead>{t.reports.dueDate}</TableHead>
+                  <TableHead className="text-right">{t.reports.balance}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

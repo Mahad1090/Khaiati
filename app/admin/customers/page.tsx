@@ -15,10 +15,12 @@ import { CustomerFormDialog } from "@/components/admin/customers/customer-form-d
 import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { searchCustomers } from "@/lib/actions/customers";
 import { formatDate } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 async function CustomersTable({ q }: { q: string }) {
+  const { t } = await getServerLanguage();
   let customers;
   try {
     customers = await searchCustomers(q);
@@ -30,7 +32,7 @@ async function CustomersTable({ q }: { q: string }) {
     return (
       <Card>
         <CardContent className="py-10 text-center text-sm text-muted-foreground">
-          No customers found.
+          {t.customers.noneFound}
         </CardContent>
       </Card>
     );
@@ -41,11 +43,11 @@ async function CustomersTable({ q }: { q: string }) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Customer #</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Phone</TableHead>
-            <TableHead>Registered</TableHead>
-            <TableHead className="text-right">Note</TableHead>
+            <TableHead>{t.customers.customerNo}</TableHead>
+            <TableHead>{t.customers.name}</TableHead>
+            <TableHead>{t.customers.phone}</TableHead>
+            <TableHead>{t.customers.registered}</TableHead>
+            <TableHead className="text-right">{t.customers.note}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -78,24 +80,25 @@ export default async function CustomersPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q = "" } = await searchParams;
+  const { t } = await getServerLanguage();
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-serif text-2xl">Customers</h1>
+          <h1 className="font-serif text-2xl">{t.customers.title}</h1>
           <p className="text-sm text-muted-foreground">
-            Search by customer number, name, or phone.
+            {t.customers.subtitle}
           </p>
         </div>
         <CustomerFormDialog />
       </div>
 
       <Suspense>
-        <SearchBox placeholder="Search customers..." />
+        <SearchBox placeholder={t.customers.searchPlaceholder} />
       </Suspense>
 
-      <Suspense fallback={<p className="text-sm text-muted-foreground">Loading...</p>}>
+      <Suspense fallback={<p className="text-sm text-muted-foreground">{t.customers.loading}</p>}>
         <CustomersTable q={q} />
       </Suspense>
     </div>

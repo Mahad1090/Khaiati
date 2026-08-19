@@ -12,8 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export default function CustomerLoginPage() {
+  const { t } = useLanguage();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,7 +34,7 @@ export default function CustomerLoginPage() {
       router.push("/account");
       router.refresh();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Sign-in is not available right now.");
+      toast.error(err instanceof Error ? err.message : t.accountLogin.unavailable);
     } finally {
       setLoading(false);
     }
@@ -45,17 +47,17 @@ export default function CustomerLoginPage() {
           <Link href="/" className="mb-2 flex items-center gap-3">
             <Image src="/logo.png" alt="Khaiati" width={56} height={56} className="h-14 w-14 object-contain" />
           </Link>
-          <CardTitle className="font-serif text-xl">Sign In</CardTitle>
-          <CardDescription>Access your account and order history.</CardDescription>
+          <CardTitle className="font-serif text-xl">{t.accountLogin.title}</CardTitle>
+          <CardDescription>{t.accountLogin.subtitle}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t.accountLogin.email}</Label>
               <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t.accountLogin.password}</Label>
               <Input
                 id="password"
                 type="password"
@@ -65,13 +67,13 @@ export default function CustomerLoginPage() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In"}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t.accountLogin.signIn}
             </Button>
           </form>
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            No account yet?{" "}
+            {t.accountLogin.noAccount}{" "}
             <Link href="/account/register" className="underline hover:text-accent">
-              Create one
+              {t.accountLogin.createOne}
             </Link>
           </p>
         </CardContent>

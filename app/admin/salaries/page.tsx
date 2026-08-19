@@ -16,10 +16,12 @@ import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { getAllWorkerPayments, getAllWorkerAdvances } from "@/lib/actions/workers";
 import { payModelLabels, type PayModel } from "@/lib/validation/worker";
 import { formatDate, formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 async function SalariesTables({ q }: { q: string }) {
+  const { t } = await getServerLanguage();
   let payments, advances;
   try {
     [payments, advances] = await Promise.all([getAllWorkerPayments(q), getAllWorkerAdvances(q)]);
@@ -30,11 +32,11 @@ async function SalariesTables({ q }: { q: string }) {
   return (
     <div className="space-y-8">
       <div className="space-y-3">
-        <h2 className="font-serif text-lg">Salary / Wage Payments</h2>
+        <h2 className="font-serif text-lg">{t.workers.salaryWagePayments}</h2>
         {payments.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-center text-sm text-muted-foreground">
-              No payments found.
+              {t.workers.noPaymentsFound}
             </CardContent>
           </Card>
         ) : (
@@ -42,12 +44,12 @@ async function SalariesTables({ q }: { q: string }) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Worker</TableHead>
-                  <TableHead>Pay Model</TableHead>
-                  <TableHead>Period</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Note</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead>{t.workers.worker}</TableHead>
+                  <TableHead>{t.workers.payModel}</TableHead>
+                  <TableHead>{t.workers.period}</TableHead>
+                  <TableHead>{t.workers.date}</TableHead>
+                  <TableHead>{t.workers.note}</TableHead>
+                  <TableHead className="text-right">{t.workers.amount}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -74,11 +76,11 @@ async function SalariesTables({ q }: { q: string }) {
       </div>
 
       <div className="space-y-3">
-        <h2 className="font-serif text-lg">Advance Salary</h2>
+        <h2 className="font-serif text-lg">{t.workers.advanceSalary}</h2>
         {advances.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-center text-sm text-muted-foreground">
-              No advances found.
+              {t.workers.noAdvancesFound}
             </CardContent>
           </Card>
         ) : (
@@ -86,11 +88,11 @@ async function SalariesTables({ q }: { q: string }) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Worker</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Salary Period</TableHead>
-                  <TableHead>Reason</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead>{t.workers.worker}</TableHead>
+                  <TableHead>{t.workers.date}</TableHead>
+                  <TableHead>{t.workers.salaryPeriod}</TableHead>
+                  <TableHead>{t.workers.reason}</TableHead>
+                  <TableHead className="text-right">{t.workers.amount}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -122,14 +124,15 @@ export default async function SalariesPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q = "" } = await searchParams;
+  const { t } = await getServerLanguage();
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-serif text-2xl">Salaries &amp; Wages</h1>
+          <h1 className="font-serif text-2xl">{t.workers.salariesTitle}</h1>
           <p className="text-sm text-muted-foreground">
-            Payments and advances across all workers. Weekly, biweekly, monthly, or per-job.
+            {t.workers.salariesSubtitle}
           </p>
         </div>
         <div className="flex gap-2">
@@ -139,10 +142,10 @@ export default async function SalariesPage({
       </div>
 
       <Suspense>
-        <SearchBox placeholder="Search by worker..." />
+        <SearchBox placeholder={t.workers.searchByWorker} />
       </Suspense>
 
-      <Suspense fallback={<p className="text-sm text-muted-foreground">Loading...</p>}>
+      <Suspense fallback={<p className="text-sm text-muted-foreground">{t.workers.loading}</p>}>
         <SalariesTables q={q} />
       </Suspense>
     </div>

@@ -15,10 +15,12 @@ import { WorkerFormDialog } from "@/components/admin/workers/worker-form-dialog"
 import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { searchWorkers } from "@/lib/actions/workers";
 import { formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 async function WorkersTable({ q }: { q: string }) {
+  const { t } = await getServerLanguage();
   let workers;
   try {
     workers = await searchWorkers(q);
@@ -30,7 +32,7 @@ async function WorkersTable({ q }: { q: string }) {
     return (
       <Card>
         <CardContent className="py-10 text-center text-sm text-muted-foreground">
-          No workers found.
+          {t.workers.noneFound}
         </CardContent>
       </Card>
     );
@@ -41,12 +43,12 @@ async function WorkersTable({ q }: { q: string }) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Worker #</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Occupation</TableHead>
-            <TableHead>Contact</TableHead>
-            <TableHead>Employee #</TableHead>
-            <TableHead className="text-right">Base Salary</TableHead>
+            <TableHead>{t.workers.workerNo}</TableHead>
+            <TableHead>{t.workers.name}</TableHead>
+            <TableHead>{t.workers.occupation}</TableHead>
+            <TableHead>{t.workers.contact}</TableHead>
+            <TableHead>{t.workers.employeeNo}</TableHead>
+            <TableHead className="text-right">{t.workers.baseSalary}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -78,24 +80,25 @@ export default async function WorkersPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q = "" } = await searchParams;
+  const { t } = await getServerLanguage();
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-serif text-2xl">Workers</h1>
+          <h1 className="font-serif text-2xl">{t.workers.title}</h1>
           <p className="text-sm text-muted-foreground">
-            Search by worker number, name, phone, or employee number.
+            {t.workers.subtitle}
           </p>
         </div>
         <WorkerFormDialog />
       </div>
 
       <Suspense>
-        <SearchBox placeholder="Search workers..." />
+        <SearchBox placeholder={t.workers.searchPlaceholder} />
       </Suspense>
 
-      <Suspense fallback={<p className="text-sm text-muted-foreground">Loading...</p>}>
+      <Suspense fallback={<p className="text-sm text-muted-foreground">{t.workers.loading}</p>}>
         <WorkersTable q={q} />
       </Suspense>
     </div>

@@ -1,4 +1,3 @@
-import { LanguageProvider } from "@/lib/i18n/language-context";
 import { Header } from "@/components/header";
 import { Hero } from "@/components/hero";
 import { Collections } from "@/components/collections";
@@ -17,24 +16,22 @@ import { Footer } from "@/components/footer";
 
 export default function Home() {
   return (
-    <LanguageProvider>
-      <main className="min-h-screen">
-        <Header />
-        <Hero />
-        <Collections />
-        <FeaturedBusinesses />
-        <FeaturedProducts />
-        <HowItWorks />
-        <Heritage />
-        <Personalization />
-        <Sustainability />
-        <Press />
-        <Services />
-        <Testimonials />
-        <Journal />
-        <Newsletter />
-        <Footer />
-      </main>
-    </LanguageProvider>
+    <main className="min-h-screen">
+      <Header />
+      <Hero />
+      <Collections />
+      <FeaturedBusinesses />
+      <FeaturedProducts />
+      <HowItWorks />
+      <Heritage />
+      <Personalization />
+      <Sustainability />
+      <Press />
+      <Services />
+      <Testimonials />
+      <Journal />
+      <Newsletter />
+      <Footer />
+    </main>
   );
 }

@@ -44,6 +44,7 @@ import { createOrder } from "@/lib/actions/orders";
 import { formatMoney } from "@/lib/format";
 import type { CustomerRow } from "@/lib/actions/customers";
 import type { DesignRow } from "@/lib/actions/designs";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 const emptyItem = {
   garment_type: "shirt" as const,
@@ -63,6 +64,7 @@ export function OrderForm({
 }) {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
+  const { t } = useLanguage();
 
   const form = useForm<OrderInput>({
     resolver: zodResolver(orderSchema),
@@ -104,7 +106,7 @@ export function OrderForm({
         toast.error(result.error);
         return;
       }
-      toast.success(`Order ${result.data.order_no} created`);
+      toast.success(`${t.orders.orderCreated} ${result.data.order_no} ${t.orders.orderCreatedSuffix}`);
       router.push(`/admin/orders/${result.data.id}`);
     } finally {
       setSubmitting(false);
@@ -116,7 +118,7 @@ export function OrderForm({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Order Details</CardTitle>
+            <CardTitle className="text-base">{t.orders.orderDetails}</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-3">
             <FormField
@@ -124,7 +126,7 @@ export function OrderForm({
               name="customer_id"
               render={({ field }) => (
                 <FormItem className="sm:col-span-3">
-                  <FormLabel>Customer</FormLabel>
+                  <FormLabel>{t.orders.customer}</FormLabel>
                   <FormControl>
                     <CustomerPicker
                       value={field.value}
@@ -141,7 +143,7 @@ export function OrderForm({
               name="order_date"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Order Date</FormLabel>
+                  <FormLabel>{t.orders.orderDate}</FormLabel>
                   <FormControl>
                     <Input type="date" {...field} />
                   </FormControl>
@@ -154,7 +156,7 @@ export function OrderForm({
               name="due_date"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Due Date</FormLabel>
+                  <FormLabel>{t.orders.dueDate}</FormLabel>
                   <FormControl>
                     <Input type="date" {...field} />
                   </FormControl>
@@ -167,7 +169,7 @@ export function OrderForm({
               name="order_kind"
               render={({ field }) => (
                 <FormItem className="sm:col-span-2">
-                  <FormLabel>Order Type</FormLabel>
+                  <FormLabel>{t.orders.orderType}</FormLabel>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="w-full">
@@ -191,7 +193,7 @@ export function OrderForm({
               name="delivery_option"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Delivery</FormLabel>
+                  <FormLabel>{t.orders.delivery}</FormLabel>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="w-full">
@@ -223,7 +225,7 @@ export function OrderForm({
           return (
             <Card key={field.id}>
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-base">Garment {index + 1}</CardTitle>
+                <CardTitle className="text-base">{t.orders.garment} {index + 1}</CardTitle>
                 {fields.length > 1 && (
                   <Button
                     type="button"
@@ -242,7 +244,7 @@ export function OrderForm({
                     name={`items.${index}.garment_type`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Garment Type</FormLabel>
+                        <FormLabel>{t.orders.garmentType}</FormLabel>
                         <Select value={field.value} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="w-full">
@@ -265,17 +267,17 @@ export function OrderForm({
                     name={`items.${index}.design_id`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Design</FormLabel>
+                        <FormLabel>{t.orders.design}</FormLabel>
                         <Select value={field.value} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="w-full">
-                              <SelectValue placeholder="None" />
+                              <SelectValue placeholder={t.orders.none} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
                             {relevantDesigns.length === 0 && (
                               <div className="px-2 py-1.5 text-sm text-muted-foreground">
-                                No designs for this garment type
+                                {t.orders.noDesignsForType}
                               </div>
                             )}
                             {relevantDesigns.map((d) => (
@@ -293,7 +295,7 @@ export function OrderForm({
                     name={`items.${index}.quantity`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Quantity</FormLabel>
+                        <FormLabel>{t.orders.quantity}</FormLabel>
                         <FormControl>
                           <Input type="number" min={1} {...field} />
                         </FormControl>
@@ -306,7 +308,7 @@ export function OrderForm({
                     name={`items.${index}.price_per_piece`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Price per Piece</FormLabel>
+                        <FormLabel>{t.orders.pricePerPieceLabel}</FormLabel>
                         <FormControl>
                           <Input type="number" min={0} step="0.01" {...field} />
                         </FormControl>
@@ -317,11 +319,11 @@ export function OrderForm({
                 </div>
 
                 <p className="text-sm text-muted-foreground">
-                  Item total: <span className="text-foreground">{formatMoney(itemTotal)}</span>
+                  {t.orders.itemTotal} <span className="text-foreground">{formatMoney(itemTotal)}</span>
                 </p>
 
                 <div>
-                  <p className="mb-2 text-sm font-medium">Measurements</p>
+                  <p className="mb-2 text-sm font-medium">{t.orders.measurements}</p>
                   <div className="grid gap-3 sm:grid-cols-4">
                     {measurementFields.map((key) => (
                       <FormField
@@ -346,7 +348,7 @@ export function OrderForm({
                     name={`items.${index}.measurements.note`}
                     render={({ field }) => (
                       <FormItem className="mt-3">
-                        <FormLabel className="text-xs">Measurement Note</FormLabel>
+                        <FormLabel className="text-xs">{t.orders.measurementNote}</FormLabel>
                         <FormControl>
                           <Textarea {...field} />
                         </FormControl>
@@ -360,7 +362,7 @@ export function OrderForm({
                   name={`items.${index}.note`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs">Garment Note</FormLabel>
+                      <FormLabel className="text-xs">{t.orders.garmentNote}</FormLabel>
                       <FormControl>
                         <Textarea {...field} />
                       </FormControl>
@@ -378,16 +380,16 @@ export function OrderForm({
           onClick={() => append(emptyItem)}
         >
           <Plus className="h-4 w-4" />
-          Add Garment
+          {t.orders.addGarment}
         </Button>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Financials</CardTitle>
+            <CardTitle className="text-base">{t.orders.financials}</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-3">
             <div>
-              <p className="text-sm text-muted-foreground">Total Price</p>
+              <p className="text-sm text-muted-foreground">{t.orders.totalPrice}</p>
               <p className="font-serif text-xl">{formatMoney(totalPrice)}</p>
             </div>
             <FormField
@@ -395,7 +397,7 @@ export function OrderForm({
               name="paid_amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Paid Amount</FormLabel>
+                  <FormLabel>{t.orders.paidAmount}</FormLabel>
                   <FormControl>
                     <Input type="number" min={0} step="0.01" {...field} />
                   </FormControl>
@@ -404,7 +406,7 @@ export function OrderForm({
               )}
             />
             <div>
-              <p className="text-sm text-muted-foreground">Balance</p>
+              <p className="text-sm text-muted-foreground">{t.orders.balance}</p>
               <p className="font-serif text-xl">{formatMoney(balance)}</p>
             </div>
             <FormField
@@ -412,7 +414,7 @@ export function OrderForm({
               name="note"
               render={({ field }) => (
                 <FormItem className="sm:col-span-3">
-                  <FormLabel>Order Note</FormLabel>
+                  <FormLabel>{t.orders.orderNote}</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
@@ -423,7 +425,7 @@ export function OrderForm({
         </Card>
 
         <Button type="submit" disabled={submitting} size="lg">
-          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create Order"}
+          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t.orders.createOrder}
         </Button>
       </form>
     </Form>

@@ -15,6 +15,7 @@ import { BusinessStatusActions } from "@/components/admin/businesses/business-st
 import { listBusinesses, getBusinessCounts } from "@/lib/actions/businesses";
 import { businessStatusLabels, type BusinessStatus } from "@/lib/validation/business";
 import { formatDate } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +27,7 @@ const statusVariant: Record<BusinessStatus, "default" | "secondary" | "outline" 
 };
 
 async function BusinessesTable({ q, status }: { q: string; status?: BusinessStatus }) {
+  const { t } = await getServerLanguage();
   let businesses;
   try {
     businesses = await listBusinesses({ search: q, status });
@@ -37,7 +39,7 @@ async function BusinessesTable({ q, status }: { q: string; status?: BusinessStat
     return (
       <Card>
         <CardContent className="py-10 text-center text-sm text-muted-foreground">
-          No businesses found.
+          {t.platformAdmin.noneFound}
         </CardContent>
       </Card>
     );
@@ -48,13 +50,13 @@ async function BusinessesTable({ q, status }: { q: string; status?: BusinessStat
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>#</TableHead>
-            <TableHead>Business</TableHead>
-            <TableHead>Owner</TableHead>
-            <TableHead>Contact</TableHead>
-            <TableHead>Location</TableHead>
-            <TableHead>Applied</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead>{t.platformAdmin.hashCol}</TableHead>
+            <TableHead>{t.platformAdmin.business}</TableHead>
+            <TableHead>{t.platformAdmin.owner}</TableHead>
+            <TableHead>{t.platformAdmin.contact}</TableHead>
+            <TableHead>{t.platformAdmin.location}</TableHead>
+            <TableHead>{t.platformAdmin.applied}</TableHead>
+            <TableHead>{t.platformAdmin.status}</TableHead>
             <TableHead />
           </TableRow>
         </TableHeader>
@@ -93,6 +95,7 @@ export default async function BusinessesPage({
   searchParams: Promise<{ q?: string; status?: BusinessStatus }>;
 }) {
   const { q = "", status } = await searchParams;
+  const { t } = await getServerLanguage();
 
   let counts;
   try {
@@ -104,9 +107,9 @@ export default async function BusinessesPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-2xl">Businesses</h1>
+        <h1 className="font-serif text-2xl">{t.platformAdmin.businessesTitle}</h1>
         <p className="text-sm text-muted-foreground">
-          Review, approve, reject, and manage businesses applying to list on Khaiati.
+          {t.platformAdmin.businessesSubtitle}
         </p>
       </div>
 
@@ -114,25 +117,25 @@ export default async function BusinessesPage({
         <div className="grid gap-4 sm:grid-cols-4">
           <Card>
             <CardContent className="pt-6">
-              <p className="text-sm text-muted-foreground">Pending Review</p>
+              <p className="text-sm text-muted-foreground">{t.platformAdmin.pendingReview}</p>
               <p className="font-serif text-2xl">{counts.pending}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-6">
-              <p className="text-sm text-muted-foreground">Approved</p>
+              <p className="text-sm text-muted-foreground">{t.platformAdmin.approved}</p>
               <p className="font-serif text-2xl">{counts.approved}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-6">
-              <p className="text-sm text-muted-foreground">Rejected</p>
+              <p className="text-sm text-muted-foreground">{t.platformAdmin.rejected}</p>
               <p className="font-serif text-2xl">{counts.rejected}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-6">
-              <p className="text-sm text-muted-foreground">Suspended</p>
+              <p className="text-sm text-muted-foreground">{t.platformAdmin.suspended}</p>
               <p className="font-serif text-2xl">{counts.suspended}</p>
             </CardContent>
           </Card>
@@ -140,10 +143,10 @@ export default async function BusinessesPage({
       )}
 
       <Suspense>
-        <SearchBox placeholder="Search by business or owner name..." />
+        <SearchBox placeholder={t.platformAdmin.searchByBusinessOrOwner} />
       </Suspense>
 
-      <Suspense fallback={<p className="text-sm text-muted-foreground">Loading...</p>}>
+      <Suspense fallback={<p className="text-sm text-muted-foreground">{t.fabrics.loading}</p>}>
         <BusinessesTable q={q} status={status} />
       </Suspense>
     </div>

@@ -39,7 +39,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useLanguage } from "@/lib/i18n/language-context";
 
+// title/label here are dictionary keys into t.adminNav.items / t.adminNav.groups,
+// not the displayed text itself — see AppSidebar below.
 type NavItem = {
   title: string;
   href: string;
@@ -146,6 +149,10 @@ export function AppSidebar({
   isOwner?: boolean;
 }) {
   const pathname = usePathname();
+  const { t } = useLanguage();
+  const groupLabels: Record<string, string> = t.adminNav.groups;
+  const itemTitles: Record<string, string> = t.adminNav.items;
+
   const visibleGroups = hidePlatformGroup
     ? [
         ...navGroups.filter(
@@ -170,7 +177,7 @@ export function AppSidebar({
               Khaiati
             </span>
             <span className="text-[10px] tracking-[0.2em] uppercase text-sidebar-foreground/60">
-              Management
+              {t.adminNav.brandSubtitle}
             </span>
           </span>
         </Link>
@@ -178,7 +185,7 @@ export function AppSidebar({
       <SidebarContent>
         {visibleGroups.map((group) => (
           <SidebarGroup key={group.label}>
-            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+            <SidebarGroupLabel>{groupLabels[group.label] ?? group.label}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => {
@@ -186,10 +193,10 @@ export function AppSidebar({
                     item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
                   return (
                     <SidebarMenuItem key={item.href}>
-                      <SidebarMenuButton asChild isActive={active} tooltip={item.title}>
+                      <SidebarMenuButton asChild isActive={active} tooltip={itemTitles[item.title] ?? item.title}>
                         <Link href={item.href}>
                           <item.icon />
-                          <span>{item.title}</span>
+                          <span>{itemTitles[item.title] ?? item.title}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -202,7 +209,7 @@ export function AppSidebar({
       </SidebarContent>
       <SidebarFooter>
         <div className="px-2 py-1.5 text-[11px] text-sidebar-foreground/50 group-data-[collapsible=icon]:hidden">
-          Khaiati Tailoring &amp; Fabric System
+          {t.adminNav.footer}
         </div>
       </SidebarFooter>
     </Sidebar>

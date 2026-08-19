@@ -31,10 +31,12 @@ import { CustomerPicker } from "@/components/admin/orders/customer-picker";
 import { saleSchema, type SaleInput } from "@/lib/validation/fabric";
 import { createSale } from "@/lib/actions/fabric-transactions";
 import { formatMoney } from "@/lib/format";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function GlobalSaleFormDialog() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const form = useForm<SaleInput>({
     resolver: zodResolver(saleSchema),
@@ -63,7 +65,7 @@ export function GlobalSaleFormDialog() {
       toast.error(result.error);
       return;
     }
-    toast.success(`Sale ${result.data.sale_no} recorded`);
+    toast.success(`${t.fabrics.saleRecorded} ${result.data.sale_no} ${t.fabrics.saleRecordedSuffix}`);
     setOpen(false);
     form.reset();
     router.refresh();
@@ -74,12 +76,12 @@ export function GlobalSaleFormDialog() {
       <DialogTrigger asChild>
         <Button>
           <Plus className="h-4 w-4" />
-          Record Sale
+          {t.fabrics.recordSale}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Record Fabric Sale</DialogTitle>
+          <DialogTitle>{t.fabrics.recordFabricSale}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -88,7 +90,7 @@ export function GlobalSaleFormDialog() {
               name="fabric_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Fabric</FormLabel>
+                  <FormLabel>{t.suppliers.fabric}</FormLabel>
                   <FormControl>
                     <FabricPicker value={field.value} onChange={(id) => field.onChange(id)} />
                   </FormControl>
@@ -101,7 +103,7 @@ export function GlobalSaleFormDialog() {
               name="customer_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Customer (optional)</FormLabel>
+                  <FormLabel>{t.fabrics.customerOptional}</FormLabel>
                   <FormControl>
                     <CustomerPicker value={field.value ?? ""} onChange={(id) => field.onChange(id)} />
                   </FormControl>
@@ -115,7 +117,7 @@ export function GlobalSaleFormDialog() {
                 name="color"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Color</FormLabel>
+                    <FormLabel>{t.fabrics.color}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -128,7 +130,7 @@ export function GlobalSaleFormDialog() {
                 name="size_meters"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Size (meters)</FormLabel>
+                    <FormLabel>{t.fabrics.sizeMeters}</FormLabel>
                     <FormControl>
                       <Input type="number" min={0} step="0.01" {...field} />
                     </FormControl>
@@ -142,7 +144,7 @@ export function GlobalSaleFormDialog() {
               name="price_per_meter"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Selling Price / Meter</FormLabel>
+                  <FormLabel>{t.fabrics.sellingPricePerMeter}</FormLabel>
                   <FormControl>
                     <Input type="number" min={0} step="0.01" {...field} />
                   </FormControl>
@@ -151,7 +153,7 @@ export function GlobalSaleFormDialog() {
               )}
             />
             <p className="text-sm text-muted-foreground">
-              Sale total: <span className="text-foreground">{formatMoney(totalPrice)}</span>
+              {t.fabrics.saleTotal} <span className="text-foreground">{formatMoney(totalPrice)}</span>
             </p>
             <div className="grid grid-cols-2 gap-4">
               <FormField
@@ -159,7 +161,7 @@ export function GlobalSaleFormDialog() {
                 name="sale_date"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Sale Date</FormLabel>
+                    <FormLabel>{t.fabrics.saleDate}</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>
@@ -172,7 +174,7 @@ export function GlobalSaleFormDialog() {
                 name="amount_paid"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Amount Paid Now</FormLabel>
+                    <FormLabel>{t.fabrics.amountPaidNowShort}</FormLabel>
                     <FormControl>
                       <Input type="number" min={0} step="0.01" {...field} />
                     </FormControl>
@@ -186,7 +188,7 @@ export function GlobalSaleFormDialog() {
               name="note"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Note</FormLabel>
+                  <FormLabel>{t.adminCommon.note}</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
@@ -195,7 +197,7 @@ export function GlobalSaleFormDialog() {
             />
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save Sale"}
+                {form.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t.fabrics.saveSale}
               </Button>
             </DialogFooter>
           </form>

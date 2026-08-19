@@ -27,10 +27,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { planSchema, type PlanInput } from "@/lib/validation/subscription";
 import { createPlan } from "@/lib/actions/subscriptions";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function PlanFormDialog() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const form = useForm<PlanInput>({
     resolver: zodResolver(planSchema),
@@ -43,7 +45,7 @@ export function PlanFormDialog() {
       toast.error(result.error);
       return;
     }
-    toast.success("Plan created");
+    toast.success(t.platformAdmin.planCreated);
     setOpen(false);
     form.reset();
     router.refresh();
@@ -54,12 +56,12 @@ export function PlanFormDialog() {
       <DialogTrigger asChild>
         <Button>
           <Plus className="h-4 w-4" />
-          New Plan
+          {t.platformAdmin.newPlan}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>New Subscription Plan</DialogTitle>
+          <DialogTitle>{t.platformAdmin.newSubscriptionPlan}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -68,9 +70,9 @@ export function PlanFormDialog() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Plan Name</FormLabel>
+                  <FormLabel>{t.platformAdmin.planName}</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Monthly" {...field} />
+                    <Input placeholder={t.platformAdmin.planNamePlaceholder} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -82,7 +84,7 @@ export function PlanFormDialog() {
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price</FormLabel>
+                    <FormLabel>{t.platformAdmin.price}</FormLabel>
                     <FormControl>
                       <Input type="number" min={0} step="0.01" {...field} />
                     </FormControl>
@@ -95,7 +97,7 @@ export function PlanFormDialog() {
                 name="duration_days"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Duration (days)</FormLabel>
+                    <FormLabel>{t.platformAdmin.durationDays}</FormLabel>
                     <FormControl>
                       <Input type="number" min={1} {...field} />
                     </FormControl>
@@ -108,7 +110,7 @@ export function PlanFormDialog() {
                 name="commission_rate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Commission %</FormLabel>
+                    <FormLabel>{t.platformAdmin.commissionPercent}</FormLabel>
                     <FormControl>
                       <Input type="number" min={0} step="0.1" {...field} />
                     </FormControl>
@@ -119,7 +121,7 @@ export function PlanFormDialog() {
             </div>
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving..." : "Save Plan"}
+                {form.formState.isSubmitting ? t.adminCommon.saving : t.platformAdmin.savePlan}
               </Button>
             </DialogFooter>
           </form>

@@ -16,8 +16,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { addIncome } from "@/lib/actions/finance";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function IncomeFormDialog() {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
@@ -33,7 +35,7 @@ export function IncomeFormDialog() {
         toast.error(result.error);
         return;
       }
-      toast.success("Income recorded");
+      toast.success(t.finance.incomeRecorded);
       setOpen(false);
       setAmount("");
       setNote("");
@@ -48,30 +50,30 @@ export function IncomeFormDialog() {
       <DialogTrigger asChild>
         <Button variant="outline">
           <Plus className="h-4 w-4" />
-          Add Other Income
+          {t.finance.addOtherIncome}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add Other Income</DialogTitle>
+          <DialogTitle>{t.finance.addOtherIncome}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <Label>Amount</Label>
+            <Label>{t.finance.amount}</Label>
             <Input type="number" min={0} step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} />
           </div>
           <div>
-            <Label>Date</Label>
+            <Label>{t.finance.date}</Label>
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
           </div>
           <div>
-            <Label>Note</Label>
-            <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Source of income" />
+            <Label>{t.adminCommon.note}</Label>
+            <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder={t.finance.sourceOfIncome} />
           </div>
         </div>
         <DialogFooter>
           <Button onClick={submit} disabled={submitting || !amount}>
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save Income"}
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t.finance.saveIncome}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -14,10 +14,12 @@ import {
 import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { getWorkerReport } from "@/lib/actions/reports";
 import { formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 export default async function WorkerReportsPage() {
+  const { t } = await getServerLanguage();
   let workers;
   try {
     workers = await getWorkerReport();
@@ -30,29 +32,29 @@ export default async function WorkerReportsPage() {
       <Button asChild variant="ghost" size="sm" className="w-fit">
         <Link href="/admin/reports">
           <ArrowLeft className="h-4 w-4" />
-          Back to reports
+          {t.reports.backToReports}
         </Link>
       </Button>
-      <h1 className="font-serif text-2xl">Worker Reports</h1>
+      <h1 className="font-serif text-2xl">{t.reports.workerReportsTitle}</h1>
 
       {workers.length === 0 ? (
         <Card>
-          <CardContent className="py-8 text-center text-sm text-muted-foreground">No workers yet.</CardContent>
+          <CardContent className="py-8 text-center text-sm text-muted-foreground">{t.reports.noWorkersYet}</CardContent>
         </Card>
       ) : (
         <div className="overflow-x-auto rounded-md border border-border">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Worker #</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead className="text-right">Assigned</TableHead>
-                <TableHead className="text-right">Completed</TableHead>
-                <TableHead className="text-right">Pending</TableHead>
-                <TableHead className="text-right">Wages Earned</TableHead>
-                <TableHead className="text-right">Paid</TableHead>
-                <TableHead className="text-right">Advances</TableHead>
-                <TableHead className="text-right">Pending Salary</TableHead>
+                <TableHead>{t.reports.workerNo}</TableHead>
+                <TableHead>{t.reports.name}</TableHead>
+                <TableHead className="text-right">{t.reports.assigned}</TableHead>
+                <TableHead className="text-right">{t.reports.completed}</TableHead>
+                <TableHead className="text-right">{t.reports.pending}</TableHead>
+                <TableHead className="text-right">{t.reports.wagesEarned}</TableHead>
+                <TableHead className="text-right">{t.reports.paid}</TableHead>
+                <TableHead className="text-right">{t.reports.advances}</TableHead>
+                <TableHead className="text-right">{t.reports.pendingSalary}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

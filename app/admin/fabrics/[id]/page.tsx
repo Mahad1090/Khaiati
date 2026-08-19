@@ -21,6 +21,7 @@ import { getFabricById, getFabricStockHistory } from "@/lib/actions/fabrics";
 import { getFabricPurchases, getFabricSales } from "@/lib/actions/fabric-transactions";
 import { paymentTypeLabels, type PaymentType } from "@/lib/validation/fabric";
 import { formatDate, formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,7 @@ export default async function FabricDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const { t } = await getServerLanguage();
 
   let fabric, purchases, sales, stockHistory;
   try {
@@ -51,7 +53,7 @@ export default async function FabricDetailPage({
       <Button asChild variant="ghost" size="sm" className="w-fit">
         <Link href="/admin/fabrics">
           <ArrowLeft className="h-4 w-4" />
-          Back to fabrics
+          {t.fabrics.backToFabrics}
         </Link>
       </Button>
 
@@ -79,14 +81,14 @@ export default async function FabricDetailPage({
             note: fabric.note ?? "",
             is_active: fabric.is_active,
           }}
-          trigger={<Button variant="outline">Edit</Button>}
+          trigger={<Button variant="outline">{t.fabrics.edit}</Button>}
         />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Available Stock</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.fabrics.availableStock}</CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-xl">
             {fabric.availableMeters} {fabric.unit}
@@ -94,23 +96,23 @@ export default async function FabricDetailPage({
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Price / Meter</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.fabrics.priceMeter}</CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-xl">{formatMoney(fabric.price_per_meter)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Selling Price</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.fabrics.sellingPrice}</CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-xl">{formatMoney(fabric.selling_price)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Status</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.fabrics.status}</CardTitle>
           </CardHeader>
           <CardContent>
             <Badge variant={fabric.is_active ? "default" : "secondary"}>
-              {fabric.is_active ? "Active" : "Inactive"}
+              {fabric.is_active ? t.fabrics.active : t.fabrics.inactive}
             </Badge>
           </CardContent>
         </Card>
@@ -118,13 +120,13 @@ export default async function FabricDetailPage({
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="font-serif text-lg">Purchases</h2>
+          <h2 className="font-serif text-lg">{t.fabrics.purchases}</h2>
           <PurchaseFormDialog fabricId={fabric.id} />
         </div>
         {purchases!.length === 0 ? (
           <Card>
             <CardContent className="py-6 text-center text-sm text-muted-foreground">
-              No purchases yet.
+              {t.fabrics.noPurchasesYet}
             </CardContent>
           </Card>
         ) : (
@@ -132,13 +134,13 @@ export default async function FabricDetailPage({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Purchase #</TableHead>
-                  <TableHead>Supplier</TableHead>
-                  <TableHead>Bill #</TableHead>
-                  <TableHead>Meters</TableHead>
-                  <TableHead>Payment</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
-                  <TableHead className="text-right">Outstanding</TableHead>
+                  <TableHead>{t.fabrics.purchaseNo}</TableHead>
+                  <TableHead>{t.fabrics.supplierCol}</TableHead>
+                  <TableHead>{t.fabrics.billNo}</TableHead>
+                  <TableHead>{t.fabrics.meters}</TableHead>
+                  <TableHead>{t.fabrics.payment}</TableHead>
+                  <TableHead className="text-right">{t.fabrics.total}</TableHead>
+                  <TableHead className="text-right">{t.fabrics.outstanding}</TableHead>
                   <TableHead />
                 </TableRow>
               </TableHeader>
@@ -168,13 +170,13 @@ export default async function FabricDetailPage({
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="font-serif text-lg">Sales</h2>
+          <h2 className="font-serif text-lg">{t.fabrics.sales}</h2>
           <SaleFormDialog fabricId={fabric.id} availableMeters={fabric.availableMeters} />
         </div>
         {sales!.length === 0 ? (
           <Card>
             <CardContent className="py-6 text-center text-sm text-muted-foreground">
-              No sales yet.
+              {t.fabrics.noSalesYet}
             </CardContent>
           </Card>
         ) : (
@@ -182,19 +184,19 @@ export default async function FabricDetailPage({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Sale #</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Meters</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
-                  <TableHead className="text-right">Balance</TableHead>
+                  <TableHead>{t.fabrics.saleNo}</TableHead>
+                  <TableHead>{t.fabrics.customer}</TableHead>
+                  <TableHead>{t.fabrics.meters}</TableHead>
+                  <TableHead>{t.fabrics.date}</TableHead>
+                  <TableHead className="text-right">{t.fabrics.total}</TableHead>
+                  <TableHead className="text-right">{t.fabrics.balance}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {sales!.map((s) => (
                   <TableRow key={s.id}>
                     <TableCell className="font-medium">{s.sale_no}</TableCell>
-                    <TableCell>{s.customer_name ?? "Walk-in"}</TableCell>
+                    <TableCell>{s.customer_name ?? t.fabrics.walkIn}</TableCell>
                     <TableCell>{s.size_meters}</TableCell>
                     <TableCell>{formatDate(s.sale_date)}</TableCell>
                     <TableCell className="text-right">{formatMoney(s.total_price)}</TableCell>
@@ -210,11 +212,11 @@ export default async function FabricDetailPage({
       </div>
 
       <div className="space-y-3">
-        <h2 className="font-serif text-lg">Stock Movement History</h2>
+        <h2 className="font-serif text-lg">{t.fabrics.stockMovementHistory}</h2>
         {stockHistory!.length === 0 ? (
           <Card>
             <CardContent className="py-6 text-center text-sm text-muted-foreground">
-              No stock movements yet.
+              {t.fabrics.noMovementsYet}
             </CardContent>
           </Card>
         ) : (
@@ -222,10 +224,10 @@ export default async function FabricDetailPage({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Note</TableHead>
-                  <TableHead className="text-right">Change</TableHead>
+                  <TableHead>{t.fabrics.date}</TableHead>
+                  <TableHead>{t.fabrics.type}</TableHead>
+                  <TableHead>{t.fabrics.note}</TableHead>
+                  <TableHead className="text-right">{t.fabrics.change}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

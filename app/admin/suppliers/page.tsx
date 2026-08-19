@@ -14,10 +14,12 @@ import { SearchBox } from "@/components/admin/search-box";
 import { SupplierFormDialog } from "@/components/admin/suppliers/supplier-form-dialog";
 import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { searchSuppliers } from "@/lib/actions/suppliers";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 async function SuppliersTable({ q }: { q: string }) {
+  const { t } = await getServerLanguage();
   let suppliers;
   try {
     suppliers = await searchSuppliers(q);
@@ -29,7 +31,7 @@ async function SuppliersTable({ q }: { q: string }) {
     return (
       <Card>
         <CardContent className="py-10 text-center text-sm text-muted-foreground">
-          No suppliers found.
+          {t.suppliers.noneFound}
         </CardContent>
       </Card>
     );
@@ -40,11 +42,11 @@ async function SuppliersTable({ q }: { q: string }) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Supplier #</TableHead>
-            <TableHead>Company</TableHead>
-            <TableHead>Contact Person</TableHead>
-            <TableHead>Phone</TableHead>
-            <TableHead>Company #</TableHead>
+            <TableHead>{t.suppliers.supplierNo}</TableHead>
+            <TableHead>{t.suppliers.company}</TableHead>
+            <TableHead>{t.suppliers.contactPerson}</TableHead>
+            <TableHead>{t.suppliers.phone}</TableHead>
+            <TableHead>{t.suppliers.companyNo}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -75,22 +77,23 @@ export default async function SuppliersPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q = "" } = await searchParams;
+  const { t } = await getServerLanguage();
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-serif text-2xl">Suppliers</h1>
-          <p className="text-sm text-muted-foreground">Fabric companies and their financial history.</p>
+          <h1 className="font-serif text-2xl">{t.suppliers.title}</h1>
+          <p className="text-sm text-muted-foreground">{t.suppliers.subtitle}</p>
         </div>
         <SupplierFormDialog />
       </div>
 
       <Suspense>
-        <SearchBox placeholder="Search suppliers..." />
+        <SearchBox placeholder={t.suppliers.searchPlaceholder} />
       </Suspense>
 
-      <Suspense fallback={<p className="text-sm text-muted-foreground">Loading...</p>}>
+      <Suspense fallback={<p className="text-sm text-muted-foreground">{t.suppliers.loading}</p>}>
         <SuppliersTable q={q} />
       </Suspense>
     </div>

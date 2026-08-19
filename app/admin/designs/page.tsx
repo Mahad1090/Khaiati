@@ -8,10 +8,12 @@ import { ActiveToggle } from "./active-toggle";
 import { listDesigns } from "@/lib/actions/designs";
 import { garmentTypeLabels, type GarmentType } from "@/lib/validation/design";
 import { cdnImageUrl } from "@/lib/cdn";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 async function DesignsGrid({ q }: { q: string }) {
+  const { t } = await getServerLanguage();
   let designs;
   try {
     designs = await listDesigns({ search: q });
@@ -23,7 +25,7 @@ async function DesignsGrid({ q }: { q: string }) {
     return (
       <Card>
         <CardContent className="py-10 text-center text-sm text-muted-foreground">
-          No designs found.
+          {t.designs.noneFound}
         </CardContent>
       </Card>
     );
@@ -40,7 +42,7 @@ async function DesignsGrid({ q }: { q: string }) {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={imageUrl} alt={d.name} className="h-full w-full object-cover" />
               ) : (
-                <span className="text-xs text-muted-foreground">No image</span>
+                <span className="text-xs text-muted-foreground">{t.designs.noImage}</span>
               )}
             </div>
             <CardContent className="space-y-2 pt-4">
@@ -68,24 +70,25 @@ export default async function DesignsPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q = "" } = await searchParams;
+  const { t } = await getServerLanguage();
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-serif text-2xl">Designs</h1>
+          <h1 className="font-serif text-2xl">{t.designs.title}</h1>
           <p className="text-sm text-muted-foreground">
-            Reusable garment designs selectable during order creation.
+            {t.designs.subtitle}
           </p>
         </div>
         <DesignFormDialog />
       </div>
 
       <Suspense>
-        <SearchBox placeholder="Search designs..." />
+        <SearchBox placeholder={t.designs.searchPlaceholder} />
       </Suspense>
 
-      <Suspense fallback={<p className="text-sm text-muted-foreground">Loading...</p>}>
+      <Suspense fallback={<p className="text-sm text-muted-foreground">{t.designs.loading}</p>}>
         <DesignsGrid q={q} />
       </Suspense>
     </div>

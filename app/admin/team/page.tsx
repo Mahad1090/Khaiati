@@ -13,11 +13,13 @@ import { InviteEmployeeDialog } from "@/components/admin/team/invite-employee-di
 import { listMyTeam } from "@/lib/actions/team";
 import { getCurrentAccessContext } from "@/lib/auth/business-context";
 import { formatDate } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 export default async function TeamPage() {
   const access = await getCurrentAccessContext();
+  const { t } = await getServerLanguage();
   const isOwner = access.kind === "business_staff" && access.isOwner;
 
   let team;
@@ -26,7 +28,7 @@ export default async function TeamPage() {
   } catch (err) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-2xl">Team</h1>
+        <h1 className="font-serif text-2xl">{t.platformAdmin.teamTitle}</h1>
         <DbUnconfigured detail={err instanceof Error ? err.message : undefined} />
       </div>
     );
@@ -36,10 +38,9 @@ export default async function TeamPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-serif text-2xl">Team</h1>
+          <h1 className="font-serif text-2xl">{t.platformAdmin.teamTitle}</h1>
           <p className="text-sm text-muted-foreground">
-            Who can sign in to this business&apos;s dashboard. Employees don&apos;t see finances or subscription
-            info — only the owner does.
+            {t.platformAdmin.teamSubtitle}
           </p>
         </div>
         {isOwner && <InviteEmployeeDialog />}
@@ -48,7 +49,7 @@ export default async function TeamPage() {
       {team.length === 0 ? (
         <Card>
           <CardContent className="py-10 text-center text-sm text-muted-foreground">
-            No team members yet.
+            {t.platformAdmin.noTeamMembersYet}
           </CardContent>
         </Card>
       ) : (
@@ -56,9 +57,9 @@ export default async function TeamPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Joined</TableHead>
+                <TableHead>{t.platformAdmin.name}</TableHead>
+                <TableHead>{t.platformAdmin.role}</TableHead>
+                <TableHead>{t.platformAdmin.joined}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -67,7 +68,7 @@ export default async function TeamPage() {
                   <TableCell className="font-medium">{m.full_name ?? "—"}</TableCell>
                   <TableCell>
                     <Badge variant={m.is_owner ? "default" : "secondary"}>
-                      {m.is_owner ? "Owner" : "Employee"}
+                      {m.is_owner ? t.platformAdmin.owner2 : t.platformAdmin.employee}
                     </Badge>
                   </TableCell>
                   <TableCell>{formatDate(m.created_at)}</TableCell>

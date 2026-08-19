@@ -12,6 +12,7 @@ import { DateRangeControl } from "@/components/admin/finance/date-range-control"
 import { getProfitLoss } from "@/lib/actions/finance";
 import { expenseCategoryLabels, type ExpenseCategory } from "@/lib/validation/finance";
 import { formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +30,7 @@ export default async function ProfitLossPage({
   searchParams: Promise<{ from?: string; to?: string }>;
 }) {
   const { from = firstOfMonth(), to = today() } = await searchParams;
+  const { t } = await getServerLanguage();
 
   let report;
   try {
@@ -36,7 +38,7 @@ export default async function ProfitLossPage({
   } catch (err) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-2xl">Profit &amp; Loss</h1>
+        <h1 className="font-serif text-2xl">{t.finance.profitLossTitle}</h1>
         <DbUnconfigured detail={err instanceof Error ? err.message : undefined} />
       </div>
     );
@@ -46,17 +48,17 @@ export default async function ProfitLossPage({
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-serif text-2xl">Profit &amp; Loss</h1>
+          <h1 className="font-serif text-2xl">{t.finance.profitLossTitle}</h1>
           <p className="text-sm text-muted-foreground">
-            Computed live from Orders, Salaries, and Fabric Purchases/Sales — no duplicated bookkeeping.
+            {t.finance.profitLossSubtitle}
           </p>
         </div>
         <div className="flex gap-2">
           <Button asChild variant="outline">
-            <Link href="/admin/income">Income →</Link>
+            <Link href="/admin/income">{t.finance.incomeLink}</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/admin/expenses">Expenses →</Link>
+            <Link href="/admin/expenses">{t.finance.expensesLink}</Link>
           </Button>
         </div>
       </div>
@@ -66,20 +68,20 @@ export default async function ProfitLossPage({
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Income</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.finance.totalIncome}</CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-2xl">{formatMoney(report.income.total)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Expenses</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.finance.totalExpenses}</CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-2xl">{formatMoney(report.expenses.total)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              {report.netProfit >= 0 ? "Net Profit" : "Net Loss"}
+              {report.netProfit >= 0 ? t.finance.netProfit : t.finance.netLoss}
             </CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-2xl">
@@ -93,25 +95,25 @@ export default async function ProfitLossPage({
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Income Breakdown</CardTitle>
+            <CardTitle className="text-base">{t.finance.incomeBreakdown}</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableBody>
                 <TableRow>
-                  <TableCell>Sewing (order payments)</TableCell>
+                  <TableCell>{t.finance.sewingOrderPayments}</TableCell>
                   <TableCell className="text-right">{formatMoney(report.income.sewing)}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell>Fabric Sales</TableCell>
+                  <TableCell>{t.finance.fabricSales}</TableCell>
                   <TableCell className="text-right">{formatMoney(report.income.fabricSales)}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell>Other Income</TableCell>
+                  <TableCell>{t.finance.otherIncome}</TableCell>
                   <TableCell className="text-right">{formatMoney(report.income.other)}</TableCell>
                 </TableRow>
                 <TableRow className="font-medium">
-                  <TableCell>Total</TableCell>
+                  <TableCell>{t.finance.total}</TableCell>
                   <TableCell className="text-right">{formatMoney(report.income.total)}</TableCell>
                 </TableRow>
               </TableBody>
@@ -121,21 +123,21 @@ export default async function ProfitLossPage({
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Expense Breakdown</CardTitle>
+            <CardTitle className="text-base">{t.finance.expenseBreakdown}</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableBody>
                 <TableRow>
-                  <TableCell>Worker Salaries / Wages</TableCell>
+                  <TableCell>{t.finance.workerSalariesWages}</TableCell>
                   <TableCell className="text-right">{formatMoney(report.expenses.workerSalariesWages)}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell>Worker Advances</TableCell>
+                  <TableCell>{t.finance.workerAdvances}</TableCell>
                   <TableCell className="text-right">{formatMoney(report.expenses.workerAdvances)}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell>Fabric Purchases</TableCell>
+                  <TableCell>{t.finance.fabricPurchases}</TableCell>
                   <TableCell className="text-right">{formatMoney(report.expenses.fabricPurchases)}</TableCell>
                 </TableRow>
                 {(Object.keys(report.expenses.byCategory) as ExpenseCategory[]).map((c) => (
@@ -145,7 +147,7 @@ export default async function ProfitLossPage({
                   </TableRow>
                 ))}
                 <TableRow className="font-medium">
-                  <TableCell>Total</TableCell>
+                  <TableCell>{t.finance.total}</TableCell>
                   <TableCell className="text-right">{formatMoney(report.expenses.total)}</TableCell>
                 </TableRow>
               </TableBody>

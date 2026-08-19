@@ -38,6 +38,7 @@ import { designSchema, type DesignInput } from "@/lib/validation/design";
 import { garmentTypeLabels, garmentTypes } from "@/lib/validation/design";
 import { createDesign, updateDesign } from "@/lib/actions/designs";
 import { cdnImageUrl } from "@/lib/cdn";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type Props = {
   mode?: "create" | "edit";
@@ -49,6 +50,7 @@ type Props = {
 export function DesignFormDialog({ mode = "create", designId, defaultValues, trigger }: Props) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const form = useForm<DesignInput>({
     resolver: zodResolver(designSchema),
@@ -71,7 +73,7 @@ export function DesignFormDialog({ mode = "create", designId, defaultValues, tri
       toast.error(result.error);
       return;
     }
-    toast.success(mode === "edit" ? "Design updated" : "Design added");
+    toast.success(mode === "edit" ? t.designs.designUpdated : t.designs.designAdded);
     setOpen(false);
     form.reset();
     router.refresh();
@@ -85,13 +87,13 @@ export function DesignFormDialog({ mode = "create", designId, defaultValues, tri
         {trigger ?? (
           <Button>
             <Plus className="h-4 w-4" />
-            New Design
+            {t.designs.newDesign}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{mode === "edit" ? "Edit Design" : "New Design"}</DialogTitle>
+          <DialogTitle>{mode === "edit" ? t.designs.editDesign : t.designs.newDesign}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -104,9 +106,9 @@ export function DesignFormDialog({ mode = "create", designId, defaultValues, tri
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Design Name</FormLabel>
+                  <FormLabel>{t.designs.designName}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Design name" {...field} />
+                    <Input placeholder={t.designs.designNamePlaceholder} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -117,7 +119,7 @@ export function DesignFormDialog({ mode = "create", designId, defaultValues, tri
               name="garment_type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Garment Type</FormLabel>
+                  <FormLabel>{t.designs.garmentType}</FormLabel>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="w-full">
@@ -141,9 +143,9 @@ export function DesignFormDialog({ mode = "create", designId, defaultValues, tri
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t.designs.description}</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Optional description" {...field} />
+                    <Textarea placeholder={t.designs.descriptionPlaceholder} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -151,7 +153,7 @@ export function DesignFormDialog({ mode = "create", designId, defaultValues, tri
             />
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving..." : "Save"}
+                {form.formState.isSubmitting ? t.adminCommon.saving : t.adminCommon.save}
               </Button>
             </DialogFooter>
           </form>

@@ -2,8 +2,10 @@ import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { InquiryDialog } from "@/components/public/inquiry-dialog";
 import { listApprovedBusinesses } from "@/lib/actions/businesses";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export async function FeaturedBusinesses() {
+  const { t } = await getServerLanguage();
   let businesses: Awaited<ReturnType<typeof listApprovedBusinesses>> = [];
   try {
     businesses = (await listApprovedBusinesses()).slice(0, 6);
@@ -17,26 +19,26 @@ export async function FeaturedBusinesses() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
           <div className="space-y-4">
             <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground">
-              Featured Businesses
+              {t.featuredBusinesses.eyebrow}
             </p>
             <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl tracking-tight">
-              Discover
-              <span className="italic text-accent"> Trusted Tailors</span>
+              {t.featuredBusinesses.titleLine1}
+              <span className="italic text-accent"> {t.featuredBusinesses.titleAccent}</span>
             </h2>
           </div>
           <Link
             href="/businesses"
             className="text-sm tracking-[0.2em] uppercase hover:text-accent transition-colors duration-300"
           >
-            Browse All →
+            {t.featuredBusinesses.browseAll}
           </Link>
         </div>
 
         {businesses.length === 0 ? (
           <p className="text-muted-foreground">
-            No approved businesses yet — be the first to{" "}
+            {t.featuredBusinesses.noneYet}{" "}
             <Link href="/register-business" className="underline hover:text-accent">
-              list your business
+              {t.featuredBusinesses.listYourBusiness}
             </Link>
             .
           </p>
@@ -65,17 +67,17 @@ export async function FeaturedBusinesses() {
                     href={`/business/${b.slug}`}
                     className="flex-1 border border-primary text-primary py-3 text-center text-sm tracking-[0.15em] uppercase hover:bg-primary hover:text-primary-foreground transition-colors duration-300"
                   >
-                    View Storefront
+                    {t.featuredBusinesses.viewStorefront}
                   </Link>
                   <InquiryDialog
-                    title={`Interested in ${b.name}`}
+                    title={`${t.featuredBusinesses.interestedIn} ${b.name}`}
                     trigger={
                       <button
                         type="button"
                         className="border border-border px-4 text-sm tracking-[0.15em] uppercase hover:border-accent transition-colors duration-300"
-                        aria-label={`Enquire about ${b.name}`}
+                        aria-label={`${t.featuredBusinesses.enquireAbout} ${b.name}`}
                       >
-                        Enquire
+                        {t.featuredBusinesses.enquire}
                       </button>
                     }
                   />
@@ -86,9 +88,9 @@ export async function FeaturedBusinesses() {
         )}
 
         <p className="mt-8 text-center text-sm text-muted-foreground">
-          Own a tailoring business?{" "}
+          {t.featuredBusinesses.ownBusiness}{" "}
           <Link href="/register-business" className="underline hover:text-accent transition-colors duration-300">
-            List it on Khaiati
+            {t.featuredBusinesses.listOnKhaiati}
           </Link>
         </p>
       </div>

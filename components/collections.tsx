@@ -1,51 +1,27 @@
 "use client";
 
 import { ArrowUpRight } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
-const collections = [
-  {
-    id: 1,
-    name: "Custom Stitching",
-    description: "Bring your own fabric, we tailor it",
-    image:
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=800&fit=crop",
-    itemCount: 24,
-  },
-  {
-    id: 2,
-    name: "Fabric Shopping",
-    description: "Buy fabric and add stitching in one order",
-    image:
-      "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&h=800&fit=crop",
-    itemCount: 18,
-  },
-  {
-    id: 3,
-    name: "Alterations",
-    description: "Fit adjustments on existing garments",
-    image:
-      "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=800&fit=crop",
-    itemCount: 32,
-  },
-  {
-    id: 4,
-    name: "Bridal & Formal Wear",
-    description: "Occasion pieces, made to measure",
-    image:
-      "https://images.unsplash.com/photo-1541643600914-78b084683601?w=600&h=800&fit=crop",
-    itemCount: 12,
-  },
-  {
-    id: 5,
-    name: "Corporate Uniforms",
-    description: "Bulk stitching for teams and businesses",
-    image:
-      "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=600&h=800&fit=crop",
-    itemCount: 28,
-  },
+const images = [
+  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=800&fit=crop",
+  "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&h=800&fit=crop",
+  "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=800&fit=crop",
+  "https://images.unsplash.com/photo-1541643600914-78b084683601?w=600&h=800&fit=crop",
+  "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=600&h=800&fit=crop",
 ];
 
+const itemCounts = [24, 18, 32, 12, 28];
+
 export function Collections() {
+  const { t } = useLanguage();
+  const collections = t.collections.items.map((item, index) => ({
+    id: index + 1,
+    ...item,
+    image: images[index],
+    itemCount: itemCounts[index],
+  }));
+
   return (
     <section id="collections" className="py-24 md:py-32 bg-secondary/30">
       <div className="max-w-[1800px] mx-auto px-6 md:px-12">
@@ -53,11 +29,11 @@ export function Collections() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
           <div className="space-y-4">
             <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground">
-              Service Categories
+              {t.collections.eyebrow}
             </p>
             <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl tracking-tight">
-              What You Can
-              <span className="italic text-accent"> Order</span>
+              {t.collections.titleLine1}
+              <span className="italic text-accent"> {t.collections.titleAccent}</span>
             </h2>
           </div>
           <button
@@ -65,7 +41,7 @@ export function Collections() {
             onClick={() => document.getElementById("businesses")?.scrollIntoView({ behavior: "smooth" })}
             className="group inline-flex items-center gap-2 text-sm tracking-[0.2em] uppercase hover:text-accent transition-colors duration-300 self-start md:self-auto"
           >
-            Browse Businesses
+            {t.collections.browseBusinesses}
             <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
           </button>
         </div>
@@ -97,7 +73,7 @@ export function Collections() {
                 {/* Content */}
                 <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-end">
                   <p className="text-[10px] tracking-[0.3em] uppercase text-background/70 mb-2">
-                    {collection.itemCount} businesses
+                    {collection.itemCount} {t.collections.businessesSuffix}
                   </p>
                   <h3
                     className={`font-serif text-background mb-2 ${

@@ -4,6 +4,7 @@ import { MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { listApprovedBusinesses } from "@/lib/actions/businesses";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,7 @@ export default async function BusinessesPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q = "" } = await searchParams;
+  const { t } = await getServerLanguage();
   let businesses: Awaited<ReturnType<typeof listApprovedBusinesses>> = [];
   try {
     businesses = await listApprovedBusinesses(q);
@@ -29,18 +31,18 @@ export default async function BusinessesPage({
         </Link>
 
         <div className="mb-10">
-          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">Discover</p>
-          <h1 className="font-serif text-4xl md:text-5xl tracking-tight">Tailoring Businesses</h1>
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">{t.businesses.discoverEyebrow}</p>
+          <h1 className="font-serif text-4xl md:text-5xl tracking-tight">{t.businesses.title}</h1>
         </div>
 
         <form className="mb-10 max-w-md" method="get">
-          <Input name="q" defaultValue={q} placeholder="Search by name or location..." />
+          <Input name="q" defaultValue={q} placeholder={t.businesses.searchPlaceholder} />
         </form>
 
         {businesses.length === 0 ? (
           <Card>
             <CardContent className="py-16 text-center text-sm text-muted-foreground">
-              No approved businesses {q ? "match your search" : "yet"}.
+              {q ? t.businesses.noneMatch : t.businesses.noneYet}
             </CardContent>
           </Card>
         ) : (

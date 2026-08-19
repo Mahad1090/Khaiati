@@ -15,10 +15,12 @@ import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { getAllPurchases } from "@/lib/actions/fabric-transactions";
 import { paymentTypeLabels, type PaymentType } from "@/lib/validation/fabric";
 import { formatDate, formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 async function PurchasesTable({ q }: { q: string }) {
+  const { t } = await getServerLanguage();
   let rows;
   try {
     rows = await getAllPurchases(q);
@@ -30,7 +32,7 @@ async function PurchasesTable({ q }: { q: string }) {
     return (
       <Card>
         <CardContent className="py-10 text-center text-sm text-muted-foreground">
-          No purchases found.
+          {t.fabrics.noPurchasesFound}
         </CardContent>
       </Card>
     );
@@ -41,15 +43,15 @@ async function PurchasesTable({ q }: { q: string }) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Purchase #</TableHead>
-            <TableHead>Fabric</TableHead>
-            <TableHead>Supplier</TableHead>
-            <TableHead>Bill #</TableHead>
-            <TableHead>Meters</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Payment</TableHead>
-            <TableHead className="text-right">Total</TableHead>
-            <TableHead className="text-right">Outstanding</TableHead>
+            <TableHead>{t.fabrics.purchaseNo}</TableHead>
+            <TableHead>{t.suppliers.fabric}</TableHead>
+            <TableHead>{t.fabrics.supplierCol}</TableHead>
+            <TableHead>{t.fabrics.billNo}</TableHead>
+            <TableHead>{t.fabrics.meters}</TableHead>
+            <TableHead>{t.fabrics.date}</TableHead>
+            <TableHead>{t.fabrics.payment}</TableHead>
+            <TableHead className="text-right">{t.fabrics.total}</TableHead>
+            <TableHead className="text-right">{t.fabrics.outstanding}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -88,22 +90,23 @@ export default async function FabricPurchasesPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q = "" } = await searchParams;
+  const { t } = await getServerLanguage();
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-serif text-2xl">Fabric Purchases</h1>
-          <p className="text-sm text-muted-foreground">Every purchase, across all fabrics and suppliers.</p>
+          <h1 className="font-serif text-2xl">{t.fabrics.allPurchasesTitle}</h1>
+          <p className="text-sm text-muted-foreground">{t.fabrics.allPurchasesSubtitle}</p>
         </div>
         <GlobalPurchaseFormDialog />
       </div>
 
       <Suspense>
-        <SearchBox placeholder="Search by fabric, supplier, or bill #..." />
+        <SearchBox placeholder={t.fabrics.searchByFabricSupplierBill} />
       </Suspense>
 
-      <Suspense fallback={<p className="text-sm text-muted-foreground">Loading...</p>}>
+      <Suspense fallback={<p className="text-sm text-muted-foreground">{t.fabrics.loading}</p>}>
         <PurchasesTable q={q} />
       </Suspense>
     </div>

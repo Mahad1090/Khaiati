@@ -16,6 +16,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { addOrderPayment } from "@/lib/actions/orders";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function AddPaymentDialog({ orderId, balance }: { orderId: string; balance: number }) {
   const [open, setOpen] = useState(false);
@@ -23,6 +24,7 @@ export function AddPaymentDialog({ orderId, balance }: { orderId: string; balanc
   const [note, setNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   async function submit() {
     setSubmitting(true);
@@ -32,7 +34,7 @@ export function AddPaymentDialog({ orderId, balance }: { orderId: string; balanc
         toast.error(result.error);
         return;
       }
-      toast.success("Payment recorded");
+      toast.success(t.orders.paymentRecorded);
       setOpen(false);
       setAmount("");
       setNote("");
@@ -47,16 +49,16 @@ export function AddPaymentDialog({ orderId, balance }: { orderId: string; balanc
       <DialogTrigger asChild>
         <Button variant="outline" disabled={balance <= 0}>
           <Plus className="h-4 w-4" />
-          Record Payment
+          {t.orders.recordPayment}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Record Payment</DialogTitle>
+          <DialogTitle>{t.orders.recordPayment}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <Label>Amount (balance {balance.toFixed(2)})</Label>
+            <Label>{t.orders.amountBalance} {balance.toFixed(2)})</Label>
             <Input
               type="number"
               min={0}
@@ -66,13 +68,13 @@ export function AddPaymentDialog({ orderId, balance }: { orderId: string; balanc
             />
           </div>
           <div>
-            <Label>Note</Label>
-            <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Optional" />
+            <Label>{t.adminCommon.note}</Label>
+            <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder={t.adminCommon.optionalNote} />
           </div>
         </div>
         <DialogFooter>
           <Button onClick={submit} disabled={submitting || !amount}>
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save Payment"}
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t.orders.savePayment}
           </Button>
         </DialogFooter>
       </DialogContent>

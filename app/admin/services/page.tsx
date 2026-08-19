@@ -14,17 +14,19 @@ import { AvailabilityToggle } from "@/components/admin/marketplace/availability-
 import { listMyServices, setServiceAvailable } from "@/lib/actions/services";
 import { garmentTypeLabels, type GarmentType } from "@/lib/validation/design";
 import { formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 export default async function ServicesPage() {
+  const { t } = await getServerLanguage();
   let services;
   try {
     services = await listMyServices();
   } catch (err) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-2xl">Services</h1>
+        <h1 className="font-serif text-2xl">{t.marketplace.servicesTitle}</h1>
         <DbUnconfigured detail={err instanceof Error ? err.message : undefined} />
       </div>
     );
@@ -34,8 +36,8 @@ export default async function ServicesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-serif text-2xl">Services</h1>
-          <p className="text-sm text-muted-foreground">Stitching services offered on your storefront.</p>
+          <h1 className="font-serif text-2xl">{t.marketplace.servicesTitle}</h1>
+          <p className="text-sm text-muted-foreground">{t.marketplace.servicesSubtitle}</p>
         </div>
         <ServiceFormDialog />
       </div>
@@ -43,7 +45,7 @@ export default async function ServicesPage() {
       {services.length === 0 ? (
         <Card>
           <CardContent className="py-10 text-center text-sm text-muted-foreground">
-            No services yet.
+            {t.marketplace.noServicesYet}
           </CardContent>
         </Card>
       ) : (
@@ -51,13 +53,13 @@ export default async function ServicesPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>#</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Garment</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-                <TableHead className="text-right">Est. Days</TableHead>
-                <TableHead>Available</TableHead>
+                <TableHead>{t.marketplace.hashCol}</TableHead>
+                <TableHead>{t.marketplace.name}</TableHead>
+                <TableHead>{t.marketplace.garment}</TableHead>
+                <TableHead>{t.marketplace.category}</TableHead>
+                <TableHead className="text-right">{t.marketplace.price}</TableHead>
+                <TableHead className="text-right">{t.marketplace.estDays}</TableHead>
+                <TableHead>{t.marketplace.available}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -68,7 +70,7 @@ export default async function ServicesPage() {
                   </TableCell>
                   <TableCell className="font-medium">{s.name}</TableCell>
                   <TableCell>
-                    {s.clothing_category ? garmentTypeLabels[s.clothing_category as GarmentType] : "Any"}
+                    {s.clothing_category ? garmentTypeLabels[s.clothing_category as GarmentType] : t.marketplace.any}
                   </TableCell>
                   <TableCell>{s.category_name ?? "—"}</TableCell>
                   <TableCell className="text-right">{formatMoney(s.price)}</TableCell>

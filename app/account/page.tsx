@@ -18,20 +18,22 @@ import { getCurrentCustomer, getMyOrders } from "@/lib/actions/customer-auth";
 import { getMyReviewedOrderIds } from "@/lib/actions/reviews";
 import { orderStatusLabels, type OrderStatus } from "@/lib/validation/order";
 import { formatDate, formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 export default async function AccountPage() {
   const customer = await getCurrentCustomer();
+  const { t } = await getServerLanguage();
 
   if (!customer) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-secondary/20 px-6">
         <div className="max-w-sm text-center">
-          <h1 className="font-serif text-2xl">Not Signed In</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Sign in to see your account and order history.</p>
+          <h1 className="font-serif text-2xl">{t.account.notSignedIn}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{t.account.notSignedInSubtitle}</p>
           <Button asChild className="mt-6">
-            <Link href="/account/login">Sign In</Link>
+            <Link href="/account/login">{t.account.signIn}</Link>
           </Button>
         </div>
       </div>
@@ -61,11 +63,11 @@ export default async function AccountPage() {
         </div>
 
         <div>
-          <h2 className="mb-3 font-serif text-lg">My Orders</h2>
+          <h2 className="mb-3 font-serif text-lg">{t.account.myOrders}</h2>
           {orders.length === 0 ? (
             <Card>
               <CardContent className="py-10 text-center text-sm text-muted-foreground">
-                No orders yet.
+                {t.account.noOrdersYet}
               </CardContent>
             </Card>
           ) : (
@@ -73,12 +75,12 @@ export default async function AccountPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Order #</TableHead>
-                    <TableHead>Business</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Due</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
-                    <TableHead className="text-right">Balance</TableHead>
+                    <TableHead>{t.account.orderNo}</TableHead>
+                    <TableHead>{t.account.business}</TableHead>
+                    <TableHead>{t.account.status}</TableHead>
+                    <TableHead>{t.account.due}</TableHead>
+                    <TableHead className="text-right">{t.account.total}</TableHead>
+                    <TableHead className="text-right">{t.account.balance}</TableHead>
                     <TableHead />
                   </TableRow>
                 </TableHeader>
@@ -99,7 +101,7 @@ export default async function AccountPage() {
                         <Button asChild variant="ghost" size="sm">
                           <Link href={`/track/${o.tracking_token}`} target="_blank">
                             <QrCode className="h-3.5 w-3.5" />
-                            Track
+                            {t.account.track}
                           </Link>
                         </Button>
                         {["completed", "delivered"].includes(o.status) &&

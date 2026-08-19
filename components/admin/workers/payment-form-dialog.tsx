@@ -24,8 +24,10 @@ import {
 } from "@/components/ui/select";
 import { addWorkerPayment } from "@/lib/actions/workers";
 import { payModels, payModelLabels, type PayModel } from "@/lib/validation/worker";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function PaymentFormDialog({ workerId }: { workerId: string }) {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [payModel, setPayModel] = useState<PayModel>("per_job");
   const [amount, setAmount] = useState("");
@@ -51,7 +53,7 @@ export function PaymentFormDialog({ workerId }: { workerId: string }) {
         toast.error(result.error);
         return;
       }
-      toast.success("Payment recorded");
+      toast.success(t.workers.paymentRecorded);
       setOpen(false);
       setAmount("");
       setNote("");
@@ -66,16 +68,16 @@ export function PaymentFormDialog({ workerId }: { workerId: string }) {
       <DialogTrigger asChild>
         <Button variant="outline">
           <Plus className="h-4 w-4" />
-          Record Salary/Wage Payment
+          {t.workers.recordSalaryWagePayment}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Record Payment</DialogTitle>
+          <DialogTitle>{t.workers.recordPayment}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <Label>Pay Model</Label>
+            <Label>{t.workers.payModelLabel}</Label>
             <Select value={payModel} onValueChange={(v) => setPayModel(v as PayModel)}>
               <SelectTrigger className="w-full">
                 <SelectValue />
@@ -90,31 +92,31 @@ export function PaymentFormDialog({ workerId }: { workerId: string }) {
             </Select>
           </div>
           <div>
-            <Label>Amount</Label>
+            <Label>{t.workers.amount}</Label>
             <Input type="number" min={0} step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Period Start</Label>
+              <Label>{t.workers.periodStart}</Label>
               <Input type="date" value={periodStart} onChange={(e) => setPeriodStart(e.target.value)} />
             </div>
             <div>
-              <Label>Period End</Label>
+              <Label>{t.workers.periodEnd}</Label>
               <Input type="date" value={periodEnd} onChange={(e) => setPeriodEnd(e.target.value)} />
             </div>
           </div>
           <div>
-            <Label>Payment Date</Label>
+            <Label>{t.workers.paymentDate}</Label>
             <Input type="date" value={paidAt} onChange={(e) => setPaidAt(e.target.value)} />
           </div>
           <div>
-            <Label>Note</Label>
-            <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Optional" />
+            <Label>{t.adminCommon.note}</Label>
+            <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder={t.adminCommon.optionalNote} />
           </div>
         </div>
         <DialogFooter>
           <Button onClick={submit} disabled={submitting || !amount}>
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save Payment"}
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t.workers.savePayment}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -15,10 +15,12 @@ import { FabricFormDialog } from "@/components/admin/fabrics/fabric-form-dialog"
 import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { listFabrics } from "@/lib/actions/fabrics";
 import { formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 async function FabricsTable({ q }: { q: string }) {
+  const { t } = await getServerLanguage();
   let fabrics;
   try {
     fabrics = await listFabrics({ search: q });
@@ -30,7 +32,7 @@ async function FabricsTable({ q }: { q: string }) {
     return (
       <Card>
         <CardContent className="py-10 text-center text-sm text-muted-foreground">
-          No fabrics found.
+          {t.fabrics.noneFound}
         </CardContent>
       </Card>
     );
@@ -41,14 +43,14 @@ async function FabricsTable({ q }: { q: string }) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Fabric #</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Color</TableHead>
-            <TableHead>Supplier</TableHead>
-            <TableHead className="text-right">Price/Meter</TableHead>
-            <TableHead className="text-right">Selling Price</TableHead>
-            <TableHead className="text-right">Available</TableHead>
+            <TableHead>{t.fabrics.fabricNo}</TableHead>
+            <TableHead>{t.fabrics.name}</TableHead>
+            <TableHead>{t.fabrics.type}</TableHead>
+            <TableHead>{t.fabrics.color}</TableHead>
+            <TableHead>{t.fabrics.supplier}</TableHead>
+            <TableHead className="text-right">{t.fabrics.pricePerMeter}</TableHead>
+            <TableHead className="text-right">{t.fabrics.sellingPrice}</TableHead>
+            <TableHead className="text-right">{t.fabrics.available}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -86,22 +88,23 @@ export default async function FabricsPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q = "" } = await searchParams;
+  const { t } = await getServerLanguage();
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-serif text-2xl">Fabrics</h1>
-          <p className="text-sm text-muted-foreground">Catalogue, pricing, and available stock.</p>
+          <h1 className="font-serif text-2xl">{t.fabrics.title}</h1>
+          <p className="text-sm text-muted-foreground">{t.fabrics.subtitle}</p>
         </div>
         <FabricFormDialog />
       </div>
 
       <Suspense>
-        <SearchBox placeholder="Search fabrics..." />
+        <SearchBox placeholder={t.fabrics.searchPlaceholder} />
       </Suspense>
 
-      <Suspense fallback={<p className="text-sm text-muted-foreground">Loading...</p>}>
+      <Suspense fallback={<p className="text-sm text-muted-foreground">{t.fabrics.loading}</p>}>
         <FabricsTable q={q} />
       </Suspense>
     </div>

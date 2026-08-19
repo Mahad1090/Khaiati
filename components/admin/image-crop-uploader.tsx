@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Slider } from "@/components/ui/slider";
 import { getCroppedImageBlob } from "@/lib/crop-image";
 import { uploadDesignImage } from "@/lib/actions/uploads";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type Props = {
   onUploaded: (path: string) => void;
@@ -19,6 +20,7 @@ type Props = {
 
 /** Upload -> crop -> confirm -> upload to storage -> hand back the storage path. */
 export function ImageCropUploader({ onUploaded, previewUrl }: Props) {
+  const { t } = useLanguage();
   const [rawImage, setRawImage] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -55,12 +57,12 @@ export function ImageCropUploader({ onUploaded, previewUrl }: Props) {
         return;
       }
       onUploaded(result.data.path);
-      toast.success("Image uploaded");
+      toast.success(t.settingsPage.imageUploaded);
       setDialogOpen(false);
       setRawImage(null);
     } catch (err) {
       console.error(err);
-      toast.error("Could not process image.");
+      toast.error(t.settingsPage.couldNotProcessImage);
     } finally {
       setBusy(false);
     }
@@ -83,13 +85,13 @@ export function ImageCropUploader({ onUploaded, previewUrl }: Props) {
 
       <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-accent hover:underline">
         <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={onFileChange} />
-        Choose image
+        {t.settingsPage.chooseImage}
       </label>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Crop image</DialogTitle>
+            <DialogTitle>{t.settingsPage.cropImage}</DialogTitle>
           </DialogHeader>
           <div className="relative h-72 w-full bg-muted">
             {rawImage && (
@@ -113,10 +115,10 @@ export function ImageCropUploader({ onUploaded, previewUrl }: Props) {
           />
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)} disabled={busy}>
-              Cancel
+              {t.settingsPage.cancel}
             </Button>
             <Button onClick={confirmCrop} disabled={busy}>
-              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save Image"}
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : t.settingsPage.saveImage}
             </Button>
           </DialogFooter>
         </DialogContent>

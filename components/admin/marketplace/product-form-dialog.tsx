@@ -28,6 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { productSchema, type ProductInput } from "@/lib/validation/marketplace";
 import { createProduct, updateProduct } from "@/lib/actions/products";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function ProductFormDialog({
   mode = "create",
@@ -42,6 +43,7 @@ export function ProductFormDialog({
 }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const form = useForm<ProductInput>({
     resolver: zodResolver(productSchema),
@@ -63,7 +65,7 @@ export function ProductFormDialog({
       toast.error(result.error);
       return;
     }
-    toast.success(mode === "edit" ? "Product updated" : "Product added");
+    toast.success(mode === "edit" ? t.marketplace.productUpdated : t.marketplace.productAdded);
     setOpen(false);
     form.reset();
     router.refresh();
@@ -75,13 +77,13 @@ export function ProductFormDialog({
         {trigger ?? (
           <Button>
             <Plus className="h-4 w-4" />
-            New Product
+            {t.marketplace.newProduct}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{mode === "edit" ? "Edit Product" : "New Product"}</DialogTitle>
+          <DialogTitle>{mode === "edit" ? t.marketplace.editProduct : t.marketplace.newProduct}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -90,7 +92,7 @@ export function ProductFormDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t.marketplace.name}</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -104,9 +106,9 @@ export function ProductFormDialog({
                 name="categoryName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category</FormLabel>
+                    <FormLabel>{t.marketplace.category}</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Cotton Fabric" {...field} />
+                      <Input placeholder={t.marketplace.categoryPlaceholder} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -117,7 +119,7 @@ export function ProductFormDialog({
                 name="color"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Color</FormLabel>
+                    <FormLabel>{t.marketplace.color}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -131,7 +133,7 @@ export function ProductFormDialog({
               name="fabric_type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Fabric Type</FormLabel>
+                  <FormLabel>{t.marketplace.fabricType}</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -145,7 +147,7 @@ export function ProductFormDialog({
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price</FormLabel>
+                    <FormLabel>{t.marketplace.price}</FormLabel>
                     <FormControl>
                       <Input type="number" min={0} step="0.01" {...field} />
                     </FormControl>
@@ -158,7 +160,7 @@ export function ProductFormDialog({
                 name="stock_quantity"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Stock Quantity</FormLabel>
+                    <FormLabel>{t.marketplace.stockQuantity}</FormLabel>
                     <FormControl>
                       <Input type="number" min={0} step="0.01" {...field} />
                     </FormControl>
@@ -172,7 +174,7 @@ export function ProductFormDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t.marketplace.description}</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
@@ -182,7 +184,7 @@ export function ProductFormDialog({
             />
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving..." : "Save"}
+                {form.formState.isSubmitting ? t.adminCommon.saving : t.adminCommon.save}
               </Button>
             </DialogFooter>
           </form>

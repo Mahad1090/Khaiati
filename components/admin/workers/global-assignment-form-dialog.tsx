@@ -45,10 +45,12 @@ import {
 } from "@/lib/validation/worker";
 import { garmentTypeLabels, garmentTypes } from "@/lib/validation/design";
 import { createAssignment } from "@/lib/actions/workers";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function GlobalAssignmentFormDialog() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const form = useForm<AssignmentInput>({
     resolver: zodResolver(assignmentSchema),
@@ -72,7 +74,7 @@ export function GlobalAssignmentFormDialog() {
       toast.error(result.error);
       return;
     }
-    toast.success("Assignment created");
+    toast.success(t.workers.assignmentCreated);
     setOpen(false);
     form.reset();
     router.refresh();
@@ -83,12 +85,12 @@ export function GlobalAssignmentFormDialog() {
       <DialogTrigger asChild>
         <Button>
           <Plus className="h-4 w-4" />
-          New Assignment
+          {t.workers.newAssignment}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Assign Work</DialogTitle>
+          <DialogTitle>{t.workers.assignWork}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -97,7 +99,7 @@ export function GlobalAssignmentFormDialog() {
               name="worker_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Worker</FormLabel>
+                  <FormLabel>{t.workers.worker}</FormLabel>
                   <FormControl>
                     <WorkerPicker value={field.value} onChange={(id) => field.onChange(id)} />
                   </FormControl>
@@ -110,7 +112,7 @@ export function GlobalAssignmentFormDialog() {
               name="order_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Order</FormLabel>
+                  <FormLabel>{t.workers.order}</FormLabel>
                   <FormControl>
                     <OrderPicker value={field.value ?? ""} onChange={(id) => field.onChange(id)} />
                   </FormControl>
@@ -124,7 +126,7 @@ export function GlobalAssignmentFormDialog() {
                 name="garment_type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Garment Type</FormLabel>
+                    <FormLabel>{t.workers.garmentType}</FormLabel>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger className="w-full">
@@ -147,7 +149,7 @@ export function GlobalAssignmentFormDialog() {
                 name="work_type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Work Type</FormLabel>
+                    <FormLabel>{t.workers.workType}</FormLabel>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger className="w-full">
@@ -172,7 +174,7 @@ export function GlobalAssignmentFormDialog() {
                 name="quantity"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Quantity</FormLabel>
+                    <FormLabel>{t.workers.qty}</FormLabel>
                     <FormControl>
                       <Input type="number" min={1} {...field} />
                     </FormControl>
@@ -185,7 +187,7 @@ export function GlobalAssignmentFormDialog() {
                 name="wage"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Wage (per piece)</FormLabel>
+                    <FormLabel>{t.workers.wagePerPiece}</FormLabel>
                     <FormControl>
                       <Input type="number" min={0} step="0.01" {...field} />
                     </FormControl>
@@ -200,7 +202,7 @@ export function GlobalAssignmentFormDialog() {
                 name="submitted_date"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Submission Date</FormLabel>
+                    <FormLabel>{t.workers.submissionDate}</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>
@@ -213,7 +215,7 @@ export function GlobalAssignmentFormDialog() {
                 name="due_date"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Due Date</FormLabel>
+                    <FormLabel>{t.workers.dueDate}</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>
@@ -227,7 +229,7 @@ export function GlobalAssignmentFormDialog() {
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>{t.workers.status}</FormLabel>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="w-full">
@@ -250,7 +252,7 @@ export function GlobalAssignmentFormDialog() {
               name="note"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Note</FormLabel>
+                  <FormLabel>{t.adminCommon.note}</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
@@ -259,7 +261,7 @@ export function GlobalAssignmentFormDialog() {
             />
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving..." : "Save Assignment"}
+                {form.formState.isSubmitting ? t.adminCommon.saving : t.workers.saveAssignment}
               </Button>
             </DialogFooter>
           </form>

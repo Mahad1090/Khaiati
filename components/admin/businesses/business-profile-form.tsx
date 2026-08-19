@@ -17,8 +17,10 @@ import {
 } from "@/components/ui/form";
 import { businessProfileSchema, type BusinessProfileInput } from "@/lib/validation/business";
 import { updateMyBusinessProfile } from "@/lib/actions/businesses";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function BusinessProfileForm({ defaultValues }: { defaultValues: BusinessProfileInput }) {
+  const { t } = useLanguage();
   const form = useForm<BusinessProfileInput>({
     resolver: zodResolver(businessProfileSchema),
     defaultValues,
@@ -30,7 +32,7 @@ export function BusinessProfileForm({ defaultValues }: { defaultValues: Business
       toast.error(result.error);
       return;
     }
-    toast.success("Business profile updated");
+    toast.success(t.platformAdmin.businessProfileUpdated);
   }
 
   return (
@@ -41,7 +43,7 @@ export function BusinessProfileForm({ defaultValues }: { defaultValues: Business
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Business Name</FormLabel>
+              <FormLabel>{t.platformAdmin.businessName}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -55,7 +57,7 @@ export function BusinessProfileForm({ defaultValues }: { defaultValues: Business
             name="contactEmail"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Contact Email</FormLabel>
+                <FormLabel>{t.platformAdmin.contactEmail}</FormLabel>
                 <FormControl>
                   <Input type="email" {...field} />
                 </FormControl>
@@ -68,7 +70,7 @@ export function BusinessProfileForm({ defaultValues }: { defaultValues: Business
             name="contactPhone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Contact Phone</FormLabel>
+                <FormLabel>{t.platformAdmin.contactPhone}</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -82,7 +84,7 @@ export function BusinessProfileForm({ defaultValues }: { defaultValues: Business
           name="location"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Location</FormLabel>
+              <FormLabel>{t.platformAdmin.location}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -95,7 +97,7 @@ export function BusinessProfileForm({ defaultValues }: { defaultValues: Business
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>{t.platformAdmin.description}</FormLabel>
               <FormControl>
                 <Textarea rows={4} {...field} />
               </FormControl>
@@ -104,7 +106,7 @@ export function BusinessProfileForm({ defaultValues }: { defaultValues: Business
           )}
         />
         <Button type="submit" disabled={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? "Saving..." : "Save Changes"}
+          {form.formState.isSubmitting ? t.adminCommon.saving : t.platformAdmin.saveChanges}
         </Button>
       </form>
     </Form>

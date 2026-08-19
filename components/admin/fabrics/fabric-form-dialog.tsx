@@ -29,6 +29,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { SupplierPicker } from "@/components/admin/suppliers/supplier-picker";
 import { fabricSchema, type FabricInput } from "@/lib/validation/fabric";
 import { createFabric, updateFabric } from "@/lib/actions/fabrics";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type Props = {
   mode?: "create" | "edit";
@@ -40,6 +41,7 @@ type Props = {
 export function FabricFormDialog({ mode = "create", fabricId, defaultValues, trigger }: Props) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const form = useForm<FabricInput>({
     resolver: zodResolver(fabricSchema),
@@ -62,7 +64,7 @@ export function FabricFormDialog({ mode = "create", fabricId, defaultValues, tri
       toast.error(result.error);
       return;
     }
-    toast.success(mode === "edit" ? "Fabric updated" : "Fabric added");
+    toast.success(mode === "edit" ? t.fabrics.fabricUpdated : t.fabrics.fabricAdded);
     setOpen(false);
     form.reset();
     router.refresh();
@@ -74,13 +76,13 @@ export function FabricFormDialog({ mode = "create", fabricId, defaultValues, tri
         {trigger ?? (
           <Button>
             <Plus className="h-4 w-4" />
-            New Fabric
+            {t.fabrics.newFabric}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{mode === "edit" ? "Edit Fabric" : "New Fabric"}</DialogTitle>
+          <DialogTitle>{mode === "edit" ? t.fabrics.editFabric : t.fabrics.newFabric}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -89,7 +91,7 @@ export function FabricFormDialog({ mode = "create", fabricId, defaultValues, tri
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Fabric Name</FormLabel>
+                  <FormLabel>{t.fabrics.fabricName}</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -103,7 +105,7 @@ export function FabricFormDialog({ mode = "create", fabricId, defaultValues, tri
                 name="fabric_type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Fabric Type</FormLabel>
+                    <FormLabel>{t.fabrics.fabricType}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -116,7 +118,7 @@ export function FabricFormDialog({ mode = "create", fabricId, defaultValues, tri
                 name="color"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Color</FormLabel>
+                    <FormLabel>{t.fabrics.color}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -130,7 +132,7 @@ export function FabricFormDialog({ mode = "create", fabricId, defaultValues, tri
               name="supplier_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Supplier / Company</FormLabel>
+                  <FormLabel>{t.fabrics.supplierCompany}</FormLabel>
                   <FormControl>
                     <SupplierPicker value={field.value ?? ""} onChange={(id) => field.onChange(id)} />
                   </FormControl>
@@ -144,7 +146,7 @@ export function FabricFormDialog({ mode = "create", fabricId, defaultValues, tri
                 name="price_per_meter"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price / Meter</FormLabel>
+                    <FormLabel>{t.fabrics.priceMeter}</FormLabel>
                     <FormControl>
                       <Input type="number" min={0} step="0.01" {...field} />
                     </FormControl>
@@ -157,7 +159,7 @@ export function FabricFormDialog({ mode = "create", fabricId, defaultValues, tri
                 name="selling_price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Selling Price</FormLabel>
+                    <FormLabel>{t.fabrics.sellingPrice}</FormLabel>
                     <FormControl>
                       <Input type="number" min={0} step="0.01" {...field} />
                     </FormControl>
@@ -170,7 +172,7 @@ export function FabricFormDialog({ mode = "create", fabricId, defaultValues, tri
                 name="unit"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Unit</FormLabel>
+                    <FormLabel>{t.fabrics.unit}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -184,7 +186,7 @@ export function FabricFormDialog({ mode = "create", fabricId, defaultValues, tri
               name="note"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Note</FormLabel>
+                  <FormLabel>{t.adminCommon.note}</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
@@ -194,7 +196,7 @@ export function FabricFormDialog({ mode = "create", fabricId, defaultValues, tri
             />
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving..." : "Save"}
+                {form.formState.isSubmitting ? t.adminCommon.saving : t.adminCommon.save}
               </Button>
             </DialogFooter>
           </form>

@@ -3,6 +3,8 @@ import type { Metadata, Viewport } from "next";
 import { DM_Sans, Playfair_Display } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/sonner";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
+import { LanguageProvider } from "@/lib/i18n/language-context";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -46,18 +48,22 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { language, dir } = await getServerLanguage();
+
   return (
-    <html lang="en" className="bg-background">
+    <html lang={language} dir={dir} className="bg-background">
       <body
         className={`${dmSans.variable} ${playfair.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
-        {children}
+        <LanguageProvider initialLanguage={language}>
+          {children}
+        </LanguageProvider>
         <Toaster />
         <Analytics />
       </body>

@@ -28,6 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { workerSchema, type WorkerInput } from "@/lib/validation/worker";
 import { createWorker, updateWorker } from "@/lib/actions/workers";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type Props = {
   mode?: "create" | "edit";
@@ -39,6 +40,7 @@ type Props = {
 export function WorkerFormDialog({ mode = "create", workerId, defaultValues, trigger }: Props) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const form = useForm<WorkerInput>({
     resolver: zodResolver(workerSchema),
@@ -58,7 +60,7 @@ export function WorkerFormDialog({ mode = "create", workerId, defaultValues, tri
       toast.error(result.error);
       return;
     }
-    toast.success(mode === "edit" ? "Worker updated" : "Worker added");
+    toast.success(mode === "edit" ? t.workers.workerUpdated : t.workers.workerAdded);
     setOpen(false);
     form.reset();
     router.refresh();
@@ -70,13 +72,13 @@ export function WorkerFormDialog({ mode = "create", workerId, defaultValues, tri
         {trigger ?? (
           <Button>
             <Plus className="h-4 w-4" />
-            New Worker
+            {t.workers.newWorker}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{mode === "edit" ? "Edit Worker" : "New Worker"}</DialogTitle>
+          <DialogTitle>{mode === "edit" ? t.workers.editWorker : t.workers.newWorker}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -85,9 +87,9 @@ export function WorkerFormDialog({ mode = "create", workerId, defaultValues, tri
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t.adminCommon.name}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Worker name" {...field} />
+                    <Input placeholder={t.workers.workerName} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -99,7 +101,7 @@ export function WorkerFormDialog({ mode = "create", workerId, defaultValues, tri
                 name="occupation"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Occupation</FormLabel>
+                    <FormLabel>{t.workers.occupation}</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g. Tailor" {...field} />
                     </FormControl>
@@ -112,7 +114,7 @@ export function WorkerFormDialog({ mode = "create", workerId, defaultValues, tri
                 name="employee_number"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Employee Number</FormLabel>
+                    <FormLabel>{t.workers.employeeNo}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -127,7 +129,7 @@ export function WorkerFormDialog({ mode = "create", workerId, defaultValues, tri
                 name="contact_number"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Contact Number</FormLabel>
+                    <FormLabel>{t.workers.contactNumber}</FormLabel>
                     <FormControl>
                       <Input placeholder="+92 300 1234567" {...field} />
                     </FormControl>
@@ -140,7 +142,7 @@ export function WorkerFormDialog({ mode = "create", workerId, defaultValues, tri
                 name="salary"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Base Salary</FormLabel>
+                    <FormLabel>{t.workers.baseSalary}</FormLabel>
                     <FormControl>
                       <Input type="number" min={0} step="0.01" {...field} value={field.value ?? ""} />
                     </FormControl>
@@ -154,9 +156,9 @@ export function WorkerFormDialog({ mode = "create", workerId, defaultValues, tri
               name="note"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Note</FormLabel>
+                  <FormLabel>{t.adminCommon.note}</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Optional note" {...field} />
+                    <Textarea placeholder={t.adminCommon.optionalNote} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -164,7 +166,7 @@ export function WorkerFormDialog({ mode = "create", workerId, defaultValues, tri
             />
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving..." : "Save"}
+                {form.formState.isSubmitting ? t.adminCommon.saving : t.adminCommon.save}
               </Button>
             </DialogFooter>
           </form>

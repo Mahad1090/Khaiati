@@ -13,11 +13,13 @@ import { ModerateReviewButton } from "@/components/admin/reviews/moderate-review
 import { getMyBusinessReviews, listAllReviews } from "@/lib/actions/reviews";
 import { getCurrentAccessContext } from "@/lib/auth/business-context";
 import { formatDate } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 export default async function ReviewsPage() {
   const access = await getCurrentAccessContext();
+  const { t } = await getServerLanguage();
   const isPlatformAdmin = access.kind === "platform_admin";
 
   let reviews;
@@ -26,7 +28,7 @@ export default async function ReviewsPage() {
   } catch (err) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-2xl">Reviews</h1>
+        <h1 className="font-serif text-2xl">{t.reviews.title}</h1>
         <DbUnconfigured detail={err instanceof Error ? err.message : undefined} />
       </div>
     );
@@ -35,18 +37,18 @@ export default async function ReviewsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-2xl">Reviews</h1>
+        <h1 className="font-serif text-2xl">{t.reviews.title}</h1>
         <p className="text-sm text-muted-foreground">
           {isPlatformAdmin
-            ? "Every review across every business — moderate as needed."
-            : "Reviews from your customers."}
+            ? t.reviews.subtitlePlatform
+            : t.reviews.subtitleBusiness}
         </p>
       </div>
 
       {reviews.length === 0 ? (
         <Card>
           <CardContent className="py-10 text-center text-sm text-muted-foreground">
-            No reviews yet.
+            {t.reviews.noneYet}
           </CardContent>
         </Card>
       ) : (
@@ -54,12 +56,12 @@ export default async function ReviewsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Customer</TableHead>
-                {isPlatformAdmin && <TableHead>Business</TableHead>}
-                <TableHead className="text-right">Rating</TableHead>
-                <TableHead>Comment</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>{t.reviews.customer}</TableHead>
+                {isPlatformAdmin && <TableHead>{t.reviews.business}</TableHead>}
+                <TableHead className="text-right">{t.reviews.rating}</TableHead>
+                <TableHead>{t.reviews.comment}</TableHead>
+                <TableHead>{t.reviews.date}</TableHead>
+                <TableHead>{t.reviews.status}</TableHead>
                 {isPlatformAdmin && <TableHead />}
               </TableRow>
             </TableHeader>

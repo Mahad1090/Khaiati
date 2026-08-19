@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function Footer() {
+  const { t } = useLanguage();
   return (
     <footer id="contact" className="bg-primary text-primary-foreground">
       <div className="max-w-[1800px] mx-auto px-6 md:px-12">
@@ -22,8 +24,7 @@ export function Footer() {
               <h2 className="font-serif text-2xl tracking-[0.2em]">KHAIATI</h2>
             </Link>
             <p className="text-primary-foreground/70 text-sm leading-relaxed max-w-xs">
-              A marketplace connecting customers with tailoring businesses —
-              stitching, fabric, and order tracking in one place.
+              {t.footer.tagline}
             </p>
 
             {/* Social */}
@@ -66,83 +67,83 @@ export function Footer() {
 
           {/* Links */}
           <div className="space-y-6">
-            <h3 className="text-sm tracking-[0.2em] uppercase">For Customers</h3>
+            <h3 className="text-sm tracking-[0.2em] uppercase">{t.footer.forCustomers}</h3>
             <ul className="space-y-3 text-sm text-primary-foreground/70">
               <li>
                 <Link href="#businesses" className="hover:text-primary-foreground transition-colors duration-300">
-                  Browse Businesses
+                  {t.footer.browseBusinesses}
                 </Link>
               </li>
               <li>
                 <Link href="#collections" className="hover:text-primary-foreground transition-colors duration-300">
-                  Services
+                  {t.footer.services}
                 </Link>
               </li>
               <li>
                 <Link href="#how-it-works" className="hover:text-primary-foreground transition-colors duration-300">
-                  How It Works
+                  {t.footer.howItWorks}
                 </Link>
               </li>
               <li>
                 <Link href="#how-it-works" className="hover:text-primary-foreground transition-colors duration-300">
-                  Order Tracking
+                  {t.footer.orderTracking}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div className="space-y-6">
-            <h3 className="text-sm tracking-[0.2em] uppercase">For Businesses</h3>
+            <h3 className="text-sm tracking-[0.2em] uppercase">{t.footer.forBusinesses}</h3>
             <ul className="space-y-3 text-sm text-primary-foreground/70">
               <li>
                 <Link href="#businesses" className="hover:text-primary-foreground transition-colors duration-300">
-                  List Your Business
+                  {t.footer.listYourBusiness}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="hover:text-primary-foreground transition-colors duration-300">
-                  Pricing &amp; Subscriptions
+                  {t.footer.pricing}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="hover:text-primary-foreground transition-colors duration-300">
-                  Business Dashboard
+                  {t.footer.businessDashboard}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="hover:text-primary-foreground transition-colors duration-300">
-                  Employee Management
+                  {t.footer.employeeManagement}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div className="space-y-6">
-            <h3 className="text-sm tracking-[0.2em] uppercase">Support</h3>
+            <h3 className="text-sm tracking-[0.2em] uppercase">{t.footer.support}</h3>
             <ul className="space-y-3 text-sm text-primary-foreground/70">
               <li>
                 <Link href="#" className="hover:text-primary-foreground transition-colors duration-300">
-                  Contact Us
+                  {t.footer.contactUs}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="hover:text-primary-foreground transition-colors duration-300">
-                  FAQ
+                  {t.footer.faq}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="hover:text-primary-foreground transition-colors duration-300">
-                  Shipping & Returns
+                  {t.footer.shippingReturns}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="hover:text-primary-foreground transition-colors duration-300">
-                  Care Guide
+                  {t.footer.careGuide}
                 </Link>
               </li>
               <li>
                 <Link href="#" className="hover:text-primary-foreground transition-colors duration-300">
-                  Book Appointment
+                  {t.footer.bookAppointment}
                 </Link>
               </li>
             </ul>
@@ -151,16 +152,16 @@ export function Footer() {
 
         {/* Bottom bar */}
         <div className="py-6 border-t border-primary-foreground/20 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/50">
-          <p>© 2026 Khaiati. All rights reserved.</p>
+          <p>{t.footer.copyright}</p>
           <div className="flex flex-wrap justify-center gap-6">
             <Link href="#" className="hover:text-primary-foreground transition-colors duration-300">
-              Legal Notice
+              {t.footer.legalNotice}
             </Link>
             <Link href="#" className="hover:text-primary-foreground transition-colors duration-300">
-              Privacy Policy
+              {t.footer.privacyPolicy}
             </Link>
             <Link href="#" className="hover:text-primary-foreground transition-colors duration-300">
-              Cookies
+              {t.footer.cookies}
             </Link>
           </div>
         </div>

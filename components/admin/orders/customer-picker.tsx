@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { searchCustomers, type CustomerRow } from "@/lib/actions/customers";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type Props = {
   value: string;
@@ -28,6 +29,7 @@ export function CustomerPicker({ value, onChange, initialCustomer }: Props) {
     initialCustomer ? [initialCustomer] : []
   );
   const [selected, setSelected] = useState<CustomerRow | null>(initialCustomer ?? null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const handle = setTimeout(() => {
@@ -50,16 +52,16 @@ export function CustomerPicker({ value, onChange, initialCustomer }: Props) {
               {selected.name} · {selected.phone}
             </span>
           ) : (
-            <span className="text-muted-foreground">Search customer by name, phone, or ID...</span>
+            <span className="text-muted-foreground">{t.orders.searchCustomerPlaceholder}</span>
           )}
           <ChevronsUpDown className="h-4 w-4 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command shouldFilter={false}>
-          <CommandInput placeholder="Search customers..." value={query} onValueChange={setQuery} />
+          <CommandInput placeholder={t.customers.searchPlaceholder} value={query} onValueChange={setQuery} />
           <CommandList>
-            <CommandEmpty>No customers found.</CommandEmpty>
+            <CommandEmpty>{t.customers.noneFound}</CommandEmpty>
             <CommandGroup>
               {results.map((c) => (
                 <CommandItem

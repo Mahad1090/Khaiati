@@ -23,8 +23,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { customerRegisterSchema, type CustomerRegisterInput } from "@/lib/validation/customer-auth";
 import { registerCustomerAccount } from "@/lib/actions/customer-auth";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export default function CustomerRegisterPage() {
+  const { t } = useLanguage();
   const router = useRouter();
   const form = useForm<CustomerRegisterInput>({
     resolver: zodResolver(customerRegisterSchema),
@@ -44,15 +46,15 @@ export default function CustomerRegisterPage() {
         password: values.password,
       });
       if (error) {
-        toast.success("Account created — please sign in.");
+        toast.success(t.accountRegister.accountCreatedSignIn);
         router.push("/account/login");
         return;
       }
-      toast.success("Account created");
+      toast.success(t.accountRegister.accountCreated);
       router.push("/account");
       router.refresh();
     } catch {
-      toast.success("Account created — please sign in.");
+      toast.success(t.accountRegister.accountCreatedSignIn);
       router.push("/account/login");
     }
   }
@@ -66,9 +68,9 @@ export default function CustomerRegisterPage() {
         </Link>
         <Card>
           <CardHeader>
-            <CardTitle className="font-serif text-xl">Create Your Account</CardTitle>
+            <CardTitle className="font-serif text-xl">{t.accountRegister.title}</CardTitle>
             <CardDescription>
-              Save your measurements, track orders, and book fittings across businesses.
+              {t.accountRegister.subtitle}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -79,7 +81,7 @@ export default function CustomerRegisterPage() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name</FormLabel>
+                      <FormLabel>{t.accountRegister.name}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -92,7 +94,7 @@ export default function CustomerRegisterPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>{t.accountRegister.email}</FormLabel>
                       <FormControl>
                         <Input type="email" {...field} />
                       </FormControl>
@@ -105,9 +107,9 @@ export default function CustomerRegisterPage() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone</FormLabel>
+                      <FormLabel>{t.accountRegister.phone}</FormLabel>
                       <FormControl>
-                        <Input placeholder="+92 300 1234567" {...field} />
+                        <Input placeholder={t.accountRegister.phonePlaceholder} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -118,23 +120,23 @@ export default function CustomerRegisterPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>{t.accountRegister.password}</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="At least 8 characters" {...field} />
+                        <Input type="password" placeholder={t.accountRegister.passwordPlaceholder} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                  {form.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create Account"}
+                  {form.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t.accountRegister.createAccount}
                 </Button>
               </form>
             </Form>
             <p className="mt-4 text-center text-sm text-muted-foreground">
-              Already have an account?{" "}
+              {t.accountRegister.alreadyHaveAccount}{" "}
               <Link href="/account/login" className="underline hover:text-accent">
-                Sign in
+                {t.accountRegister.signIn}
               </Link>
             </p>
           </CardContent>

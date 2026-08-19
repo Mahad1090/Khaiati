@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import type { AccessContext } from "@/lib/auth/business-context";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function AdminShell({
   children,
@@ -26,6 +27,7 @@ export function AdminShell({
   access: AccessContext;
 }) {
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   if (pathname === "/admin/login") {
     return <>{children}</>;
@@ -43,9 +45,9 @@ export function AdminShell({
         {!authConfigured && (
           <div className="flex items-center gap-2 border-b border-accent/40 bg-accent/10 px-4 py-2 text-sm text-foreground">
             <AlertTriangle className="h-4 w-4 shrink-0 text-accent" />
-            No sign-in is configured — this system is currently reachable by anyone with the URL. Set{" "}
-            <code className="rounded bg-muted px-1 py-0.5">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
-            <code className="rounded bg-muted px-1 py-0.5">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> to require sign-in.
+            {t.adminShell.noAuthWarning}{" "}
+            <code className="rounded bg-muted px-1 py-0.5">NEXT_PUBLIC_SUPABASE_URL</code> {t.adminShell.noAuthWarningAnd}{" "}
+            <code className="rounded bg-muted px-1 py-0.5">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> {t.adminShell.noAuthWarningEnd}
           </div>
         )}
         <header className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border px-4">
@@ -53,7 +55,7 @@ export function AdminShell({
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
             <span className="text-sm text-muted-foreground">
-              {isBusinessStaff ? access.businessName : "Tailoring & Fabric Management"}
+              {isBusinessStaff ? access.businessName : t.adminShell.defaultTitle}
             </span>
           </div>
           {authConfigured && (
@@ -79,15 +81,15 @@ export function AdminShell({
 }
 
 function PendingScreen() {
+  const { t } = useLanguage();
   return (
     <div className="mx-auto max-w-md py-16">
       <Card>
         <CardHeader className="items-center text-center">
           <Clock className="h-10 w-10 text-accent" />
-          <CardTitle className="font-serif text-xl">Application Under Review</CardTitle>
+          <CardTitle className="font-serif text-xl">{t.adminShell.pendingTitle}</CardTitle>
           <CardDescription>
-            Your business registration is still being reviewed by our team. You&apos;ll be able to manage your
-            dashboard once it&apos;s approved.
+            {t.adminShell.pendingDesc}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -96,6 +98,7 @@ function PendingScreen() {
 }
 
 function BlockedScreen({ status }: { status: string }) {
+  const { t } = useLanguage();
   const isRejected = status === "rejected";
   return (
     <div className="mx-auto max-w-md py-16">
@@ -103,12 +106,10 @@ function BlockedScreen({ status }: { status: string }) {
         <CardHeader className="items-center text-center">
           {isRejected ? <XCircle className="h-10 w-10 text-destructive" /> : <Ban className="h-10 w-10 text-destructive" />}
           <CardTitle className="font-serif text-xl">
-            {isRejected ? "Application Not Approved" : "Account Suspended"}
+            {isRejected ? t.adminShell.rejectedTitle : t.adminShell.suspendedTitle}
           </CardTitle>
           <CardDescription>
-            {isRejected
-              ? "Your business registration was not approved. Contact support if you believe this is a mistake."
-              : "Your business account has been suspended. Contact support for details."}
+            {isRejected ? t.adminShell.rejectedDesc : t.adminShell.suspendedDesc}
           </CardDescription>
         </CardHeader>
       </Card>

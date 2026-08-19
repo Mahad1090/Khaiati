@@ -15,6 +15,7 @@ import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { getDashboardStats, getPlatformStats } from "@/lib/actions/dashboard";
 import { getCurrentAccessContext } from "@/lib/auth/business-context";
 import { formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +45,7 @@ function StatCard({
 
 export default async function AdminDashboardPage() {
   const access = await getCurrentAccessContext();
+  const { t } = await getServerLanguage();
   const isPlatformAdmin = access.kind !== "business_staff";
 
   if (isPlatformAdmin) {
@@ -53,7 +55,7 @@ export default async function AdminDashboardPage() {
     } catch (err) {
       return (
         <div className="space-y-6">
-          <h1 className="font-serif text-2xl">Platform Dashboard</h1>
+          <h1 className="font-serif text-2xl">{t.adminDashboard.platformTitle}</h1>
           <DbUnconfigured detail={err instanceof Error ? err.message : undefined} />
         </div>
       );
@@ -62,23 +64,23 @@ export default async function AdminDashboardPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-serif text-2xl">Platform Dashboard</h1>
-            <p className="text-sm text-muted-foreground">Across every business on Khaiati.</p>
+            <h1 className="font-serif text-2xl">{t.adminDashboard.platformTitle}</h1>
+            <p className="text-sm text-muted-foreground">{t.adminDashboard.platformSubtitle}</p>
           </div>
           <Button asChild>
-            <Link href="/admin/businesses">Manage Businesses</Link>
+            <Link href="/admin/businesses">{t.adminDashboard.manageBusinesses}</Link>
           </Button>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Total Businesses" value={String(stats.totalBusinesses)} icon={Building2} />
-          <StatCard label="Pending Approval" value={String(stats.pendingBusinesses)} icon={Clock} />
-          <StatCard label="Approved Businesses" value={String(stats.approvedBusinesses)} icon={CheckCircle2} />
-          <StatCard label="Total Customers" value={String(stats.totalCustomers)} icon={Users} />
-          <StatCard label="Total Orders" value={String(stats.totalOrders)} icon={ShoppingBag} />
-          <StatCard label="Platform Revenue" value={formatMoney(stats.platformRevenue)} icon={Wallet} />
-          <StatCard label="Active Subscriptions" value={String(stats.activeSubscriptions)} icon={CreditCard} />
+          <StatCard label={t.adminDashboard.totalBusinesses} value={String(stats.totalBusinesses)} icon={Building2} />
+          <StatCard label={t.adminDashboard.pendingApproval} value={String(stats.pendingBusinesses)} icon={Clock} />
+          <StatCard label={t.adminDashboard.approvedBusinesses} value={String(stats.approvedBusinesses)} icon={CheckCircle2} />
+          <StatCard label={t.adminDashboard.totalCustomers} value={String(stats.totalCustomers)} icon={Users} />
+          <StatCard label={t.adminDashboard.totalOrders} value={String(stats.totalOrders)} icon={ShoppingBag} />
+          <StatCard label={t.adminDashboard.platformRevenue} value={formatMoney(stats.platformRevenue)} icon={Wallet} />
+          <StatCard label={t.adminDashboard.activeSubscriptions} value={String(stats.activeSubscriptions)} icon={CreditCard} />
           <StatCard
-            label="Pending Subscription Payments"
+            label={t.adminDashboard.pendingSubscriptionPayments}
             value={String(stats.pendingSubscriptionPayments)}
             icon={CalendarClock}
           />
@@ -94,8 +96,8 @@ export default async function AdminDashboardPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="font-serif text-2xl">Dashboard</h1>
-          <p className="text-sm text-muted-foreground">Business overview</p>
+          <h1 className="font-serif text-2xl">{t.adminDashboard.title}</h1>
+          <p className="text-sm text-muted-foreground">{t.adminDashboard.subtitle}</p>
         </div>
         <DbUnconfigured detail={err instanceof Error ? err.message : undefined} />
       </div>
@@ -106,29 +108,29 @@ export default async function AdminDashboardPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-serif text-2xl">Dashboard</h1>
-          <p className="text-sm text-muted-foreground">Business overview</p>
+          <h1 className="font-serif text-2xl">{t.adminDashboard.title}</h1>
+          <p className="text-sm text-muted-foreground">{t.adminDashboard.subtitle}</p>
         </div>
         <div className="flex gap-2">
           <Button asChild variant="outline">
-            <Link href="/admin/customers">Customers</Link>
+            <Link href="/admin/customers">{t.adminDashboard.customers}</Link>
           </Button>
           <Button asChild>
-            <Link href="/admin/orders">Orders</Link>
+            <Link href="/admin/orders">{t.adminDashboard.orders}</Link>
           </Button>
         </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Total Customers" value={String(stats.totalCustomers)} icon={Users} />
-        <StatCard label="Active Orders" value={String(stats.activeOrders)} icon={ShoppingBag} />
-        <StatCard label="Pending Orders" value={String(stats.pendingOrders)} icon={Clock} />
-        <StatCard label="Completed Orders" value={String(stats.completedOrders)} icon={CheckCircle2} />
-        <StatCard label="Due Within 7 Days" value={String(stats.ordersDueSoon)} icon={CalendarClock} />
-        <StatCard label="Total Billed" value={formatMoney(stats.totalBilled)} icon={Wallet} />
-        <StatCard label="Total Collected" value={formatMoney(stats.totalCollected)} icon={Wallet} />
+        <StatCard label={t.adminDashboard.totalCustomers} value={String(stats.totalCustomers)} icon={Users} />
+        <StatCard label={t.adminDashboard.activeOrders} value={String(stats.activeOrders)} icon={ShoppingBag} />
+        <StatCard label={t.adminDashboard.pendingOrders} value={String(stats.pendingOrders)} icon={Clock} />
+        <StatCard label={t.adminDashboard.completedOrders} value={String(stats.completedOrders)} icon={CheckCircle2} />
+        <StatCard label={t.adminDashboard.dueWithin7Days} value={String(stats.ordersDueSoon)} icon={CalendarClock} />
+        <StatCard label={t.adminDashboard.totalBilled} value={formatMoney(stats.totalBilled)} icon={Wallet} />
+        <StatCard label={t.adminDashboard.totalCollected} value={formatMoney(stats.totalCollected)} icon={Wallet} />
         <StatCard
-          label="Outstanding Balance"
+          label={t.adminDashboard.outstandingBalance}
           value={formatMoney(stats.outstandingBalance)}
           icon={Wallet}
         />

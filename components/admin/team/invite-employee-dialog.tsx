@@ -27,10 +27,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { inviteEmployeeSchema, type InviteEmployeeInput } from "@/lib/validation/team";
 import { inviteEmployee } from "@/lib/actions/team";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function InviteEmployeeDialog() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const form = useForm<InviteEmployeeInput>({
     resolver: zodResolver(inviteEmployeeSchema),
@@ -43,7 +45,7 @@ export function InviteEmployeeDialog() {
       toast.error(result.error);
       return;
     }
-    toast.success("Team member added");
+    toast.success(t.platformAdmin.teamMemberAdded);
     setOpen(false);
     form.reset();
     router.refresh();
@@ -54,12 +56,12 @@ export function InviteEmployeeDialog() {
       <DialogTrigger asChild>
         <Button>
           <Plus className="h-4 w-4" />
-          Invite Team Member
+          {t.platformAdmin.inviteTeamMember}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Invite Team Member</DialogTitle>
+          <DialogTitle>{t.platformAdmin.inviteTeamMember}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -68,7 +70,7 @@ export function InviteEmployeeDialog() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t.platformAdmin.name}</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -81,7 +83,7 @@ export function InviteEmployeeDialog() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t.platformAdmin.email}</FormLabel>
                   <FormControl>
                     <Input type="email" {...field} />
                   </FormControl>
@@ -94,7 +96,7 @@ export function InviteEmployeeDialog() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Temporary Password</FormLabel>
+                  <FormLabel>{t.platformAdmin.temporaryPassword}</FormLabel>
                   <FormControl>
                     <Input type="password" placeholder="At least 8 characters" {...field} />
                   </FormControl>
@@ -104,7 +106,7 @@ export function InviteEmployeeDialog() {
             />
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Adding..." : "Add Team Member"}
+                {form.formState.isSubmitting ? t.platformAdmin.adding : t.platformAdmin.addTeamMember}
               </Button>
             </DialogFooter>
           </form>

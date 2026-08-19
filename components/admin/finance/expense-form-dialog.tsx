@@ -24,8 +24,10 @@ import {
 } from "@/components/ui/select";
 import { addExpense } from "@/lib/actions/finance";
 import { expenseCategories, expenseCategoryLabels, type ExpenseCategory } from "@/lib/validation/finance";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function ExpenseFormDialog() {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [category, setCategory] = useState<ExpenseCategory>("shop");
   const [amount, setAmount] = useState("");
@@ -42,7 +44,7 @@ export function ExpenseFormDialog() {
         toast.error(result.error);
         return;
       }
-      toast.success("Expense recorded");
+      toast.success(t.finance.expenseRecorded);
       setOpen(false);
       setAmount("");
       setNote("");
@@ -57,16 +59,16 @@ export function ExpenseFormDialog() {
       <DialogTrigger asChild>
         <Button variant="outline">
           <Plus className="h-4 w-4" />
-          Add Expense
+          {t.finance.addExpense}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add Shop Expense</DialogTitle>
+          <DialogTitle>{t.finance.addShopExpense}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <Label>Category</Label>
+            <Label>{t.finance.category}</Label>
             <Select value={category} onValueChange={(v) => setCategory(v as ExpenseCategory)}>
               <SelectTrigger className="w-full">
                 <SelectValue />
@@ -81,21 +83,21 @@ export function ExpenseFormDialog() {
             </Select>
           </div>
           <div>
-            <Label>Amount</Label>
+            <Label>{t.finance.amount}</Label>
             <Input type="number" min={0} step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} />
           </div>
           <div>
-            <Label>Date</Label>
+            <Label>{t.finance.date}</Label>
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
           </div>
           <div>
-            <Label>Note</Label>
-            <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Optional" />
+            <Label>{t.adminCommon.note}</Label>
+            <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder={t.adminCommon.optionalNote} />
           </div>
         </div>
         <DialogFooter>
           <Button onClick={submit} disabled={submitting || !amount}>
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save Expense"}
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t.finance.saveExpense}
           </Button>
         </DialogFooter>
       </DialogContent>

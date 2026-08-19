@@ -16,6 +16,7 @@ import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { searchOrders } from "@/lib/actions/orders";
 import { orderStatusLabels, type OrderStatus } from "@/lib/validation/order";
 import { formatDate, formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,7 @@ const statusVariant: Record<OrderStatus, "default" | "secondary" | "outline" | "
 };
 
 async function OrdersTable({ q }: { q: string }) {
+  const { t } = await getServerLanguage();
   let orders;
   try {
     orders = await searchOrders(q);
@@ -42,7 +44,7 @@ async function OrdersTable({ q }: { q: string }) {
     return (
       <Card>
         <CardContent className="py-10 text-center text-sm text-muted-foreground">
-          No orders found.
+          {t.orders.noneFound}
         </CardContent>
       </Card>
     );
@@ -53,13 +55,13 @@ async function OrdersTable({ q }: { q: string }) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Order #</TableHead>
-            <TableHead>Customer</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Order Date</TableHead>
-            <TableHead>Due Date</TableHead>
-            <TableHead className="text-right">Total</TableHead>
-            <TableHead className="text-right">Balance</TableHead>
+            <TableHead>{t.orders.orderNo}</TableHead>
+            <TableHead>{t.orders.customer}</TableHead>
+            <TableHead>{t.orders.status}</TableHead>
+            <TableHead>{t.orders.orderDate}</TableHead>
+            <TableHead>{t.orders.dueDate}</TableHead>
+            <TableHead className="text-right">{t.orders.total}</TableHead>
+            <TableHead className="text-right">{t.orders.balance}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -97,26 +99,27 @@ export default async function OrdersPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q = "" } = await searchParams;
+  const { t } = await getServerLanguage();
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-serif text-2xl">Orders</h1>
+          <h1 className="font-serif text-2xl">{t.orders.title}</h1>
           <p className="text-sm text-muted-foreground">
-            Search by order number, customer name, or phone.
+            {t.orders.subtitle}
           </p>
         </div>
         <Button asChild>
-          <Link href="/admin/orders/new">New Order</Link>
+          <Link href="/admin/orders/new">{t.orders.newOrder}</Link>
         </Button>
       </div>
 
       <Suspense>
-        <SearchBox placeholder="Search orders..." />
+        <SearchBox placeholder={t.orders.searchPlaceholder} />
       </Suspense>
 
-      <Suspense fallback={<p className="text-sm text-muted-foreground">Loading...</p>}>
+      <Suspense fallback={<p className="text-sm text-muted-foreground">{t.orders.loading}</p>}>
         <OrdersTable q={q} />
       </Suspense>
     </div>

@@ -13,19 +13,21 @@ import {
 import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { listFabrics } from "@/lib/actions/fabrics";
 import { formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 const LOW_STOCK_THRESHOLD = 10; // meters
 
 export default async function InventoryPage() {
+  const { t } = await getServerLanguage();
   let fabrics;
   try {
     fabrics = await listFabrics();
   } catch (err) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-2xl">Inventory</h1>
+        <h1 className="font-serif text-2xl">{t.fabrics.inventoryTitle}</h1>
         <DbUnconfigured detail={err instanceof Error ? err.message : undefined} />
       </div>
     );
@@ -39,34 +41,34 @@ export default async function InventoryPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-2xl">Inventory</h1>
+        <h1 className="font-serif text-2xl">{t.fabrics.inventoryTitle}</h1>
         <p className="text-sm text-muted-foreground">
-          Live stock across all fabrics, derived from purchase and sale movements.
+          {t.fabrics.inventorySubtitle}
         </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Fabrics Tracked</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.fabrics.fabricsTracked}</CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-xl">{fabrics.length}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Meters in Stock</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.fabrics.totalMetersInStock}</CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-xl">{totalMeters.toFixed(2)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Stock Value (at cost)</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.fabrics.stockValueAtCost}</CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-xl">{formatMoney(totalValue)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Low / Out of Stock</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.fabrics.lowOutOfStock}</CardTitle>
           </CardHeader>
           <CardContent className="flex items-center gap-2 font-serif text-xl">
             {lowStock.length + outOfStock.length}
@@ -79,14 +81,14 @@ export default async function InventoryPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Fabric #</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Color</TableHead>
-              <TableHead>Supplier</TableHead>
-              <TableHead className="text-right">Cost/Meter</TableHead>
-              <TableHead className="text-right">Selling Price</TableHead>
-              <TableHead className="text-right">Available</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>{t.fabrics.fabricNo}</TableHead>
+              <TableHead>{t.fabrics.name}</TableHead>
+              <TableHead>{t.fabrics.color}</TableHead>
+              <TableHead>{t.fabrics.supplier}</TableHead>
+              <TableHead className="text-right">{t.fabrics.costMeter}</TableHead>
+              <TableHead className="text-right">{t.fabrics.sellingPrice}</TableHead>
+              <TableHead className="text-right">{t.fabrics.available}</TableHead>
+              <TableHead>{t.fabrics.status}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -109,11 +111,11 @@ export default async function InventoryPage() {
                 </TableCell>
                 <TableCell>
                   {f.availableMeters <= 0 ? (
-                    <Badge variant="destructive">Out of Stock</Badge>
+                    <Badge variant="destructive">{t.fabrics.outOfStock}</Badge>
                   ) : f.availableMeters <= LOW_STOCK_THRESHOLD ? (
-                    <Badge variant="secondary">Low Stock</Badge>
+                    <Badge variant="secondary">{t.fabrics.lowStock}</Badge>
                   ) : (
-                    <Badge variant="default">In Stock</Badge>
+                    <Badge variant="default">{t.fabrics.inStock}</Badge>
                   )}
                 </TableCell>
               </TableRow>

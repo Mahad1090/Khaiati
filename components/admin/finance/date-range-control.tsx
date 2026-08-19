@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 function toISODate(d: Date) {
   return d.toISOString().slice(0, 10);
@@ -36,6 +37,7 @@ function presetRange(preset: "today" | "week" | "month" | "year") {
 export function DateRangeControl({ from, to }: { from: string; to: string }) {
   const router = useRouter();
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   function navigate(newFrom: string, newTo: string) {
     router.push(`${pathname}?from=${newFrom}&to=${newTo}`);
@@ -44,11 +46,11 @@ export function DateRangeControl({ from, to }: { from: string; to: string }) {
   return (
     <div className="flex flex-wrap items-end gap-3">
       <div>
-        <Label className="text-xs">From</Label>
+        <Label className="text-xs">{t.finance.from}</Label>
         <Input type="date" value={from} onChange={(e) => navigate(e.target.value, to)} />
       </div>
       <div>
-        <Label className="text-xs">To</Label>
+        <Label className="text-xs">{t.finance.to}</Label>
         <Input type="date" value={to} onChange={(e) => navigate(from, e.target.value)} />
       </div>
       <div className="flex gap-2">
@@ -63,7 +65,7 @@ export function DateRangeControl({ from, to }: { from: string; to: string }) {
               navigate(r.from, r.to);
             }}
           >
-            {p === "today" ? "Today" : p === "week" ? "This Week" : p === "month" ? "This Month" : "This Year"}
+            {p === "today" ? t.finance.today : p === "week" ? t.finance.thisWeek : p === "month" ? t.finance.thisMonth : t.finance.thisYear}
           </Button>
         ))}
       </div>

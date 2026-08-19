@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { updateOrderStatus } from "@/lib/actions/orders";
 import { orderStatusLabels, orderStatuses, type OrderStatus } from "@/lib/validation/order";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function OrderStatusSelect({
   orderId,
@@ -22,6 +23,7 @@ export function OrderStatusSelect({
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const { t } = useLanguage();
 
   return (
     <Select
@@ -34,7 +36,7 @@ export function OrderStatusSelect({
             toast.error(result.error);
             return;
           }
-          toast.success("Status updated");
+          toast.success(t.orders.statusUpdated);
           router.refresh();
         });
       }}

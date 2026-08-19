@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function AvailabilityToggle({
   id,
@@ -16,6 +17,7 @@ export function AvailabilityToggle({
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const { t } = useLanguage();
 
   return (
     <Switch
@@ -25,7 +27,7 @@ export function AvailabilityToggle({
         startTransition(async () => {
           const result = await action(id, checked);
           if (!result.ok) {
-            toast.error(result.error ?? "Could not update.");
+            toast.error(result.error ?? t.marketplace.couldNotUpdate);
             return;
           }
           router.refresh();

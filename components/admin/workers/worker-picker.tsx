@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { searchWorkers, type WorkerRow } from "@/lib/actions/workers";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function WorkerPicker({
   value,
@@ -22,6 +23,7 @@ export function WorkerPicker({
   value: string;
   onChange: (id: string, worker: WorkerRow) => void;
 }) {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<WorkerRow[]>([]);
@@ -44,16 +46,16 @@ export function WorkerPicker({
               {selected.name} · {selected.worker_no}
             </span>
           ) : (
-            <span className="text-muted-foreground">Search worker...</span>
+            <span className="text-muted-foreground">{t.workers.searchWorkerPlaceholder}</span>
           )}
           <ChevronsUpDown className="h-4 w-4 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command shouldFilter={false}>
-          <CommandInput placeholder="Search workers..." value={query} onValueChange={setQuery} />
+          <CommandInput placeholder={t.workers.searchPlaceholder} value={query} onValueChange={setQuery} />
           <CommandList>
-            <CommandEmpty>No workers found.</CommandEmpty>
+            <CommandEmpty>{t.workers.noneFound}</CommandEmpty>
             <CommandGroup>
               {results.map((w) => (
                 <CommandItem

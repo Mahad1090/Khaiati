@@ -12,6 +12,7 @@ import { DateRangeControl } from "@/components/admin/finance/date-range-control"
 import { IncomeFormDialog } from "@/components/admin/finance/income-form-dialog";
 import { getProfitLoss, listIncome } from "@/lib/actions/finance";
 import { formatDate, formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +30,7 @@ export default async function IncomePage({
   searchParams: Promise<{ from?: string; to?: string }>;
 }) {
   const { from = firstOfMonth(), to = today() } = await searchParams;
+  const { t } = await getServerLanguage();
 
   let report, entries;
   try {
@@ -36,7 +38,7 @@ export default async function IncomePage({
   } catch (err) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-2xl">Income</h1>
+        <h1 className="font-serif text-2xl">{t.finance.incomeTitle}</h1>
         <DbUnconfigured detail={err instanceof Error ? err.message : undefined} />
       </div>
     );
@@ -46,10 +48,9 @@ export default async function IncomePage({
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-serif text-2xl">Income</h1>
+          <h1 className="font-serif text-2xl">{t.finance.incomeTitle}</h1>
           <p className="text-sm text-muted-foreground">
-            Sewing and fabric-sales income are tracked automatically from Orders and Fabric Sales. Log anything
-            else here.
+            {t.finance.incomeSubtitle}
           </p>
         </div>
         <IncomeFormDialog />
@@ -60,30 +61,30 @@ export default async function IncomePage({
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Sewing (Orders)</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.finance.sewingOrders}</CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-xl">{formatMoney(report.income.sewing)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Fabric Sales</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.finance.fabricSales}</CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-xl">{formatMoney(report.income.fabricSales)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Other (Manual)</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.finance.otherManual}</CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-xl">{formatMoney(report.income.other)}</CardContent>
         </Card>
       </div>
 
       <div className="space-y-3">
-        <h2 className="font-serif text-lg">Other Income Entries</h2>
+        <h2 className="font-serif text-lg">{t.finance.otherIncomeEntries}</h2>
         {entries.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-center text-sm text-muted-foreground">
-              No manual income entries in this period.
+              {t.finance.noManualIncome}
             </CardContent>
           </Card>
         ) : (
@@ -91,10 +92,10 @@ export default async function IncomePage({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>#</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Note</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead>{t.finance.hashCol}</TableHead>
+                  <TableHead>{t.finance.date}</TableHead>
+                  <TableHead>{t.finance.note}</TableHead>
+                  <TableHead className="text-right">{t.finance.amount}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

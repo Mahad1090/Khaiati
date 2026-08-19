@@ -3,48 +3,28 @@
 import { useState } from "react";
 import { Heart, ShoppingBag } from "lucide-react";
 import { InquiryDialog } from "@/components/public/inquiry-dialog";
+import { useLanguage } from "@/lib/i18n/language-context";
 
-const products = [
-  {
-    id: 1,
-    name: "Classic Shirt",
-    category: "Shirts & Dresses",
-    price: 45,
-    image:
-      "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500&h=600&fit=crop",
-    isNew: true,
-  },
-  {
-    id: 2,
-    name: "Tailored Vest",
-    category: "Vests",
-    price: 60,
-    image:
-      "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500&h=600&fit=crop",
-    isNew: false,
-  },
-  {
-    id: 3,
-    name: "Structured Coat",
-    category: "Coats",
-    price: 180,
-    image:
-      "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&h=600&fit=crop",
-    isNew: true,
-  },
-  {
-    id: 4,
-    name: "Tapered Jacket",
-    category: "Jackets",
-    price: 150,
-    image:
-      "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=500&h=600&fit=crop",
-    isNew: false,
-  },
+const images = [
+  "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=500&h=600&fit=crop",
 ];
+const prices = [45, 60, 180, 150];
+const isNewFlags = [true, false, true, false];
 
 export function FeaturedProducts() {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const { t } = useLanguage();
+
+  const products = t.featuredProducts.items.map((item, index) => ({
+    id: index + 1,
+    ...item,
+    price: prices[index],
+    image: images[index],
+    isNew: isNewFlags[index],
+  }));
 
   return (
     <section id="selection" className="py-24 md:py-32">
@@ -54,16 +34,15 @@ export function FeaturedProducts() {
           <div className="grid md:grid-cols-2 gap-8 items-end">
             <div className="space-y-4">
               <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground">
-                Selection
+                {t.featuredProducts.eyebrow}
               </p>
               <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl tracking-tight">
-                Exceptional
-                <span className="italic text-accent"> Pieces</span>
+                {t.featuredProducts.titleLine1}
+                <span className="italic text-accent"> {t.featuredProducts.titleAccent}</span>
               </h2>
             </div>
             <p className="text-muted-foreground text-lg leading-relaxed max-w-md md:text-right md:ml-auto">
-              Each garment is measured, cut, and finished by hand by our
-              master tailors.
+              {t.featuredProducts.subtitle}
             </p>
           </div>
         </div>
@@ -90,7 +69,7 @@ export function FeaturedProducts() {
                 {/* Badges */}
                 {product.isNew && (
                   <span className="absolute top-4 left-4 bg-accent text-accent-foreground px-3 py-1 text-[10px] tracking-[0.2em] uppercase">
-                    New
+                    {t.featuredProducts.newBadge}
                   </span>
                 )}
 
@@ -103,21 +82,21 @@ export function FeaturedProducts() {
                   }`}
                 >
                   <InquiryDialog
-                    title={`Enquire — ${product.name}`}
+                    title={`${t.featuredProducts.enquireTitle} ${product.name}`}
                     trigger={
                       <button
                         type="button"
                         className="flex-1 bg-background/90 backdrop-blur-sm py-3 flex items-center justify-center gap-2 text-sm tracking-[0.1em] uppercase hover:bg-background transition-colors duration-200 min-h-11"
                       >
                         <ShoppingBag className="w-4 h-4" />
-                        Enquire
+                        {t.featuredProducts.enquire}
                       </button>
                     }
                   />
                   <button
                     type="button"
                     className="w-11 h-11 bg-background/90 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors duration-200"
-                    aria-label="Save design"
+                    aria-label={t.featuredProducts.saveDesign}
                   >
                     <Heart className="w-4 h-4" />
                   </button>
@@ -146,7 +125,7 @@ export function FeaturedProducts() {
             type="button"
             className="inline-flex items-center justify-center border border-primary text-primary px-10 py-4 text-sm tracking-[0.2em] uppercase min-h-12 hover:bg-primary hover:text-primary-foreground transition-all duration-300"
           >
-            View Full Collection
+            {t.featuredProducts.viewFullCollection}
           </button>
         </div>
       </div>

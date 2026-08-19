@@ -13,6 +13,7 @@ import { getCurrentCustomer } from "@/lib/actions/customer-auth";
 import { getPublicReviews } from "@/lib/actions/reviews";
 import { garmentTypeLabels, type GarmentType } from "@/lib/validation/design";
 import { formatDate, formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,7 @@ export default async function BusinessStorefrontPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const { t } = await getServerLanguage();
 
   let business;
   try {
@@ -84,13 +86,13 @@ export default async function BusinessStorefrontPage({
             </div>
           </div>
           <InquiryDialog
-            title={`Enquire — ${business.name}`}
+            title={`${t.businessStorefront.enquireTitle} ${business.name}`}
             trigger={
               <button
                 type="button"
                 className="h-11 shrink-0 bg-primary px-8 text-sm tracking-[0.15em] uppercase text-primary-foreground hover:bg-primary/90 transition-colors"
               >
-                Get In Touch
+                {t.businessStorefront.getInTouch}
               </button>
             }
           />
@@ -98,9 +100,9 @@ export default async function BusinessStorefrontPage({
 
         <div className="space-y-12">
           <div>
-            <h2 className="mb-4 font-serif text-2xl">Services</h2>
+            <h2 className="mb-4 font-serif text-2xl">{t.businessStorefront.services}</h2>
             {services.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No services listed yet.</p>
+              <p className="text-sm text-muted-foreground">{t.businessStorefront.noServicesYet}</p>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {services.map((s) => (
@@ -123,9 +125,9 @@ export default async function BusinessStorefrontPage({
           </div>
 
           <div>
-            <h2 className="mb-4 font-serif text-2xl">Products &amp; Fabrics</h2>
+            <h2 className="mb-4 font-serif text-2xl">{t.businessStorefront.productsFabrics}</h2>
             {products.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No products listed yet.</p>
+              <p className="text-sm text-muted-foreground">{t.businessStorefront.noProductsYet}</p>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {products.map((p) => (
@@ -147,9 +149,9 @@ export default async function BusinessStorefrontPage({
           </div>
 
           <div>
-            <h2 className="mb-4 font-serif text-2xl">Reviews</h2>
+            <h2 className="mb-4 font-serif text-2xl">{t.businessStorefront.reviews}</h2>
             {reviews.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No reviews yet.</p>
+              <p className="text-sm text-muted-foreground">{t.businessStorefront.noReviewsYet}</p>
             ) : (
               <div className="space-y-4">
                 {reviews.map((r) => (

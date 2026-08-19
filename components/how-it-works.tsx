@@ -1,43 +1,24 @@
 "use client";
 
 import { Search, Ruler, CreditCard, QrCode } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
-const steps = [
-  {
-    icon: Search,
-    title: "Discover",
-    description: "Browse tailoring businesses and fabric shops near you.",
-  },
-  {
-    icon: Ruler,
-    title: "Order",
-    description:
-      "Bring your own fabric, or buy fabric and request stitching — either way, add your measurements.",
-  },
-  {
-    icon: CreditCard,
-    title: "Checkout",
-    description: "Review your order and pay securely.",
-  },
-  {
-    icon: QrCode,
-    title: "Track",
-    description:
-      "Every order gets a secure QR code — scan it any time to see cutting, stitching, finishing, and delivery status.",
-  },
-];
+const icons = [Search, Ruler, CreditCard, QrCode];
 
 export function HowItWorks() {
+  const { t } = useLanguage();
+  const steps = t.howItWorks.steps.map((step, index) => ({ ...step, icon: icons[index] }));
+
   return (
     <section id="how-it-works" className="py-24 md:py-32 bg-secondary/20">
       <div className="max-w-[1800px] mx-auto px-6 md:px-12">
         <div className="text-center mb-16 md:mb-24">
           <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4">
-            How It Works
+            {t.howItWorks.eyebrow}
           </p>
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl tracking-tight">
-            From Order
-            <span className="italic text-accent"> to Doorstep</span>
+            {t.howItWorks.titleLine1}
+            <span className="italic text-accent"> {t.howItWorks.titleAccent}</span>
           </h2>
         </div>
 

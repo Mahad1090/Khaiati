@@ -37,10 +37,12 @@ import { OrderPicker } from "@/components/admin/workers/order-picker";
 import { assignmentSchema, type AssignmentInput, workTypes, workTypeLabels, assignmentStatuses, assignmentStatusLabels } from "@/lib/validation/worker";
 import { garmentTypeLabels, garmentTypes } from "@/lib/validation/design";
 import { createAssignment } from "@/lib/actions/workers";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function AssignmentFormDialog({ workerId }: { workerId: string }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const form = useForm<AssignmentInput>({
     resolver: zodResolver(assignmentSchema),
@@ -64,7 +66,7 @@ export function AssignmentFormDialog({ workerId }: { workerId: string }) {
       toast.error(result.error);
       return;
     }
-    toast.success("Assignment created");
+    toast.success(t.workers.assignmentCreated);
     setOpen(false);
     form.reset({ ...values, order_id: "", quantity: 1, wage: 0, note: "" });
     router.refresh();
@@ -75,12 +77,12 @@ export function AssignmentFormDialog({ workerId }: { workerId: string }) {
       <DialogTrigger asChild>
         <Button variant="outline">
           <Plus className="h-4 w-4" />
-          Assign Work
+          {t.workers.assignWork}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Assign Work</DialogTitle>
+          <DialogTitle>{t.workers.assignWork}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -89,7 +91,7 @@ export function AssignmentFormDialog({ workerId }: { workerId: string }) {
               name="order_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Order</FormLabel>
+                  <FormLabel>{t.workers.order}</FormLabel>
                   <FormControl>
                     <OrderPicker value={field.value ?? ""} onChange={(id) => field.onChange(id)} />
                   </FormControl>
@@ -103,7 +105,7 @@ export function AssignmentFormDialog({ workerId }: { workerId: string }) {
                 name="garment_type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Garment Type</FormLabel>
+                    <FormLabel>{t.workers.garmentType}</FormLabel>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger className="w-full">
@@ -126,7 +128,7 @@ export function AssignmentFormDialog({ workerId }: { workerId: string }) {
                 name="work_type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Work Type</FormLabel>
+                    <FormLabel>{t.workers.workType}</FormLabel>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger className="w-full">
@@ -151,7 +153,7 @@ export function AssignmentFormDialog({ workerId }: { workerId: string }) {
                 name="quantity"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Quantity</FormLabel>
+                    <FormLabel>{t.workers.qty}</FormLabel>
                     <FormControl>
                       <Input type="number" min={1} {...field} />
                     </FormControl>
@@ -164,7 +166,7 @@ export function AssignmentFormDialog({ workerId }: { workerId: string }) {
                 name="wage"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Wage (per piece)</FormLabel>
+                    <FormLabel>{t.workers.wagePerPiece}</FormLabel>
                     <FormControl>
                       <Input type="number" min={0} step="0.01" {...field} />
                     </FormControl>
@@ -179,7 +181,7 @@ export function AssignmentFormDialog({ workerId }: { workerId: string }) {
                 name="submitted_date"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Submission Date</FormLabel>
+                    <FormLabel>{t.workers.submissionDate}</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>
@@ -192,7 +194,7 @@ export function AssignmentFormDialog({ workerId }: { workerId: string }) {
                 name="due_date"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Due Date</FormLabel>
+                    <FormLabel>{t.workers.dueDate}</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>
@@ -206,7 +208,7 @@ export function AssignmentFormDialog({ workerId }: { workerId: string }) {
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>{t.workers.status}</FormLabel>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="w-full">
@@ -229,7 +231,7 @@ export function AssignmentFormDialog({ workerId }: { workerId: string }) {
               name="note"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Note</FormLabel>
+                  <FormLabel>{t.adminCommon.note}</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
@@ -238,7 +240,7 @@ export function AssignmentFormDialog({ workerId }: { workerId: string }) {
             />
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving..." : "Save Assignment"}
+                {form.formState.isSubmitting ? t.adminCommon.saving : t.workers.saveAssignment}
               </Button>
             </DialogFooter>
           </form>

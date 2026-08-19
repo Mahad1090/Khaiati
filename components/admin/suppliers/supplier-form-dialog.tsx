@@ -28,6 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supplierSchema, type SupplierInput } from "@/lib/validation/fabric";
 import { createSupplier, updateSupplier } from "@/lib/actions/suppliers";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type Props = {
   mode?: "create" | "edit";
@@ -39,6 +40,7 @@ type Props = {
 export function SupplierFormDialog({ mode = "create", supplierId, defaultValues, trigger }: Props) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const form = useForm<SupplierInput>({
     resolver: zodResolver(supplierSchema),
@@ -59,7 +61,7 @@ export function SupplierFormDialog({ mode = "create", supplierId, defaultValues,
       toast.error(result.error);
       return;
     }
-    toast.success(mode === "edit" ? "Supplier updated" : "Supplier added");
+    toast.success(mode === "edit" ? t.suppliers.supplierUpdated : t.suppliers.supplierAdded);
     setOpen(false);
     form.reset();
     router.refresh();
@@ -71,13 +73,13 @@ export function SupplierFormDialog({ mode = "create", supplierId, defaultValues,
         {trigger ?? (
           <Button>
             <Plus className="h-4 w-4" />
-            New Supplier
+            {t.suppliers.newSupplier}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{mode === "edit" ? "Edit Supplier" : "New Supplier"}</DialogTitle>
+          <DialogTitle>{mode === "edit" ? t.suppliers.editSupplier : t.suppliers.newSupplier}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -86,7 +88,7 @@ export function SupplierFormDialog({ mode = "create", supplierId, defaultValues,
               name="company_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Company Name</FormLabel>
+                  <FormLabel>{t.suppliers.companyName}</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -100,7 +102,7 @@ export function SupplierFormDialog({ mode = "create", supplierId, defaultValues,
                 name="contact_person"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Contact Person</FormLabel>
+                    <FormLabel>{t.suppliers.contactPersonField}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -113,7 +115,7 @@ export function SupplierFormDialog({ mode = "create", supplierId, defaultValues,
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone</FormLabel>
+                    <FormLabel>{t.suppliers.phone}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -127,7 +129,7 @@ export function SupplierFormDialog({ mode = "create", supplierId, defaultValues,
               name="company_number"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Company Number</FormLabel>
+                  <FormLabel>{t.suppliers.companyNumber}</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -140,7 +142,7 @@ export function SupplierFormDialog({ mode = "create", supplierId, defaultValues,
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
+                  <FormLabel>{t.suppliers.address}</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
@@ -153,7 +155,7 @@ export function SupplierFormDialog({ mode = "create", supplierId, defaultValues,
               name="note"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Note</FormLabel>
+                  <FormLabel>{t.adminCommon.note}</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
@@ -163,7 +165,7 @@ export function SupplierFormDialog({ mode = "create", supplierId, defaultValues,
             />
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving..." : "Save"}
+                {form.formState.isSubmitting ? t.adminCommon.saving : t.adminCommon.save}
               </Button>
             </DialogFooter>
           </form>

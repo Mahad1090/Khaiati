@@ -1,41 +1,24 @@
 "use client";
 
 import { ArrowUpRight } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
-const articles = [
-  {
-    id: 1,
-    title: "Inside the Atelier: How a Bespoke Shirt Is Made",
-    category: "Craftsmanship",
-    date: "Jan 15, 2026",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Atelier%20de%20Cuir-CqVgWtJir9DMfqI20dyiHs7hbTe2hG.png",
-    excerpt:
-      "From first measurement to final press — a look at what goes into every garment we tailor.",
-  },
-  {
-    id: 2,
-    title: "A Guide to Choosing the Right Fabric",
-    category: "Fabrics",
-    date: "Jan 10, 2026",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Collection%20Printemps%20Renaissance-FCjMUb7yRDP99VcIUq2mBLbVOIwaob.png",
-    excerpt:
-      "Weight, weave, and color — what to consider before you pick fabric for your next order.",
-  },
-  {
-    id: 3,
-    title: "How to Take Your Own Measurements at Home",
-    category: "Guides",
-    date: "Jan 5, 2026",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Portrait%20Directrice%20Cr_ative-1QPQ0NqF2EBtjhlFqoPIoynq4lN3SI.png",
-    excerpt:
-      "A simple step-by-step guide so your fitting starts with accurate numbers.",
-  },
+const images = [
+  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Atelier%20de%20Cuir-CqVgWtJir9DMfqI20dyiHs7hbTe2hG.png",
+  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Collection%20Printemps%20Renaissance-FCjMUb7yRDP99VcIUq2mBLbVOIwaob.png",
+  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Portrait%20Directrice%20Cr_ative-1QPQ0NqF2EBtjhlFqoPIoynq4lN3SI.png",
 ];
+const dates = ["Jan 15, 2026", "Jan 10, 2026", "Jan 5, 2026"];
 
 export function Journal() {
+  const { t } = useLanguage();
+  const articles = t.journal.articles.map((article, index) => ({
+    id: index + 1,
+    ...article,
+    image: images[index],
+    date: dates[index],
+  }));
+
   return (
     <section id="journal" className="py-24 md:py-32">
       <div className="max-w-[1800px] mx-auto px-6 md:px-12">
@@ -43,17 +26,17 @@ export function Journal() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
           <div className="space-y-4">
             <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground">
-              The Journal
+              {t.journal.eyebrow}
             </p>
             <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl tracking-tight">
-              News &<span className="italic text-accent"> Inspirations</span>
+              {t.journal.titleAnd}<span className="italic text-accent"> {t.journal.titleAccent}</span>
             </h2>
           </div>
           <button
             type="button"
             className="group inline-flex items-center gap-2 text-sm tracking-[0.2em] uppercase hover:text-accent transition-colors duration-300 self-start md:self-auto"
           >
-            View All Articles
+            {t.journal.viewAll}
             <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
           </button>
         </div>

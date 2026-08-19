@@ -14,6 +14,7 @@ import { ExpenseFormDialog } from "@/components/admin/finance/expense-form-dialo
 import { getProfitLoss, listExpenses } from "@/lib/actions/finance";
 import { expenseCategoryLabels, type ExpenseCategory } from "@/lib/validation/finance";
 import { formatDate, formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,7 @@ export default async function ExpensesPage({
   searchParams: Promise<{ from?: string; to?: string }>;
 }) {
   const { from = firstOfMonth(), to = today() } = await searchParams;
+  const { t } = await getServerLanguage();
 
   let report, entries;
   try {
@@ -38,7 +40,7 @@ export default async function ExpensesPage({
   } catch (err) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-2xl">Expenses</h1>
+        <h1 className="font-serif text-2xl">{t.finance.expensesTitle}</h1>
         <DbUnconfigured detail={err instanceof Error ? err.message : undefined} />
       </div>
     );
@@ -48,10 +50,9 @@ export default async function ExpensesPage({
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-serif text-2xl">Expenses</h1>
+          <h1 className="font-serif text-2xl">{t.finance.expensesTitle}</h1>
           <p className="text-sm text-muted-foreground">
-            Worker salaries/wages/advances and fabric purchases are tracked automatically from Salaries and
-            Fabric Purchases. Log shop-level expenses here.
+            {t.finance.expensesSubtitle}
           </p>
         </div>
         <ExpenseFormDialog />
@@ -62,30 +63,30 @@ export default async function ExpensesPage({
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Worker Salaries / Wages</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.finance.workerSalariesWages}</CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-xl">{formatMoney(report.expenses.workerSalariesWages)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Worker Advances</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.finance.workerAdvances}</CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-xl">{formatMoney(report.expenses.workerAdvances)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Fabric Purchases</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.finance.fabricPurchases}</CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-xl">{formatMoney(report.expenses.fabricPurchases)}</CardContent>
         </Card>
       </div>
 
       <div className="space-y-3">
-        <h2 className="font-serif text-lg">Shop Expenses</h2>
+        <h2 className="font-serif text-lg">{t.finance.shopExpenses}</h2>
         {entries.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-center text-sm text-muted-foreground">
-              No shop expense entries in this period.
+              {t.finance.noShopExpenses}
             </CardContent>
           </Card>
         ) : (
@@ -93,11 +94,11 @@ export default async function ExpensesPage({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>#</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Note</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead>{t.finance.hashCol}</TableHead>
+                  <TableHead>{t.finance.date}</TableHead>
+                  <TableHead>{t.finance.category}</TableHead>
+                  <TableHead>{t.finance.note}</TableHead>
+                  <TableHead className="text-right">{t.finance.amount}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

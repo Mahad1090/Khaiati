@@ -22,8 +22,10 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { businessRegistrationSchema, type BusinessRegistrationInput } from "@/lib/validation/business";
 import { registerBusiness } from "@/lib/actions/businesses";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export default function RegisterBusinessPage() {
+  const { t } = useLanguage();
   const [submitted, setSubmitted] = useState<{ businessNo: string; accountCreated: boolean } | null>(null);
 
   const form = useForm<BusinessRegistrationInput>({
@@ -58,38 +60,37 @@ export default function RegisterBusinessPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="font-serif text-2xl">List Your Business</CardTitle>
+            <CardTitle className="font-serif text-2xl">{t.registerBusiness.title}</CardTitle>
             <CardDescription>
-              Submit your tailoring or fabric business for review. Once approved, you'll be listed
-              on Khaiati.
+              {t.registerBusiness.subtitle}
             </CardDescription>
           </CardHeader>
           <CardContent>
             {submitted ? (
               <div className="py-6 text-center">
                 <CheckCircle2 className="mx-auto h-10 w-10 text-accent" />
-                <p className="mt-4 font-serif text-lg">Application submitted</p>
+                <p className="mt-4 font-serif text-lg">{t.registerBusiness.submittedTitle}</p>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Reference number <span className="font-medium text-foreground">{submitted.businessNo}</span>.
-                  Our team will review your application and reach out.
+                  {t.registerBusiness.referenceNumber} <span className="font-medium text-foreground">{submitted.businessNo}</span>.
+                  {" "}{t.registerBusiness.referenceSuffix}
                 </p>
                 {submitted.accountCreated ? (
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Your account is ready — sign in any time to check your application status.
+                    {t.registerBusiness.accountReady}
                   </p>
                 ) : (
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Sign-in isn&apos;t set up on this platform yet — you&apos;ll be contacted directly once reviewed.
+                    {t.registerBusiness.accountNotReady}
                   </p>
                 )}
                 <div className="mt-6 flex justify-center gap-3">
                   {submitted.accountCreated && (
                     <Button asChild>
-                      <Link href="/admin/login">Sign In</Link>
+                      <Link href="/admin/login">{t.registerBusiness.signIn}</Link>
                     </Button>
                   )}
                   <Button asChild variant="outline">
-                    <Link href="/">Back to Home</Link>
+                    <Link href="/">{t.registerBusiness.backToHome}</Link>
                   </Button>
                 </div>
               </div>
@@ -101,9 +102,9 @@ export default function RegisterBusinessPage() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Business Name</FormLabel>
+                        <FormLabel>{t.registerBusiness.businessName}</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g. Al-Fateh Tailors" {...field} />
+                          <Input placeholder={t.registerBusiness.businessNamePlaceholder} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -114,9 +115,9 @@ export default function RegisterBusinessPage() {
                     name="ownerName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Owner Name</FormLabel>
+                        <FormLabel>{t.registerBusiness.ownerName}</FormLabel>
                         <FormControl>
-                          <Input placeholder="Your name" {...field} />
+                          <Input placeholder={t.registerBusiness.ownerNamePlaceholder} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -128,7 +129,7 @@ export default function RegisterBusinessPage() {
                       name="contactEmail"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Email</FormLabel>
+                          <FormLabel>{t.registerBusiness.email}</FormLabel>
                           <FormControl>
                             <Input type="email" placeholder="you@business.com" {...field} />
                           </FormControl>
@@ -141,7 +142,7 @@ export default function RegisterBusinessPage() {
                       name="contactPhone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Phone</FormLabel>
+                          <FormLabel>{t.registerBusiness.phone}</FormLabel>
                           <FormControl>
                             <Input placeholder="+92 300 1234567" {...field} />
                           </FormControl>
@@ -155,9 +156,9 @@ export default function RegisterBusinessPage() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel>{t.registerBusiness.password}</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="At least 8 characters" {...field} />
+                          <Input type="password" placeholder={t.registerBusiness.passwordPlaceholder} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -168,9 +169,9 @@ export default function RegisterBusinessPage() {
                     name="location"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Location</FormLabel>
+                        <FormLabel>{t.registerBusiness.location}</FormLabel>
                         <FormControl>
-                          <Input placeholder="City" {...field} />
+                          <Input placeholder={t.registerBusiness.locationPlaceholder} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -181,9 +182,9 @@ export default function RegisterBusinessPage() {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>About Your Business (optional)</FormLabel>
+                        <FormLabel>{t.registerBusiness.about}</FormLabel>
                         <FormControl>
-                          <Textarea placeholder="Services, specialties, years in business..." {...field} />
+                          <Textarea placeholder={t.registerBusiness.aboutPlaceholder} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -193,7 +194,7 @@ export default function RegisterBusinessPage() {
                     {form.formState.isSubmitting ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      "Submit for Review"
+                      t.registerBusiness.submit
                     )}
                   </Button>
                 </form>

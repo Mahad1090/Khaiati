@@ -16,6 +16,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { addPurchasePayment } from "@/lib/actions/fabric-transactions";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function AddPurchasePaymentDialog({
   purchaseId,
@@ -24,6 +25,7 @@ export function AddPurchasePaymentDialog({
   purchaseId: string;
   outstanding: number;
 }) {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -37,7 +39,7 @@ export function AddPurchasePaymentDialog({
         toast.error(result.error);
         return;
       }
-      toast.success("Payment recorded");
+      toast.success(t.fabrics.paymentRecorded);
       setOpen(false);
       setAmount("");
       router.refresh();
@@ -51,20 +53,20 @@ export function AddPurchasePaymentDialog({
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" disabled={outstanding <= 0}>
           <Plus className="h-3 w-3" />
-          Pay
+          {t.fabrics.pay}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Pay Supplier Balance</DialogTitle>
+          <DialogTitle>{t.fabrics.paySupplierBalance}</DialogTitle>
         </DialogHeader>
         <div>
-          <Label>Amount (outstanding {outstanding.toFixed(2)})</Label>
+          <Label>{t.fabrics.amountOutstanding} {outstanding.toFixed(2)})</Label>
           <Input type="number" min={0} step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} />
         </div>
         <DialogFooter>
           <Button onClick={submit} disabled={submitting || !amount}>
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save Payment"}
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t.fabrics.savePayment}
           </Button>
         </DialogFooter>
       </DialogContent>

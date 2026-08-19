@@ -2,40 +2,22 @@
 
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
-// TODO: swap in real client testimonials once available.
-const testimonials = [
-  {
-    id: 1,
-    quote:
-      "The fit was exactly what I asked for — nothing felt off the rack. Khaiati has become where I get everything tailored now.",
-    author: "Ahmed R.",
-    title: "Regular Client",
-    image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop",
-  },
-  {
-    id: 2,
-    quote:
-      "The craftsmanship shows in every stitch. It's this attention to detail that makes the difference.",
-    author: "Bilal K.",
-    title: "Regular Client",
-    image:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop",
-  },
-  {
-    id: 3,
-    quote:
-      "I've been coming here for years. They always get the measurements right the first time.",
-    author: "Sara M.",
-    title: "Regular Client",
-    image:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop",
-  },
+const images = [
+  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop",
+  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop",
+  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop",
 ];
 
 export function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { t } = useLanguage();
+  const testimonials = t.testimonials.items.map((item, index) => ({
+    id: index + 1,
+    ...item,
+    image: images[index],
+  }));
 
   const next = () => {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
@@ -56,15 +38,14 @@ export function Testimonials() {
           {/* Left - Title */}
           <div className="space-y-6">
             <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground">
-              Testimonials
+              {t.testimonials.eyebrow}
             </p>
             <h2 className="font-serif text-4xl md:text-5xl tracking-tight">
-              What Our
-              <span className="block italic text-accent">Clients Say</span>
+              {t.testimonials.titleLine1}
+              <span className="block italic text-accent">{t.testimonials.titleAccentLine}</span>
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              We build lasting relationships with our clients, one fitting
-              at a time. Here's what they say.
+              {t.testimonials.subtitle}
             </p>
 
             {/* Navigation */}
@@ -73,7 +54,7 @@ export function Testimonials() {
                 type="button"
                 onClick={prev}
                 className="w-12 h-12 border border-border flex items-center justify-center hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors duration-300"
-                aria-label="Previous testimonial"
+                aria-label={t.testimonials.prevAria}
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -81,7 +62,7 @@ export function Testimonials() {
                 type="button"
                 onClick={next}
                 className="w-12 h-12 border border-border flex items-center justify-center hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors duration-300"
-                aria-label="Next testimonial"
+                aria-label={t.testimonials.nextAria}
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -126,7 +107,7 @@ export function Testimonials() {
                         ? "bg-accent w-8"
                         : "bg-border hover:bg-muted-foreground"
                     }`}
-                    aria-label={`Go to testimonial ${index + 1}`}
+                    aria-label={`${t.testimonials.goToPrefix} ${index + 1}`}
                   />
                 ))}
               </div>

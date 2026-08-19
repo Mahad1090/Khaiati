@@ -28,6 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { customerSchema, type CustomerInput } from "@/lib/validation/customer";
 import { createCustomer, updateCustomer } from "@/lib/actions/customers";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type Props = {
   mode?: "create" | "edit";
@@ -44,6 +45,7 @@ export function CustomerFormDialog({
 }: Props) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const form = useForm<CustomerInput>({
     resolver: zodResolver(customerSchema),
@@ -64,7 +66,7 @@ export function CustomerFormDialog({
       toast.error(result.error);
       return;
     }
-    toast.success(mode === "edit" ? "Customer updated" : "Customer added");
+    toast.success(mode === "edit" ? t.customers.customerUpdated : t.customers.customerAdded);
     setOpen(false);
     form.reset();
     router.refresh();
@@ -76,13 +78,13 @@ export function CustomerFormDialog({
         {trigger ?? (
           <Button>
             <Plus className="h-4 w-4" />
-            New Customer
+            {t.customers.newCustomer}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{mode === "edit" ? "Edit Customer" : "New Customer"}</DialogTitle>
+          <DialogTitle>{mode === "edit" ? t.customers.editCustomer : t.customers.newCustomer}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -91,9 +93,9 @@ export function CustomerFormDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t.adminCommon.name}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Customer name" {...field} />
+                    <Input placeholder={t.customers.customerName} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -104,7 +106,7 @@ export function CustomerFormDialog({
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
+                  <FormLabel>{t.adminCommon.phone}</FormLabel>
                   <FormControl>
                     <Input placeholder="+92 300 1234567" {...field} />
                   </FormControl>
@@ -117,9 +119,9 @@ export function CustomerFormDialog({
               name="note"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Note</FormLabel>
+                  <FormLabel>{t.adminCommon.note}</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Optional note" {...field} />
+                    <Textarea placeholder={t.adminCommon.optionalNote} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -127,7 +129,7 @@ export function CustomerFormDialog({
             />
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving..." : "Save"}
+                {form.formState.isSubmitting ? t.adminCommon.saving : t.adminCommon.save}
               </Button>
             </DialogFooter>
           </form>

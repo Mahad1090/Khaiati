@@ -22,10 +22,12 @@ import {
 } from "@/lib/validation/worker";
 import { garmentTypeLabels, type GarmentType } from "@/lib/validation/design";
 import { formatDate, formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 async function AssignmentsTable({ q }: { q: string }) {
+  const { t } = await getServerLanguage();
   let rows;
   try {
     rows = await getAllAssignments(q);
@@ -37,7 +39,7 @@ async function AssignmentsTable({ q }: { q: string }) {
     return (
       <Card>
         <CardContent className="py-10 text-center text-sm text-muted-foreground">
-          No work assignments found.
+          {t.workers.noAssignmentsFound}
         </CardContent>
       </Card>
     );
@@ -48,15 +50,15 @@ async function AssignmentsTable({ q }: { q: string }) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Worker</TableHead>
-            <TableHead>Order</TableHead>
-            <TableHead>Garment</TableHead>
-            <TableHead>Work Type</TableHead>
-            <TableHead>Qty</TableHead>
-            <TableHead>Submitted</TableHead>
-            <TableHead>Due</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Wage</TableHead>
+            <TableHead>{t.workers.worker}</TableHead>
+            <TableHead>{t.workers.order}</TableHead>
+            <TableHead>{t.workers.garment}</TableHead>
+            <TableHead>{t.workers.workType}</TableHead>
+            <TableHead>{t.workers.qty}</TableHead>
+            <TableHead>{t.workers.submitted}</TableHead>
+            <TableHead>{t.workers.due}</TableHead>
+            <TableHead>{t.workers.status}</TableHead>
+            <TableHead className="text-right">{t.workers.wage}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -93,22 +95,23 @@ export default async function WorkAssignmentsPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q = "" } = await searchParams;
+  const { t } = await getServerLanguage();
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-serif text-2xl">Work Assignments</h1>
-          <p className="text-sm text-muted-foreground">Work assigned to workers, linked to orders.</p>
+          <h1 className="font-serif text-2xl">{t.workers.workAssignmentsTitle}</h1>
+          <p className="text-sm text-muted-foreground">{t.workers.workAssignmentsSubtitle}</p>
         </div>
         <GlobalAssignmentFormDialog />
       </div>
 
       <Suspense>
-        <SearchBox placeholder="Search by worker or order number..." />
+        <SearchBox placeholder={t.workers.searchWorkerOrOrder} />
       </Suspense>
 
-      <Suspense fallback={<p className="text-sm text-muted-foreground">Loading...</p>}>
+      <Suspense fallback={<p className="text-sm text-muted-foreground">{t.workers.loading}</p>}>
         <AssignmentsTable q={q} />
       </Suspense>
     </div>

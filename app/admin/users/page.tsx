@@ -12,17 +12,19 @@ import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { listUserProfiles } from "@/lib/actions/users";
 import { roleLabels } from "@/lib/permissions";
 import { formatDate } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 export default async function UsersPage() {
+  const { t } = await getServerLanguage();
   let users;
   try {
     users = await listUserProfiles();
   } catch (err) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-2xl">Users</h1>
+        <h1 className="font-serif text-2xl">{t.platformAdmin.usersTitle}</h1>
         <DbUnconfigured detail={err instanceof Error ? err.message : undefined} />
       </div>
     );
@@ -31,23 +33,23 @@ export default async function UsersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-2xl">Users</h1>
+        <h1 className="font-serif text-2xl">{t.platformAdmin.usersTitle}</h1>
         <p className="text-sm text-muted-foreground">
-          Accounts and roles — Administrator, Manager, Accountant, Storekeeper, Employee.
+          {t.platformAdmin.usersSubtitle}
         </p>
       </div>
 
       <Card className="border-dashed">
         <CardHeader>
-          <CardTitle className="text-base">Sign-in not yet configured</CardTitle>
+          <CardTitle className="text-base">{t.platformAdmin.signInNotConfigured}</CardTitle>
           <CardDescription>
-            Accounts are created through Supabase Auth. Once{" "}
-            <code className="rounded bg-muted px-1 py-0.5 text-foreground">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
-            <code className="rounded bg-muted px-1 py-0.5 text-foreground">SUPABASE_SERVICE_ROLE_KEY</code> are
-            set, new sign-ups populate <code className="rounded bg-muted px-1 py-0.5 text-foreground">user_profiles</code>{" "}
-            below and can be assigned a role. See the permission matrix in{" "}
+            {t.platformAdmin.signInNotConfiguredDescPre}{" "}
+            <code className="rounded bg-muted px-1 py-0.5 text-foreground">NEXT_PUBLIC_SUPABASE_URL</code> {t.platformAdmin.signInNotConfiguredDescMid1}{" "}
+            <code className="rounded bg-muted px-1 py-0.5 text-foreground">SUPABASE_SERVICE_ROLE_KEY</code> {t.platformAdmin.signInNotConfiguredDescMid2}{" "}
+            <code className="rounded bg-muted px-1 py-0.5 text-foreground">user_profiles</code>{" "}
+            {t.platformAdmin.signInNotConfiguredDescMid3}{" "}
             <a href="/admin/settings" className="underline hover:text-accent">
-              Settings
+              {t.platformAdmin.settings}
             </a>
             .
           </CardDescription>
@@ -57,7 +59,7 @@ export default async function UsersPage() {
       {users.length === 0 ? (
         <Card>
           <CardContent className="py-10 text-center text-sm text-muted-foreground">
-            No user accounts yet.
+            {t.platformAdmin.noUsersYet}
           </CardContent>
         </Card>
       ) : (
@@ -65,10 +67,10 @@ export default async function UsersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Joined</TableHead>
+                <TableHead>{t.platformAdmin.name}</TableHead>
+                <TableHead>{t.platformAdmin.role}</TableHead>
+                <TableHead>{t.platformAdmin.status}</TableHead>
+                <TableHead>{t.platformAdmin.joined}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -80,7 +82,7 @@ export default async function UsersPage() {
                   </TableCell>
                   <TableCell>
                     <Badge variant={u.is_active ? "default" : "secondary"}>
-                      {u.is_active ? "Active" : "Inactive"}
+                      {u.is_active ? t.platformAdmin.active : t.platformAdmin.inactive}
                     </Badge>
                   </TableCell>
                   <TableCell>{formatDate(u.created_at)}</TableCell>

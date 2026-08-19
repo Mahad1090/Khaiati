@@ -10,10 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -31,7 +33,7 @@ function LoginForm() {
       router.push(searchParams.get("next") || "/admin");
       router.refresh();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Sign-in is not available right now.");
+      toast.error(err instanceof Error ? err.message : t.adminLogin.unavailable);
     } finally {
       setLoading(false);
     }
@@ -40,7 +42,7 @@ function LoginForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">{t.adminLogin.email}</Label>
         <Input
           id="email"
           type="email"
@@ -51,7 +53,7 @@ function LoginForm() {
         />
       </div>
       <div>
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password">{t.adminLogin.password}</Label>
         <Input
           id="password"
           type="password"
@@ -62,20 +64,21 @@ function LoginForm() {
         />
       </div>
       <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In"}
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t.adminLogin.signIn}
       </Button>
     </form>
   );
 }
 
 export default function AdminLoginPage() {
+  const { t } = useLanguage();
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 px-6">
       <Card className="w-full max-w-sm">
         <CardHeader className="items-center text-center">
           <Image src="/logo.png" alt="Khaiati" width={64} height={64} className="h-16 w-16 object-contain" />
-          <CardTitle className="font-serif text-xl">Staff Sign In</CardTitle>
-          <CardDescription>Khaiati Management</CardDescription>
+          <CardTitle className="font-serif text-xl">{t.adminLogin.title}</CardTitle>
+          <CardDescription>{t.adminLogin.subtitle}</CardDescription>
         </CardHeader>
         <CardContent>
           <Suspense fallback={null}>

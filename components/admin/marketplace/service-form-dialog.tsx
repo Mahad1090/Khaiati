@@ -36,6 +36,7 @@ import {
 import { serviceSchema, type ServiceInput } from "@/lib/validation/marketplace";
 import { garmentTypeLabels, garmentTypes } from "@/lib/validation/design";
 import { createService, updateService } from "@/lib/actions/services";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function ServiceFormDialog({
   mode = "create",
@@ -50,6 +51,7 @@ export function ServiceFormDialog({
 }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const form = useForm<ServiceInput>({
     resolver: zodResolver(serviceSchema),
@@ -70,7 +72,7 @@ export function ServiceFormDialog({
       toast.error(result.error);
       return;
     }
-    toast.success(mode === "edit" ? "Service updated" : "Service added");
+    toast.success(mode === "edit" ? t.marketplace.serviceUpdated : t.marketplace.serviceAdded);
     setOpen(false);
     form.reset();
     router.refresh();
@@ -82,13 +84,13 @@ export function ServiceFormDialog({
         {trigger ?? (
           <Button>
             <Plus className="h-4 w-4" />
-            New Service
+            {t.marketplace.newService}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{mode === "edit" ? "Edit Service" : "New Service"}</DialogTitle>
+          <DialogTitle>{mode === "edit" ? t.marketplace.editService : t.marketplace.newService}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -97,9 +99,9 @@ export function ServiceFormDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t.marketplace.name}</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Shirt Stitching" {...field} />
+                    <Input placeholder={t.marketplace.namePlaceholder} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -111,11 +113,11 @@ export function ServiceFormDialog({
                 name="clothing_category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Garment Type</FormLabel>
+                    <FormLabel>{t.marketplace.garmentType}</FormLabel>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Any" />
+                          <SelectValue placeholder={t.marketplace.any} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -135,9 +137,9 @@ export function ServiceFormDialog({
                 name="categoryName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category</FormLabel>
+                    <FormLabel>{t.marketplace.category}</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Alterations" {...field} />
+                      <Input placeholder={t.marketplace.categoryAltPlaceholder} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -150,7 +152,7 @@ export function ServiceFormDialog({
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price</FormLabel>
+                    <FormLabel>{t.marketplace.price}</FormLabel>
                     <FormControl>
                       <Input type="number" min={0} step="0.01" {...field} />
                     </FormControl>
@@ -163,7 +165,7 @@ export function ServiceFormDialog({
                 name="estimated_completion_days"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Est. Completion (days)</FormLabel>
+                    <FormLabel>{t.marketplace.estCompletionDays}</FormLabel>
                     <FormControl>
                       <Input type="number" min={0} {...field} value={field.value ?? ""} />
                     </FormControl>
@@ -177,7 +179,7 @@ export function ServiceFormDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t.marketplace.description}</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
@@ -187,7 +189,7 @@ export function ServiceFormDialog({
             />
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving..." : "Save"}
+                {form.formState.isSubmitting ? t.adminCommon.saving : t.adminCommon.save}
               </Button>
             </DialogFooter>
           </form>

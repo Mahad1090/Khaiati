@@ -14,10 +14,12 @@ import { GlobalSaleFormDialog } from "@/components/admin/fabrics/global-sale-for
 import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { getAllSales } from "@/lib/actions/fabric-transactions";
 import { formatDate, formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
 async function SalesTable({ q }: { q: string }) {
+  const { t } = await getServerLanguage();
   let rows;
   try {
     rows = await getAllSales(q);
@@ -29,7 +31,7 @@ async function SalesTable({ q }: { q: string }) {
     return (
       <Card>
         <CardContent className="py-10 text-center text-sm text-muted-foreground">
-          No sales found.
+          {t.fabrics.noSalesFound}
         </CardContent>
       </Card>
     );
@@ -40,13 +42,13 @@ async function SalesTable({ q }: { q: string }) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Sale #</TableHead>
-            <TableHead>Fabric</TableHead>
-            <TableHead>Customer</TableHead>
-            <TableHead>Meters</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead className="text-right">Total</TableHead>
-            <TableHead className="text-right">Balance</TableHead>
+            <TableHead>{t.fabrics.saleNo}</TableHead>
+            <TableHead>{t.suppliers.fabric}</TableHead>
+            <TableHead>{t.fabrics.customer}</TableHead>
+            <TableHead>{t.fabrics.meters}</TableHead>
+            <TableHead>{t.fabrics.date}</TableHead>
+            <TableHead className="text-right">{t.fabrics.total}</TableHead>
+            <TableHead className="text-right">{t.fabrics.balance}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -58,7 +60,7 @@ async function SalesTable({ q }: { q: string }) {
                   {s.fabric_name}
                 </Link>
               </TableCell>
-              <TableCell>{s.customer_name ?? "Walk-in"}</TableCell>
+              <TableCell>{s.customer_name ?? t.fabrics.walkIn}</TableCell>
               <TableCell>{s.size_meters}</TableCell>
               <TableCell>{formatDate(s.sale_date)}</TableCell>
               <TableCell className="text-right">{formatMoney(s.total_price)}</TableCell>
@@ -79,22 +81,23 @@ export default async function FabricSalesPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q = "" } = await searchParams;
+  const { t } = await getServerLanguage();
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-serif text-2xl">Fabric Sales</h1>
-          <p className="text-sm text-muted-foreground">Every sale, across all fabrics.</p>
+          <h1 className="font-serif text-2xl">{t.fabrics.allSalesTitle}</h1>
+          <p className="text-sm text-muted-foreground">{t.fabrics.allSalesSubtitle}</p>
         </div>
         <GlobalSaleFormDialog />
       </div>
 
       <Suspense>
-        <SearchBox placeholder="Search by fabric or customer..." />
+        <SearchBox placeholder={t.fabrics.searchByFabricOrCustomer} />
       </Suspense>
 
-      <Suspense fallback={<p className="text-sm text-muted-foreground">Loading...</p>}>
+      <Suspense fallback={<p className="text-sm text-muted-foreground">{t.fabrics.loading}</p>}>
         <SalesTable q={q} />
       </Suspense>
     </div>

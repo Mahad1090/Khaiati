@@ -34,6 +34,7 @@ import {
 } from "@/lib/validation/worker";
 import { garmentTypeLabels, type GarmentType } from "@/lib/validation/design";
 import { formatDate, formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +44,7 @@ export default async function WorkerDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const { t } = await getServerLanguage();
 
   let worker;
   let assignments, payments, advances, summary;
@@ -66,7 +68,7 @@ export default async function WorkerDetailPage({
       <Button asChild variant="ghost" size="sm" className="w-fit">
         <Link href="/admin/workers">
           <ArrowLeft className="h-4 w-4" />
-          Back to workers
+          {t.workers.backToWorkers}
         </Link>
       </Button>
 
@@ -94,7 +96,7 @@ export default async function WorkerDetailPage({
               salary: worker.salary ? Number(worker.salary) : undefined,
               note: worker.note ?? "",
             }}
-            trigger={<Button variant="outline">Edit</Button>}
+            trigger={<Button variant="outline">{t.workers.edit}</Button>}
           />
         </div>
       </div>
@@ -102,25 +104,25 @@ export default async function WorkerDetailPage({
       <div className="grid gap-4 sm:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Wages Earned</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.workers.wagesEarned}</CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-xl">{formatMoney(summary!.totalWages)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Paid</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.workers.totalPaid}</CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-xl">{formatMoney(summary!.totalPaid)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Advances</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.workers.advances}</CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-xl">{formatMoney(summary!.totalAdvances)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Remaining</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t.workers.remaining}</CardTitle>
           </CardHeader>
           <CardContent className="font-serif text-xl">{formatMoney(summary!.remaining)}</CardContent>
         </Card>
@@ -128,13 +130,13 @@ export default async function WorkerDetailPage({
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="font-serif text-lg">Work Assignments</h2>
+          <h2 className="font-serif text-lg">{t.workers.workAssignments}</h2>
           <AssignmentFormDialog workerId={worker.id} />
         </div>
         {assignments!.length === 0 ? (
           <Card>
             <CardContent className="py-6 text-center text-sm text-muted-foreground">
-              No assignments yet.
+              {t.workers.noAssignmentsYet}
             </CardContent>
           </Card>
         ) : (
@@ -142,14 +144,14 @@ export default async function WorkerDetailPage({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Order</TableHead>
-                  <TableHead>Garment</TableHead>
-                  <TableHead>Work Type</TableHead>
-                  <TableHead>Qty</TableHead>
-                  <TableHead>Submitted</TableHead>
-                  <TableHead>Due</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Wage</TableHead>
+                  <TableHead>{t.workers.order}</TableHead>
+                  <TableHead>{t.workers.garment}</TableHead>
+                  <TableHead>{t.workers.workType}</TableHead>
+                  <TableHead>{t.workers.qty}</TableHead>
+                  <TableHead>{t.workers.submitted}</TableHead>
+                  <TableHead>{t.workers.due}</TableHead>
+                  <TableHead>{t.workers.status}</TableHead>
+                  <TableHead className="text-right">{t.workers.wage}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -183,13 +185,13 @@ export default async function WorkerDetailPage({
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="font-serif text-lg">Salary / Wage Payments</h2>
+          <h2 className="font-serif text-lg">{t.workers.salaryWagePayments}</h2>
           <PaymentFormDialog workerId={worker.id} />
         </div>
         {payments!.length === 0 ? (
           <Card>
             <CardContent className="py-6 text-center text-sm text-muted-foreground">
-              No payments yet.
+              {t.workers.noPaymentsYet}
             </CardContent>
           </Card>
         ) : (
@@ -197,11 +199,11 @@ export default async function WorkerDetailPage({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Pay Model</TableHead>
-                  <TableHead>Period</TableHead>
-                  <TableHead>Note</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead>{t.workers.date}</TableHead>
+                  <TableHead>{t.workers.payModel}</TableHead>
+                  <TableHead>{t.workers.period}</TableHead>
+                  <TableHead>{t.workers.note}</TableHead>
+                  <TableHead className="text-right">{t.workers.amount}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -224,13 +226,13 @@ export default async function WorkerDetailPage({
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="font-serif text-lg">Advance Salary</h2>
+          <h2 className="font-serif text-lg">{t.workers.advanceSalary}</h2>
           <AdvanceFormDialog workerId={worker.id} />
         </div>
         {advances!.length === 0 ? (
           <Card>
             <CardContent className="py-6 text-center text-sm text-muted-foreground">
-              No advances yet.
+              {t.workers.noAdvancesYet}
             </CardContent>
           </Card>
         ) : (
@@ -238,10 +240,10 @@ export default async function WorkerDetailPage({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Salary Period</TableHead>
-                  <TableHead>Reason</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead>{t.workers.date}</TableHead>
+                  <TableHead>{t.workers.salaryPeriod}</TableHead>
+                  <TableHead>{t.workers.reason}</TableHead>
+                  <TableHead className="text-right">{t.workers.amount}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

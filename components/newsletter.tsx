@@ -6,10 +6,12 @@ import { useState } from "react";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { subscribeNewsletter } from "@/lib/actions/public-site";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function Newsletter() {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const { t } = useLanguage();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,7 +22,7 @@ export function Newsletter() {
         toast.error(result.error);
         return;
       }
-      toast.success("Subscribed — thank you.");
+      toast.success(t.newsletter.subscribed);
       setEmail("");
     } finally {
       setSubmitting(false);
@@ -37,29 +39,28 @@ export function Newsletter() {
         <div className="max-w-2xl mx-auto text-center">
           <div className="space-y-6 mb-10">
             <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground">
-              Newsletter
+              {t.newsletter.eyebrow}
             </p>
             <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl tracking-tight">
-              Stay
-              <span className="italic text-accent"> Informed</span>
+              {t.newsletter.titleLine1}
+              <span className="italic text-accent"> {t.newsletter.titleAccent}</span>
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed">
-              Subscribe for fabric arrivals, seasonal designs, and tailoring
-              tips from the atelier.
+              {t.newsletter.subtitle}
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <label htmlFor="newsletter-email" className="sr-only">
-                Email address
+                {t.newsletter.emailLabel}
               </label>
               <input
                 id="newsletter-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Your email address"
+                placeholder={t.newsletter.emailPlaceholder}
                 required
                 className="w-full h-14 px-6 bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors duration-300 text-base"
               />
@@ -73,7 +74,7 @@ export function Newsletter() {
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  Subscribe
+                  {t.newsletter.subscribe}
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                 </>
               )}
@@ -81,9 +82,9 @@ export function Newsletter() {
           </form>
 
           <p className="text-sm text-muted-foreground mt-6">
-            By subscribing, you agree to our{" "}
+            {t.newsletter.privacyPrefix}{" "}
             <button type="button" className="underline hover:text-accent transition-colors duration-300">
-              privacy policy
+              {t.newsletter.privacyLink}
             </button>
             .
           </p>

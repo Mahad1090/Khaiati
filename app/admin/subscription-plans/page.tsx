@@ -15,6 +15,7 @@ import { TogglePlanActive } from "@/components/admin/subscriptions/toggle-plan-a
 import { listPlans, listSubscriptions } from "@/lib/actions/subscriptions";
 import { paymentStatusLabels, type PaymentStatus } from "@/lib/validation/subscription";
 import { formatDate, formatMoney } from "@/lib/format";
+import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
@@ -27,13 +28,14 @@ const statusVariant: Record<PaymentStatus, "default" | "secondary" | "outline" |
 };
 
 export default async function SubscriptionPlansPage() {
+  const { t } = await getServerLanguage();
   let plans, subscriptions;
   try {
     [plans, subscriptions] = await Promise.all([listPlans(), listSubscriptions()]);
   } catch (err) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-2xl">Subscription Plans</h1>
+        <h1 className="font-serif text-2xl">{t.platformAdmin.subscriptionPlansTitle}</h1>
         <DbUnconfigured detail={err instanceof Error ? err.message : undefined} />
       </div>
     );
@@ -43,21 +45,20 @@ export default async function SubscriptionPlansPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-serif text-2xl">Subscription Plans</h1>
+          <h1 className="font-serif text-2xl">{t.platformAdmin.subscriptionPlansTitle}</h1>
           <p className="text-sm text-muted-foreground">
-            Platform billing plans and business subscription requests. No payment gateway is wired up —
-            confirm payment manually once received off-platform.
+            {t.platformAdmin.subscriptionPlansSubtitle}
           </p>
         </div>
         <PlanFormDialog />
       </div>
 
       <div className="space-y-3">
-        <h2 className="font-serif text-lg">Plans</h2>
+        <h2 className="font-serif text-lg">{t.platformAdmin.plans}</h2>
         {plans.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-center text-sm text-muted-foreground">
-              No plans yet.
+              {t.platformAdmin.noPlansYet}
             </CardContent>
           </Card>
         ) : (
@@ -65,11 +66,11 @@ export default async function SubscriptionPlansPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead className="text-right">Price</TableHead>
-                  <TableHead className="text-right">Duration</TableHead>
-                  <TableHead className="text-right">Commission</TableHead>
-                  <TableHead>Active</TableHead>
+                  <TableHead>{t.platformAdmin.name}</TableHead>
+                  <TableHead className="text-right">{t.platformAdmin.price}</TableHead>
+                  <TableHead className="text-right">{t.platformAdmin.duration}</TableHead>
+                  <TableHead className="text-right">{t.platformAdmin.commission}</TableHead>
+                  <TableHead>{t.platformAdmin.active}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -77,7 +78,7 @@ export default async function SubscriptionPlansPage() {
                   <TableRow key={p.id}>
                     <TableCell className="font-medium">{p.name}</TableCell>
                     <TableCell className="text-right">{formatMoney(p.price)}</TableCell>
-                    <TableCell className="text-right">{p.duration_days} days</TableCell>
+                    <TableCell className="text-right">{p.duration_days} {t.platformAdmin.days}</TableCell>
                     <TableCell className="text-right">{p.commission_rate}%</TableCell>
                     <TableCell>
                       <TogglePlanActive id={p.id} isActive={p.is_active} />
@@ -91,11 +92,11 @@ export default async function SubscriptionPlansPage() {
       </div>
 
       <div className="space-y-3">
-        <h2 className="font-serif text-lg">Business Subscriptions</h2>
+        <h2 className="font-serif text-lg">{t.platformAdmin.businessSubscriptions}</h2>
         {subscriptions.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-center text-sm text-muted-foreground">
-              No subscription requests yet.
+              {t.platformAdmin.noSubscriptionRequests}
             </CardContent>
           </Card>
         ) : (
@@ -103,12 +104,12 @@ export default async function SubscriptionPlansPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Business</TableHead>
-                  <TableHead>Plan</TableHead>
-                  <TableHead className="text-right">Price</TableHead>
-                  <TableHead>Start</TableHead>
-                  <TableHead>Expiry</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>{t.platformAdmin.business}</TableHead>
+                  <TableHead>{t.platformAdmin.plan}</TableHead>
+                  <TableHead className="text-right">{t.platformAdmin.price}</TableHead>
+                  <TableHead>{t.platformAdmin.start}</TableHead>
+                  <TableHead>{t.platformAdmin.expiry}</TableHead>
+                  <TableHead>{t.platformAdmin.status}</TableHead>
                   <TableHead />
                 </TableRow>
               </TableHeader>
