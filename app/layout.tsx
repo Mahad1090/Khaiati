@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/sonner";
 import { getServerLanguage } from "@/lib/i18n/get-server-language";
 import { LanguageProvider } from "@/lib/i18n/language-context";
+import { LanguageSelectModal } from "@/components/language-select-modal";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -48,6 +49,7 @@ export default async function RootLayout({
         suppressHydrationWarning
       >
         <LanguageProvider initialLanguage={language}>
+          <LanguageSelectModal />
           {children}
         </LanguageProvider>
         <Toaster />

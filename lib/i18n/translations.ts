@@ -12,6 +12,11 @@ export const RTL_LANGUAGES: Language[] = ["fa", "ps"];
 
 export const translations = {
   en: {
+    languageSelect: {
+      heading: "Select your language",
+      subheading: "Please choose a language to continue",
+      continue: "Continue",
+    },
     nav: {
       browse: "Browse Businesses",
       services: "Services",
@@ -1084,6 +1089,11 @@ export const translations = {
     langToggle: "فارسی",
   },
   fa: {
+    languageSelect: {
+      heading: "زبان خود را انتخاب کنید",
+      subheading: "لطفاً برای ادامه یک زبان انتخاب کنید",
+      continue: "ادامه",
+    },
     nav: {
       browse: "مرور کسب‌وکارها",
       services: "خدمات",
@@ -2150,6 +2160,11 @@ export const translations = {
     langToggle: "پښتو",
   },
   ps: {
+    languageSelect: {
+      heading: "خپله ژبه وټاکئ",
+      subheading: "مهرباني وکړئ د دوام لپاره یوه ژبه وټاکئ",
+      continue: "دوام",
+    },
     nav: {
       browse: "کاروبارونه وګورئ",
       services: "خدمتونه",
