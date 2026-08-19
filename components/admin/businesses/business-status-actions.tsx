@@ -1,0 +1,59 @@
+"use client";
+
+import { useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Check, X, Ban, RotateCcw, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { updateBusinessStatus } from "@/lib/actions/businesses";
+import type { BusinessStatus } from "@/lib/validation/business";
+
+export function BusinessStatusActions({ id, status }: { id: string; status: BusinessStatus }) {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+
+  function setStatus(next: BusinessStatus) {
+    startTransition(async () => {
+      const result = await updateBusinessStatus(id, next);
+      if (!result.ok) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success(`Business ${next}`);
+      router.refresh();
+    });
+  }
+
+  if (pending) {
+    return <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />;
+  }
+
+  return (
+    <div className="flex gap-1">
+      {status === "pending" && (
+        <>
+          <Button size="sm" variant="outline" onClick={() => setStatus("approved")}>
+            <Check className="h-3.5 w-3.5" />
+            Approve
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => setStatus("rejected")}>
+            <X className="h-3.5 w-3.5" />
+            Reject
+          </Button>
+        </>
+      )}
+      {status === "approved" && (
+        <Button size="sm" variant="ghost" onClick={() => setStatus("suspended")}>
+          <Ban className="h-3.5 w-3.5" />
+          Suspend
+        </Button>
+      )}
+      {(status === "suspended" || status === "rejected") && (
+        <Button size="sm" variant="outline" onClick={() => setStatus("approved")}>
+          <RotateCcw className="h-3.5 w-3.5" />
+          Reinstate
+        </Button>
+      )}
+    </div>
+  );
+}
