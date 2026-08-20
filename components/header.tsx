@@ -3,14 +3,23 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, Languages, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Menu, X, Languages, User, ChevronDown, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
-export function Header() {
+type HeaderCustomer = {
+  name: string;
+  email: string | null;
+} | null;
+
+export function Header({ customer }: { customer?: HeaderCustomer }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const { t, toggleLanguage } = useLanguage();
+  const router = useRouter();
 
   const navItems = [
     { id: "collections", label: t.nav.services },
@@ -18,6 +27,15 @@ export function Header() {
     { id: "products", label: t.nav.fabrics },
     { id: "how-it-works", label: t.nav.howItWorks },
   ];
+
+  async function handleSignOut() {
+    const supabase = createSupabaseBrowserClient();
+    await supabase.auth.signOut();
+    setIsMenuOpen(false);
+    setIsAccountMenuOpen(false);
+    router.push("/");
+    router.refresh();
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
@@ -28,9 +46,9 @@ export function Header() {
             <Image
               src="/logo.png"
               alt="Khaiati"
-              width={64}
-              height={64}
-              className="h-12 w-12 md:h-16 md:w-16 object-contain"
+              width={80}
+              height={80}
+              className="h-16 w-16 md:h-20 md:w-20 object-contain"
               priority
             />
             <h1 className="font-serif text-xl md:text-2xl tracking-[0.2em] text-foreground">
@@ -66,13 +84,54 @@ export function Header() {
 
             <NotificationBell />
 
-            <Link
-              href="/account"
-              className="flex items-center gap-1.5 text-sm tracking-[0.15em] uppercase hover:text-accent transition-colors duration-300"
-            >
-              <User className="h-4 w-4" />
-              Account
-            </Link>
+            {customer ? (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsAccountMenuOpen((open) => !open)}
+                  className="flex items-center gap-1.5 text-sm tracking-[0.15em] uppercase hover:text-accent transition-colors duration-300"
+                >
+                  <User className="h-4 w-4" />
+                  <span className="max-w-[180px] truncate">{customer.name}</span>
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </button>
+                {isAccountMenuOpen && (
+                  <div className="absolute right-0 top-full mt-3 w-56 rounded-md border border-border bg-background p-1 shadow-md">
+                    <div className="px-2 py-1.5 text-xs text-muted-foreground font-normal uppercase tracking-[0.12em]">
+                      Signed in as
+                      <div className="text-sm font-medium text-foreground normal-case tracking-normal truncate">
+                        {customer.name}
+                      </div>
+                    </div>
+                    <div className="my-1 h-px bg-border" />
+                    <Link
+                      href="/account"
+                      className="flex items-center gap-2 rounded-sm px-2 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
+                      onClick={() => setIsAccountMenuOpen(false)}
+                    >
+                      <User className="h-4 w-4" />
+                      My Account
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      className="flex w-full items-center gap-2 rounded-sm px-2 py-2 text-sm text-destructive hover:bg-destructive/10"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                href="/account/login"
+                className="flex items-center gap-1.5 text-sm tracking-[0.15em] uppercase hover:text-accent transition-colors duration-300"
+              >
+                <User className="h-4 w-4" />
+                Sign In
+              </Link>
+            )}
 
             <Button asChild className="h-10 rounded-none px-6 text-xs tracking-[0.2em] uppercase">
               <Link href="/register-business">{t.hero.cta2}</Link>
@@ -118,13 +177,40 @@ export function Header() {
                   {item.label}
                 </a>
               ))}
-              <Link
-                href="/account"
-                className="text-sm tracking-[0.2em] uppercase"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Account
-              </Link>
+
+              {customer ? (
+                <>
+                  <div className="text-xs text-muted-foreground uppercase tracking-[0.15em]">
+                    Signed in as
+                    <div className="text-sm text-foreground normal-case tracking-normal mt-0.5">
+                      {customer.name}
+                    </div>
+                  </div>
+                  <Link
+                    href="/account"
+                    className="text-sm tracking-[0.2em] uppercase"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    My Account
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="text-left text-sm tracking-[0.2em] uppercase text-destructive"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/account/login"
+                  className="text-sm tracking-[0.2em] uppercase"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Sign In
+                </Link>
+              )}
+
               <Button asChild className="h-11 w-full rounded-none text-xs tracking-[0.2em] uppercase">
                 <Link href="/register-business" onClick={() => setIsMenuOpen(false)}>
                   {t.hero.cta2}

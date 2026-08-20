@@ -1,3 +1,4 @@
+import { getCurrentCustomer } from "@/lib/actions/customer-auth";
 import { Header } from "@/components/header";
 import { Hero } from "@/components/hero";
 import { Collections } from "@/components/collections";
@@ -14,10 +15,12 @@ import { Journal } from "@/components/journal";
 import { Newsletter } from "@/components/newsletter";
 import { Footer } from "@/components/footer";
 
-export default function Home() {
+export default async function Home() {
+  const customer = await getCurrentCustomer();
+
   return (
     <main className="min-h-screen">
-      <Header />
+      <Header customer={customer ? { name: customer.name, email: customer.email } : null} />
       <Hero />
       <Collections />
       <FeaturedBusinesses />

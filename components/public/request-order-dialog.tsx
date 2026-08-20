@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
@@ -40,6 +40,8 @@ export function RequestOrderDialog({
   isSignedIn: boolean;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const nextParam = `?next=${encodeURIComponent(pathname)}`;
   const [open, setOpen] = useState(false);
   const [quantity, setQuantity] = useState("1");
   const [deliveryOption, setDeliveryOption] = useState<"pickup" | "delivery">("pickup");
@@ -91,10 +93,10 @@ export function RequestOrderDialog({
             <p className="text-sm text-muted-foreground">Sign in or create a free account to continue.</p>
             <div className="mt-4 flex justify-center gap-3">
               <Button asChild variant="outline">
-                <Link href="/account/login">Sign In</Link>
+                <Link href={`/account/login${nextParam}`}>Sign In</Link>
               </Button>
               <Button asChild>
-                <Link href="/account/register">Create Account</Link>
+                <Link href={`/account/register${nextParam}`}>Create Account</Link>
               </Button>
             </div>
           </div>

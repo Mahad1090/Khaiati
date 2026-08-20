@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -14,12 +14,18 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useLanguage } from "@/lib/i18n/language-context";
 
-export default function CustomerLoginPage() {
+function LoginForm() {
   const { t } = useLanguage();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // After signing in, send the customer back to wherever they came from
+  // (e.g. the page they were ordering from) rather than trapping them on
+  // the bare account page. Defaults to the homepage.
+  const nextPath = searchParams.get("next") || "/";
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -31,7 +37,7 @@ export default function CustomerLoginPage() {
         toast.error(error.message);
         return;
       }
-      router.push("/account");
+      router.push(nextPath);
       router.refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t.accountLogin.unavailable);
@@ -40,6 +46,42 @@ export default function CustomerLoginPage() {
     }
   }
 
+  return (
+    <>
+      <form onSubmit={onSubmit} className="space-y-4">
+        <div>
+          <Label htmlFor="email">{t.accountLogin.email}</Label>
+          <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+        </div>
+        <div>
+          <Label htmlFor="password">{t.accountLogin.password}</Label>
+          <Input
+            id="password"
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t.accountLogin.signIn}
+        </Button>
+      </form>
+      <p className="mt-4 text-center text-sm text-muted-foreground">
+        {t.accountLogin.noAccount}{" "}
+        <Link
+          href={nextPath !== "/" ? `/account/register?next=${encodeURIComponent(nextPath)}` : "/account/register"}
+          className="underline hover:text-accent"
+        >
+          {t.accountLogin.createOne}
+        </Link>
+      </p>
+    </>
+  );
+}
+
+export default function CustomerLoginPage() {
+  const { t } = useLanguage();
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/20 px-6">
       <Card className="w-full max-w-sm">
@@ -51,31 +93,9 @@ export default function CustomerLoginPage() {
           <CardDescription>{t.accountLogin.subtitle}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={onSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="email">{t.accountLogin.email}</Label>
-              <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-            </div>
-            <div>
-              <Label htmlFor="password">{t.accountLogin.password}</Label>
-              <Input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t.accountLogin.signIn}
-            </Button>
-          </form>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            {t.accountLogin.noAccount}{" "}
-            <Link href="/account/register" className="underline hover:text-accent">
-              {t.accountLogin.createOne}
-            </Link>
-          </p>
+          <Suspense fallback={null}>
+            <LoginForm />
+          </Suspense>
         </CardContent>
       </Card>
     </div>
