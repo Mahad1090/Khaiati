@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ArrowRight, Search, MapPin, ShieldCheck, QrCode, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -108,12 +109,19 @@ export function Hero() {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <Link
+                  href="/tailoring"
+                  className="group inline-flex items-center justify-center gap-3 border border-white/30 text-white px-8 py-4 text-sm tracking-[0.2em] uppercase min-h-12 hover:border-white hover:bg-white/10 transition-all duration-500 backdrop-blur-sm"
+                >
+                  Start tailoring
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" />
+                </Link>
                 <button
                   type="button"
                   onClick={() =>
                     document.getElementById("businesses")?.scrollIntoView({ behavior: "smooth" })
                   }
-                  className="group inline-flex items-center justify-center gap-3 border border-white/30 text-white px-8 py-4 text-sm tracking-[0.2em] uppercase min-h-12 hover:border-white hover:bg-white/10 transition-all duration-500 backdrop-blur-sm"
+                  className="group inline-flex items-center justify-center gap-3 border border-white/10 bg-white/5 text-white px-8 py-4 text-sm tracking-[0.2em] uppercase min-h-12 hover:border-white/30 hover:bg-white/10 transition-all duration-500 backdrop-blur-sm"
                 >
                   {t.hero.cta1}
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" />

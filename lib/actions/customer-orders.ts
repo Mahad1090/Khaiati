@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { query, withTransaction } from "@/lib/db";
 import { getCurrentCustomer } from "./customer-auth";
-import { customerOrderRequestSchema } from "@/lib/validation/customer-order";
+import { customerOrderRequestSchema, customerTailoringOrderSchema } from "@/lib/validation/customer-order";
 import type { ActionResult } from "./customers";
 
 async function nextOrderNo(client: { query: typeof query }) {
@@ -14,24 +14,36 @@ async function nextOrderNo(client: { query: typeof query }) {
 
 /**
  * Customer-initiated order request (doc §9, §26-27 — simplified: no
- * multi-item cart, one product or service per request). Measurements are
- * taken by the business when they process the order, same as how a
- * walk-in customer's measurements are taken — not collected on this public
- * form, to keep the storefront request simple.
+ * multi-item cart, one product or service per request).
  */
 export async function requestServiceOrder(
   serviceId: string,
   input: unknown
 ): Promise<ActionResult<{ orderNo: string }>> {
-  const parsed = customerOrderRequestSchema.safeParse(input);
-  if (!parsed.success) {
-    return { ok: false, error: parsed.error.issues[0]?.message ?? "Please check the form." };
+  const tailoringParsed = customerTailoringOrderSchema.safeParse(input);
+  const simpleParsed = tailoringParsed.success ? undefined : customerOrderRequestSchema.safeParse(input);
+
+  if (!tailoringParsed.success && !simpleParsed?.success) {
+    return {
+      ok: false,
+      error:
+        tailoringParsed.error.issues[0]?.message ??
+        simpleParsed?.error.issues[0]?.message ??
+        "Please check the form.",
+    };
   }
+
   const customer = await getCurrentCustomer();
   if (!customer) {
     return { ok: false, error: "Please sign in to request an order." };
   }
-  const { quantity, delivery_option, note } = parsed.data;
+
+  const isTailoringRequest = tailoringParsed.success;
+  const parsed = isTailoringRequest ? tailoringParsed.data : simpleParsed?.data;
+  if (!parsed) {
+    return { ok: false, error: "Please check the form." };
+  }
+  const { quantity, delivery_option, note } = parsed;
 
   try {
     const result = await withTransaction(async (client) => {
@@ -39,12 +51,14 @@ export async function requestServiceOrder(
         business_id: string;
         clothing_category: string | null;
         price: string;
-      }>(`select business_id, clothing_category, price from services where id = $1 and is_available = true`, [
-        serviceId,
-      ]);
+      }>(
+        `select business_id, clothing_category, price from services where id = $1 and is_available = true`,
+        [serviceId]
+      );
       if (svcRows.length === 0) throw new Error("NOT_FOUND");
+
       const service = svcRows[0];
-      const garmentType = service.clothing_category || "shirt";
+      const garmentType = service.clothing_category || (isTailoringRequest ? tailoringParsed.data.garment_type : "shirt");
       const totalPrice = Math.round(Number(service.price) * quantity * 100) / 100;
 
       const orderNo = await nextOrderNo(client);
@@ -56,11 +70,57 @@ export async function requestServiceOrder(
       );
       const orderId = orderRows[0].id;
 
-      await client.query(
-        `insert into order_items (order_id, garment_type, service_id, quantity, price_per_piece, total_price, note)
-         values ($1, $2, $3, $4, $5, $6, $7)`,
-        [orderId, garmentType, serviceId, quantity, service.price, totalPrice, note || null]
-      );
+      if (isTailoringRequest) {
+        const { garment_type, design_id, measurements } = tailoringParsed.data;
+        if (service.clothing_category && service.clothing_category !== garment_type) {
+          throw new Error("INVALID_GARMENT_TYPE");
+        }
+
+        if (design_id) {
+          const { rows: designRows } = await client.query<{ id: string; garment_type: string }>(
+            `select id, garment_type from designs
+             where id = $1 and business_id = $2 and is_active = true`,
+            [design_id, service.business_id]
+          );
+          if (designRows.length === 0 || designRows[0].garment_type !== garmentType) {
+            throw new Error("INVALID_DESIGN");
+          }
+        }
+
+        const { rows: itemRows } = await client.query<{ id: string }>(
+          `insert into order_items (order_id, garment_type, design_id, service_id, quantity, price_per_piece, total_price, note)
+           values ($1, $2, $3, $4, $5, $6, $7, $8)
+           returning id`,
+          [orderId, garmentType, design_id || null, serviceId, quantity, service.price, totalPrice, note || null]
+        );
+
+        const m = measurements;
+        await client.query(
+          `insert into garment_measurements
+             (order_item_id, height, sleeve, shoulder, neck, armhole, armpit, chest, waist, hip, inseam, note)
+           values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+          [
+            itemRows[0].id,
+            m.height ?? null,
+            m.sleeve ?? null,
+            m.shoulder ?? null,
+            m.neck ?? null,
+            m.armhole ?? null,
+            m.armpit ?? null,
+            m.chest ?? null,
+            m.waist ?? null,
+            m.hip ?? null,
+            m.inseam ?? null,
+            m.note || null,
+          ]
+        );
+      } else {
+        await client.query(
+          `insert into order_items (order_id, garment_type, service_id, quantity, price_per_piece, total_price, note)
+           values ($1, $2, $3, $4, $5, $6, $7)`,
+          [orderId, garmentType, serviceId, quantity, service.price, totalPrice, note || null]
+        );
+      }
 
       await client.query(
         `insert into business_customers (business_id, customer_id) values ($1, $2)
@@ -76,6 +136,12 @@ export async function requestServiceOrder(
   } catch (err) {
     if (err instanceof Error && err.message === "NOT_FOUND") {
       return { ok: false, error: "This service is no longer available." };
+    }
+    if (err instanceof Error && err.message === "INVALID_GARMENT_TYPE") {
+      return { ok: false, error: "Please choose the garment type required for this service." };
+    }
+    if (err instanceof Error && err.message === "INVALID_DESIGN") {
+      return { ok: false, error: "Please select a valid design for this tailor." };
     }
     console.error("requestServiceOrder failed", err);
     return { ok: false, error: "Could not submit your order request. Please try again." };

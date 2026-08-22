@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
@@ -26,18 +26,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { requestServiceOrder, requestProductOrder } from "@/lib/actions/customer-orders";
+import type { DesignRow } from "@/lib/actions/designs";
+import { garmentTypeLabels, type GarmentType } from "@/lib/validation/design";
+import { garmentMeasurementFields, measurementFieldLabels, type MeasurementFieldKey } from "@/lib/validation/measurements";
 
 export function RequestOrderDialog({
   kind,
   id,
   name,
   isSignedIn,
+  garmentType,
+  designs,
 }: {
   kind: "service" | "product";
   id: string;
   name: string;
   isSignedIn: boolean;
+  garmentType?: GarmentType | null;
+  designs?: DesignRow[];
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -46,14 +55,38 @@ export function RequestOrderDialog({
   const [quantity, setQuantity] = useState("1");
   const [deliveryOption, setDeliveryOption] = useState<"pickup" | "delivery">("pickup");
   const [note, setNote] = useState("");
+  const [designId, setDesignId] = useState("");
+  const [measurements, setMeasurements] = useState<Partial<Record<MeasurementFieldKey, string>>>({});
   const [submitting, setSubmitting] = useState(false);
   const [orderNo, setOrderNo] = useState<string | null>(null);
 
+  const isTailoringRequest = kind === "service" && Boolean(garmentType);
+  const availableDesigns = useMemo(
+    () => (isTailoringRequest ? (designs ?? []).filter((design) => design.garment_type === garmentType) : []),
+    [designs, garmentType, isTailoringRequest]
+  );
+  const measurementFields = garmentType ? garmentMeasurementFields[garmentType] : [];
+
   async function submit() {
+    if (isTailoringRequest && !designId) {
+      toast.error("Please select a design.");
+      return;
+    }
+
     setSubmitting(true);
     try {
       const action = kind === "service" ? requestServiceOrder : requestProductOrder;
-      const result = await action(id, { quantity, delivery_option: deliveryOption, note });
+      const payload = isTailoringRequest
+        ? {
+            garment_type: garmentType,
+            design_id: designId,
+            quantity,
+            delivery_option: deliveryOption,
+            note,
+            measurements: { ...measurements, note },
+          }
+        : { quantity, delivery_option: deliveryOption, note };
+      const result = await action(id, payload);
       if (!result.ok) {
         toast.error(result.error);
         return;
@@ -78,7 +111,7 @@ export function RequestOrderDialog({
           Request
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="font-serif">Request — {name}</DialogTitle>
           {!isSignedIn && (
@@ -111,29 +144,96 @@ export function RequestOrderDialog({
             </Button>
           </div>
         ) : (
-          <div className="space-y-4">
-            <div>
-              <Label>Quantity</Label>
-              <Input type="number" min={1} value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+          <div className="space-y-5">
+            {isTailoringRequest && garmentType && (
+              <Card>
+                <CardContent className="flex flex-wrap items-center gap-3 pt-6">
+                  <span className="text-sm text-muted-foreground">Garment type</span>
+                  <Badge variant="outline">{garmentTypeLabels[garmentType]}</Badge>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <Label>Quantity</Label>
+                <Input type="number" min={1} value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+              </div>
+              <div>
+                <Label>Delivery</Label>
+                <Select value={deliveryOption} onValueChange={(v) => setDeliveryOption(v as "pickup" | "delivery")}> 
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pickup">Pickup</SelectItem>
+                    <SelectItem value="delivery">Delivery</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div>
-              <Label>Delivery</Label>
-              <Select value={deliveryOption} onValueChange={(v) => setDeliveryOption(v as "pickup" | "delivery")}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pickup">Pickup</SelectItem>
-                  <SelectItem value="delivery">Delivery</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+
+            {isTailoringRequest && (
+              <div className="space-y-4 rounded-lg border border-border p-4">
+                <div>
+                  <Label>Design</Label>
+                  <Select value={designId} onValueChange={setDesignId}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a design" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableDesigns.length === 0 ? (
+                        <SelectItem value="__none" disabled>
+                          No designs available
+                        </SelectItem>
+                      ) : (
+                        availableDesigns.map((design) => (
+                          <SelectItem key={design.id} value={design.id}>
+                            {design.name}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                  {availableDesigns.length === 0 && (
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      This tailor has not published any designs for this garment yet.
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <p className="mb-3 text-sm font-medium">Measurements</p>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {measurementFields.map((field) => (
+                      <div key={field}>
+                        <Label className="text-xs">{measurementFieldLabels[field]}</Label>
+                        <Input
+                          type="number"
+                          min={0}
+                          step="0.1"
+                          value={measurements[field] ?? ""}
+                          onChange={(e) =>
+                            setMeasurements((current) => ({
+                              ...current,
+                              [field]: e.target.value,
+                            }))
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div>
               <Label>Note (optional)</Label>
               <Textarea value={note} onChange={(e) => setNote(e.target.value)} />
             </div>
+
             <DialogFooter>
-              <Button onClick={submit} disabled={submitting}>
+              <Button onClick={submit} disabled={submitting || (isTailoringRequest && availableDesigns.length === 0)}>
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send Request"}
               </Button>
             </DialogFooter>

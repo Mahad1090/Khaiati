@@ -3,6 +3,7 @@ import Image from "next/image";
 import { MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { listApprovedBusinesses } from "@/lib/actions/businesses";
 import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
@@ -33,6 +34,9 @@ export default async function BusinessesPage({
         <div className="mb-10">
           <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">{t.businesses.discoverEyebrow}</p>
           <h1 className="font-serif text-4xl md:text-5xl tracking-tight">{t.businesses.title}</h1>
+          <Button asChild className="mt-6">
+            <Link href="/tailoring">Start tailoring flow</Link>
+          </Button>
         </div>
 
         <form className="mb-10 max-w-md" method="get">

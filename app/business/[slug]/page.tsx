@@ -3,10 +3,12 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { MapPin, Phone, Mail, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { InquiryDialog } from "@/components/public/inquiry-dialog";
 import { RequestOrderDialog } from "@/components/public/request-order-dialog";
 import { getApprovedBusinessBySlug } from "@/lib/actions/businesses";
+import { listPublicDesigns } from "@/lib/actions/designs";
 import { listPublicProducts } from "@/lib/actions/products";
 import { listPublicServices } from "@/lib/actions/services";
 import { getCurrentCustomer } from "@/lib/actions/customer-auth";
@@ -33,11 +35,12 @@ export default async function BusinessStorefrontPage({
   }
   if (!business) notFound();
 
-  const [products, services, customer, reviewData] = await Promise.all([
+  const [products, services, customer, reviewData, designs] = await Promise.all([
     listPublicProducts(business.id).catch(() => []),
     listPublicServices(business.id).catch(() => []),
     getCurrentCustomer().catch(() => null),
     getPublicReviews(business.id).catch(() => ({ reviews: [], average: 0 })),
+    listPublicDesigns(business.id, { activeOnly: true }).catch(() => []),
   ]);
   const isSignedIn = Boolean(customer);
   const { reviews, average } = reviewData;
@@ -116,7 +119,9 @@ export default async function BusinessStorefrontPage({
                       )}
                       {s.description && <p className="text-sm text-muted-foreground">{s.description}</p>}
                       <p className="font-serif text-lg text-accent">{formatMoney(s.price)}</p>
-                      <RequestOrderDialog kind="service" id={s.id} name={s.name} isSignedIn={isSignedIn} />
+                      <Button asChild variant="outline" className="w-full">
+                        <Link href="/tailoring">Start tailoring flow</Link>
+                      </Button>
                     </CardContent>
                   </Card>
                 ))}
