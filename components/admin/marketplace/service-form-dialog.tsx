@@ -19,6 +19,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -128,6 +129,10 @@ export function ServiceFormDialog({
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormDescription>
+                      Leave as "Any" to offer this service for every garment type. Customers filter by garment type first,
+                      so setting a specific one here is what makes this service show up for that garment.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

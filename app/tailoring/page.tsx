@@ -51,8 +51,9 @@ export default async function TailoringPage() {
           <h2 className="mb-4 font-serif text-2xl">Available tailors</h2>
           {tailorBusinesses.length === 0 ? (
             <Card>
-              <CardContent className="py-16 text-center text-sm text-muted-foreground">
-                No approved tailoring businesses have published services yet.
+              <CardContent className="space-y-3 py-16 text-center text-sm text-muted-foreground">
+                <p>No approved tailoring businesses have published services yet.</p>
+                <p>Check back soon — we're onboarding new tailors regularly.</p>
               </CardContent>
             </Card>
           ) : (
