@@ -19,10 +19,11 @@ import { useLanguage } from "@/lib/i18n/language-context";
 type Props = {
   value: string;
   onChange: (id: string, order: OrderListRow) => void;
+  placeholder?: string;
 };
 
 /** Search/select an order by order number or customer, per the "enter/search order number" assignment workflow. */
-export function OrderPicker({ value, onChange }: Props) {
+export function OrderPicker({ value, onChange, placeholder }: Props) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -46,7 +47,7 @@ export function OrderPicker({ value, onChange }: Props) {
               {selected.order_no} · {selected.customer_name}
             </span>
           ) : (
-            <span className="text-muted-foreground">{t.workers.searchOrderPlaceholder}</span>
+            <span className="text-muted-foreground">{placeholder ?? t.workers.searchOrderPlaceholder}</span>
           )}
           <ChevronsUpDown className="h-4 w-4 opacity-50" />
         </Button>

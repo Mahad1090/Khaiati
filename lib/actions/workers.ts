@@ -137,14 +137,12 @@ export async function createAssignment(input: unknown): Promise<ActionResult<{ i
     if (workerOk.rows.length === 0) {
       return { ok: false, error: "Worker not found." };
     }
-    if (order_id) {
-      const orderOk = await query<{ id: string }>(
-        `select id from orders where id = $1 and business_id = $2`,
-        [order_id, businessId]
-      );
-      if (orderOk.rows.length === 0) {
-        return { ok: false, error: "Order not found." };
-      }
+    const orderOk = await query<{ id: string }>(
+      `select id from orders where id = $1 and business_id = $2`,
+      [order_id, businessId]
+    );
+    if (orderOk.rows.length === 0) {
+      return { ok: false, error: "Order not found." };
     }
 
     const { rows } = await query<{ id: string }>(
@@ -154,7 +152,7 @@ export async function createAssignment(input: unknown): Promise<ActionResult<{ i
        returning id`,
       [
         worker_id,
-        order_id || null,
+        order_id,
         garment_type,
         work_type,
         quantity,
@@ -166,7 +164,7 @@ export async function createAssignment(input: unknown): Promise<ActionResult<{ i
       ]
     );
     revalidatePath(`/admin/workers/${worker_id}`);
-    if (order_id) revalidatePath(`/admin/orders/${order_id}`);
+    revalidatePath(`/admin/orders/${order_id}`);
     return { ok: true, data: rows[0] };
   } catch (err) {
     console.error("createAssignment failed", err);

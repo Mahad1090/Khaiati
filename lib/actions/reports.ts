@@ -110,26 +110,60 @@ export type WorkerReportRow = {
   pending_salary: string;
 };
 
-export async function getWorkerReport(): Promise<WorkerReportRow[]> {
+export async function getWorkerReport(from?: string, to?: string): Promise<WorkerReportRow[]> {
   const businessId = await getCurrentBusinessId();
+  const fromDate = from || null;
+  const toDate = to || null;
   const { rows } = await query<WorkerReportRow>(
     `select
        w.id, w.worker_no, w.name, w.occupation,
        count(wa.id)::int as assigned_count,
        count(wa.id) filter (where wa.status = 'completed')::int as completed_count,
        count(wa.id) filter (where wa.status in ('assigned', 'in_progress'))::int as pending_count,
-       coalesce((select sum(wage * quantity) from worker_assignments where worker_id = w.id and status = 'completed'), 0) as total_wages,
-       coalesce((select sum(amount) from worker_payments where worker_id = w.id), 0) as total_paid,
-       coalesce((select sum(amount) from worker_advances where worker_id = w.id), 0) as total_advances,
-       coalesce((select sum(wage * quantity) from worker_assignments where worker_id = w.id and status = 'completed'), 0)
-         - coalesce((select sum(amount) from worker_payments where worker_id = w.id), 0)
-         - coalesce((select sum(amount) from worker_advances where worker_id = w.id), 0) as pending_salary
+       coalesce((
+         select sum(wage * quantity) from worker_assignments
+         where worker_id = w.id and status = 'completed'
+           and ($2::date is null or submitted_date >= $2::date)
+           and ($3::date is null or submitted_date <= $3::date)
+       ), 0) as total_wages,
+       coalesce((
+         select sum(amount) from worker_payments
+         where worker_id = w.id
+           and ($2::date is null or paid_at >= $2::date)
+           and ($3::date is null or paid_at <= $3::date)
+       ), 0) as total_paid,
+       coalesce((
+         select sum(amount) from worker_advances
+         where worker_id = w.id
+           and ($2::date is null or advance_date >= $2::date)
+           and ($3::date is null or advance_date <= $3::date)
+       ), 0) as total_advances,
+       coalesce((
+         select sum(wage * quantity) from worker_assignments
+         where worker_id = w.id and status = 'completed'
+           and ($2::date is null or submitted_date >= $2::date)
+           and ($3::date is null or submitted_date <= $3::date)
+       ), 0)
+         - coalesce((
+           select sum(amount) from worker_payments
+           where worker_id = w.id
+             and ($2::date is null or paid_at >= $2::date)
+             and ($3::date is null or paid_at <= $3::date)
+         ), 0)
+         - coalesce((
+           select sum(amount) from worker_advances
+           where worker_id = w.id
+             and ($2::date is null or advance_date >= $2::date)
+             and ($3::date is null or advance_date <= $3::date)
+         ), 0) as pending_salary
      from workers w
      left join worker_assignments wa on wa.worker_id = w.id
+       and ($2::date is null or wa.submitted_date >= $2::date)
+       and ($3::date is null or wa.submitted_date <= $3::date)
      where w.business_id = $1
      group by w.id
      order by w.created_at desc`,
-    [businessId]
+    [businessId, fromDate, toDate]
   );
   return rows;
 }

@@ -48,7 +48,7 @@ const money = z
 
 export const assignmentSchema = z.object({
   worker_id: z.string().uuid("Select a worker"),
-  order_id: z.string().uuid("Select an order").optional().or(z.literal("")),
+  order_id: z.string().uuid("Enter the order's serial number"),
   garment_type: z.enum(garmentTypes),
   work_type: z.enum(workTypes),
   quantity: z

@@ -25,6 +25,7 @@ export function AdvanceFormDialog({ workerId }: { workerId: string }) {
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [period, setPeriod] = useState("");
   const [reason, setReason] = useState("");
+  const [note, setNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
 
@@ -36,6 +37,7 @@ export function AdvanceFormDialog({ workerId }: { workerId: string }) {
         advance_date: date,
         salary_period: period,
         reason,
+        note,
       });
       if (!result.ok) {
         toast.error(result.error);
@@ -45,6 +47,7 @@ export function AdvanceFormDialog({ workerId }: { workerId: string }) {
       setOpen(false);
       setAmount("");
       setReason("");
+      setNote("");
       router.refresh();
     } finally {
       setSubmitting(false);
@@ -79,6 +82,10 @@ export function AdvanceFormDialog({ workerId }: { workerId: string }) {
           <div>
             <Label>{t.workers.reason}</Label>
             <Input value={reason} onChange={(e) => setReason(e.target.value)} placeholder={t.adminCommon.optionalNote} />
+          </div>
+          <div>
+            <Label>{t.workers.note}</Label>
+            <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder={t.adminCommon.optionalNote} />
           </div>
         </div>
         <DialogFooter>

@@ -92,6 +92,7 @@ async function SalariesTables({ q }: { q: string }) {
                   <TableHead>{t.workers.date}</TableHead>
                   <TableHead>{t.workers.salaryPeriod}</TableHead>
                   <TableHead>{t.workers.reason}</TableHead>
+                  <TableHead>{t.workers.note}</TableHead>
                   <TableHead className="text-right">{t.workers.amount}</TableHead>
                 </TableRow>
               </TableHeader>
@@ -106,6 +107,7 @@ async function SalariesTables({ q }: { q: string }) {
                     <TableCell>{formatDate(a.advance_date)}</TableCell>
                     <TableCell>{a.salary_period ?? "—"}</TableCell>
                     <TableCell>{a.reason ?? "—"}</TableCell>
+                    <TableCell>{a.note ?? "—"}</TableCell>
                     <TableCell className="text-right">{formatMoney(a.amount)}</TableCell>
                   </TableRow>
                 ))}

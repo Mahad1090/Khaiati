@@ -112,9 +112,13 @@ export function GlobalAssignmentFormDialog() {
               name="order_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t.workers.order}</FormLabel>
+                  <FormLabel>{t.workers.order} *</FormLabel>
                   <FormControl>
-                    <OrderPicker value={field.value ?? ""} onChange={(id) => field.onChange(id)} />
+                    <OrderPicker
+                      value={field.value ?? ""}
+                      onChange={(id) => field.onChange(id)}
+                      placeholder={t.workers.searchOrderPlaceholder}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

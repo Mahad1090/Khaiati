@@ -12,17 +12,23 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DbUnconfigured } from "@/components/admin/db-unconfigured";
+import { DateRangeControl } from "@/components/admin/finance/date-range-control";
 import { getWorkerReport } from "@/lib/actions/reports";
 import { formatMoney } from "@/lib/format";
 import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
 export const dynamic = "force-dynamic";
 
-export default async function WorkerReportsPage() {
+export default async function WorkerReportsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ from?: string; to?: string }>;
+}) {
+  const { from = "", to = "" } = await searchParams;
   const { t } = await getServerLanguage();
   let workers;
   try {
-    workers = await getWorkerReport();
+    workers = await getWorkerReport(from || undefined, to || undefined);
   } catch (err) {
     return <DbUnconfigured detail={err instanceof Error ? err.message : undefined} />;
   }
@@ -36,6 +42,8 @@ export default async function WorkerReportsPage() {
         </Link>
       </Button>
       <h1 className="font-serif text-2xl">{t.reports.workerReportsTitle}</h1>
+
+      <DateRangeControl from={from} to={to} />
 
       {workers.length === 0 ? (
         <Card>
