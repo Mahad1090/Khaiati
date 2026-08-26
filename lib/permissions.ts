@@ -25,8 +25,8 @@ export type Capability =
   | "orders:edit"
   | "orders:delete"
   | "workers:view"
-  | "workers:edit"
-  | "payroll:edit" // salaries, wages, advances
+  | "workers:edit" // hire/deactivate workers and assign them work
+  | "payroll:edit" // salaries, wages, advances — accountant and storekeeper both handle this
   | "fabrics:view"
   | "fabrics:edit"
   | "purchases:edit"
@@ -34,7 +34,11 @@ export type Capability =
   | "finance:view"
   | "finance:edit"
   | "reports:view"
-  | "users:manage"
+  | "catalog:view" // designs/services/products browsing
+  | "users:manage" // platform-wide account administration
+  | "admins:manage" // add/remove sub-administrators (administrator only)
+  | "businesses:manage" // approve/deny/create businesses & store owners (administrator only)
+  | "team:manage" // add the store's storekeeper/accountant/workers (manager/owner only)
   | "backup:run";
 
 const ALL: Capability[] = [
@@ -53,10 +57,25 @@ const ALL: Capability[] = [
   "finance:view",
   "finance:edit",
   "reports:view",
+  "catalog:view",
   "users:manage",
+  "admins:manage",
+  "businesses:manage",
+  "team:manage",
   "backup:run",
 ];
 
+// Role → capability matrix, matching the real hierarchy:
+//   Administrator  — runs the whole platform; approves/denies businesses;
+//                    can add other administrators.
+//   Manager        — the store owner. Adds their own store's Storekeeper,
+//                    Accountant, and any number of workers; assigns work;
+//                    sees the store's finances.
+//   Accountant     — salaries/wages/finance for their store only.
+//   Storekeeper    — search + insert (read/write) scoped to their own
+//                    store's fabrics/purchases/sales, and can also handle
+//                    salaries. No visibility into other stores or businesses.
+//   Employee       — a plain worker login with day-to-day order access.
 export const rolePermissions: Record<Role, Capability[]> = {
   administrator: ALL,
   manager: [
@@ -74,6 +93,8 @@ export const rolePermissions: Record<Role, Capability[]> = {
     "sales:edit",
     "finance:view",
     "reports:view",
+    "catalog:view",
+    "team:manage",
   ],
   accountant: [
     "customers:view",
@@ -85,8 +106,15 @@ export const rolePermissions: Record<Role, Capability[]> = {
     "finance:edit",
     "reports:view",
   ],
-  storekeeper: ["fabrics:view", "fabrics:edit", "purchases:edit", "sales:edit", "reports:view"],
-  employee: ["customers:view", "orders:view", "orders:edit", "fabrics:view", "reports:view"],
+  storekeeper: [
+    "fabrics:view",
+    "fabrics:edit",
+    "purchases:edit",
+    "sales:edit",
+    "payroll:edit",
+    "reports:view",
+  ],
+  employee: ["customers:view", "orders:view", "orders:edit", "fabrics:view", "catalog:view", "reports:view"],
 };
 
 export function can(role: Role, capability: Capability): boolean {

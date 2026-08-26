@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { query } from "@/lib/db";
-import { getCurrentBusinessId } from "@/lib/auth/business-context";
+import { getCurrentBusinessId, requireCapability } from "@/lib/auth/business-context";
 import {
   workerSchema,
   assignmentSchema,
@@ -34,6 +34,13 @@ export async function createWorker(input: unknown): Promise<ActionResult<{ id: s
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
+  try {
+    // Hiring workers is the Manager's job — Accountant/Storekeeper only
+    // handle salaries, not headcount.
+    await requireCapability("workers:edit");
+  } catch {
+    return { ok: false, error: "You don't have permission to add workers." };
+  }
   const { name, occupation, contact_number, employee_number, salary, note } = parsed.data;
   try {
     const businessId = await getCurrentBusinessId();
@@ -64,6 +71,11 @@ export async function updateWorker(id: string, input: unknown): Promise<ActionRe
   const parsed = workerSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+  try {
+    await requireCapability("workers:edit");
+  } catch {
+    return { ok: false, error: "You don't have permission to edit workers." };
   }
   const { name, occupation, contact_number, employee_number, salary, note } = parsed.data;
   try {
@@ -124,6 +136,12 @@ export async function createAssignment(input: unknown): Promise<ActionResult<{ i
   const parsed = assignmentSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+  try {
+    // Assigning work to a worker is a Manager capability.
+    await requireCapability("workers:edit");
+  } catch {
+    return { ok: false, error: "You don't have permission to assign work." };
   }
   const { worker_id, order_id, garment_type, work_type, quantity, submitted_date, due_date, status, wage, note } =
     parsed.data;
@@ -234,6 +252,13 @@ export async function addWorkerPayment(workerId: string, input: unknown): Promis
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
+  try {
+    // Salaries/wages: Manager, Accountant, and Storekeeper can all record
+    // these for their own store — nobody else (see lib/permissions.ts).
+    await requireCapability("payroll:edit");
+  } catch {
+    return { ok: false, error: "You don't have permission to manage salaries." };
+  }
   const { pay_model, amount, period_start, period_end, paid_at, note } = parsed.data;
   try {
     const businessId = await getCurrentBusinessId();
@@ -312,6 +337,11 @@ export async function addWorkerAdvance(workerId: string, input: unknown): Promis
   const parsed = workerAdvanceSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+  try {
+    await requireCapability("payroll:edit");
+  } catch {
+    return { ok: false, error: "You don't have permission to manage salaries." };
   }
   const { amount, advance_date, salary_period, reason, note } = parsed.data;
   try {

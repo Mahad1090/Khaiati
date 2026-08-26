@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { query } from "@/lib/db";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
-import { getCurrentBusinessId, requireOwner } from "@/lib/auth/business-context";
+import { getCurrentBusinessId, requireOwner, requireAdministrator } from "@/lib/auth/business-context";
 import { createNotification } from "./notifications";
 import {
   businessRegistrationSchema,
@@ -216,6 +216,11 @@ export async function updateMyBusinessProfile(input: unknown): Promise<ActionRes
 }
 
 export async function updateBusinessStatus(id: string, status: BusinessStatus): Promise<ActionResult> {
+  try {
+    await requireAdministrator();
+  } catch {
+    return { ok: false, error: "Only an administrator can approve, reject, or suspend businesses." };
+  }
   try {
     const { rows } = await query<{ owner_user_id: string | null; name: string }>(
       `update businesses set status = $1 where id = $2 returning owner_user_id, name`,

@@ -35,12 +35,13 @@ export function AdminShell({
 
   const isBusinessStaff = access.kind === "business_staff";
   const isOwner = !isBusinessStaff || access.isOwner;
+  const staffRole = isBusinessStaff ? access.role : undefined;
   const isPending = isBusinessStaff && access.businessStatus === "pending";
   const isBlocked = isBusinessStaff && (access.businessStatus === "rejected" || access.businessStatus === "suspended");
 
   return (
     <SidebarProvider>
-      <AppSidebar hidePlatformGroup={isBusinessStaff} isOwner={isOwner} />
+      <AppSidebar hidePlatformGroup={isBusinessStaff} isOwner={isOwner} role={staffRole} />
       <SidebarInset>
         {!authConfigured && (
           <div className="flex items-center gap-2 border-b border-accent/40 bg-accent/10 px-4 py-2 text-sm text-foreground">

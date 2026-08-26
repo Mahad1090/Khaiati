@@ -40,6 +40,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { can, type Capability, type Role } from "@/lib/permissions";
 
 // title/label here are dictionary keys into t.adminNav.items / t.adminNav.groups,
 // not the displayed text itself — see AppSidebar below.
@@ -47,6 +48,11 @@ type NavItem = {
   title: string;
   href: string;
   icon: React.ElementType;
+  // Capability required for a business-staff user (storekeeper/accountant/
+  // employee/manager) to see this item. Undefined = always visible once the
+  // surrounding group is visible (e.g. Dashboard). Platform-only groups are
+  // hidden for business staff entirely, regardless of this field.
+  capability?: Capability;
 };
 
 type NavGroup = {
@@ -66,45 +72,45 @@ const navGroups: NavGroup[] = [
   {
     label: "Tailoring",
     items: [
-      { title: "Customers", href: "/admin/customers", icon: Users },
-      { title: "Orders", href: "/admin/orders", icon: ShoppingBag },
-      { title: "Designs", href: "/admin/designs", icon: Shirt },
-      { title: "Services", href: "/admin/services", icon: Tags },
+      { title: "Customers", href: "/admin/customers", icon: Users, capability: "customers:view" },
+      { title: "Orders", href: "/admin/orders", icon: ShoppingBag, capability: "orders:view" },
+      { title: "Designs", href: "/admin/designs", icon: Shirt, capability: "catalog:view" },
+      { title: "Services", href: "/admin/services", icon: Tags, capability: "catalog:view" },
     ],
   },
   {
     label: "Workers",
     items: [
-      { title: "Workers", href: "/admin/workers", icon: HardHat },
-      { title: "Work Assignments", href: "/admin/work-assignments", icon: ClipboardList },
-      { title: "Salaries & Wages", href: "/admin/salaries", icon: Wallet },
+      { title: "Workers", href: "/admin/workers", icon: HardHat, capability: "workers:view" },
+      { title: "Work Assignments", href: "/admin/work-assignments", icon: ClipboardList, capability: "workers:edit" },
+      { title: "Salaries & Wages", href: "/admin/salaries", icon: Wallet, capability: "payroll:edit" },
     ],
   },
   {
     label: "Fabric Store",
     items: [
-      { title: "Fabrics", href: "/admin/fabrics", icon: Scissors },
-      { title: "Suppliers", href: "/admin/suppliers", icon: Truck },
-      { title: "Purchases", href: "/admin/fabric-purchases", icon: ShoppingCart },
-      { title: "Supplier Debts", href: "/admin/supplier-debts", icon: CreditCard },
-      { title: "Fabric Sales", href: "/admin/fabric-sales", icon: Tags },
-      { title: "Inventory", href: "/admin/inventory", icon: Boxes },
-      { title: "Products", href: "/admin/products", icon: ShoppingCart },
+      { title: "Fabrics", href: "/admin/fabrics", icon: Scissors, capability: "fabrics:view" },
+      { title: "Suppliers", href: "/admin/suppliers", icon: Truck, capability: "purchases:edit" },
+      { title: "Purchases", href: "/admin/fabric-purchases", icon: ShoppingCart, capability: "purchases:edit" },
+      { title: "Supplier Debts", href: "/admin/supplier-debts", icon: CreditCard, capability: "purchases:edit" },
+      { title: "Fabric Sales", href: "/admin/fabric-sales", icon: Tags, capability: "sales:edit" },
+      { title: "Inventory", href: "/admin/inventory", icon: Boxes, capability: "fabrics:view" },
+      { title: "Products", href: "/admin/products", icon: ShoppingCart, capability: "fabrics:view" },
     ],
   },
   {
     label: "Finance",
     items: [
-      { title: "Income", href: "/admin/income", icon: TrendingUp },
-      { title: "Expenses", href: "/admin/expenses", icon: Receipt },
-      { title: "Profit & Loss", href: "/admin/profit-loss", icon: LineChart },
+      { title: "Income", href: "/admin/income", icon: TrendingUp, capability: "finance:view" },
+      { title: "Expenses", href: "/admin/expenses", icon: Receipt, capability: "finance:view" },
+      { title: "Profit & Loss", href: "/admin/profit-loss", icon: LineChart, capability: "finance:view" },
     ],
   },
   {
     label: "Reports",
     items: [
-      { title: "Reports", href: "/admin/reports", icon: BarChart3 },
-      { title: "Reviews", href: "/admin/reviews", icon: Star },
+      { title: "Reports", href: "/admin/reports", icon: BarChart3, capability: "reports:view" },
+      { title: "Reviews", href: "/admin/reviews", icon: Star, capability: "reports:view" },
     ],
   },
   {
@@ -137,27 +143,35 @@ function getBusinessProfileGroup(isOwner: boolean): NavGroup {
   };
 }
 
-// Employees (non-owner business staff) never see revenue/expenses per doc
-// §36 — only the business owner does.
-const OWNER_ONLY_GROUPS = new Set(["Finance"]);
-
 export function AppSidebar({
   hidePlatformGroup = false,
   isOwner = true,
+  role,
 }: {
   hidePlatformGroup?: boolean;
   isOwner?: boolean;
+  // The signed-in business staff member's role (manager/accountant/
+  // storekeeper/employee). Only meaningful when hidePlatformGroup is true —
+  // platform admins always see every item. Defaults to "manager" (today's
+  // unrestricted behavior) so existing callers that don't pass a role are
+  // unaffected.
+  role?: Role;
 }) {
   const pathname = usePathname();
   const { t } = useLanguage();
   const groupLabels: Record<string, string> = t.adminNav.groups;
   const itemTitles: Record<string, string> = t.adminNav.items;
+  const effectiveRole: Role = role ?? "manager";
 
   const visibleGroups = hidePlatformGroup
     ? [
-        ...navGroups.filter(
-          (g) => !PLATFORM_ONLY_GROUPS.has(g.label) && (isOwner || !OWNER_ONLY_GROUPS.has(g.label))
-        ),
+        ...navGroups
+          .filter((g) => !PLATFORM_ONLY_GROUPS.has(g.label))
+          .map((g) => ({
+            ...g,
+            items: g.items.filter((item) => !item.capability || can(effectiveRole, item.capability)),
+          }))
+          .filter((g) => g.items.length > 0),
         getBusinessProfileGroup(isOwner),
       ]
     : navGroups;

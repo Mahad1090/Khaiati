@@ -9,7 +9,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DbUnconfigured } from "@/components/admin/db-unconfigured";
+import { InviteAdministratorDialog } from "@/components/admin/users/invite-administrator-dialog";
 import { listUserProfiles } from "@/lib/actions/users";
+import { getCurrentRole } from "@/lib/auth/business-context";
 import { roleLabels } from "@/lib/permissions";
 import { formatDate } from "@/lib/format";
 import { getServerLanguage } from "@/lib/i18n/get-server-language";
@@ -18,6 +20,15 @@ export const dynamic = "force-dynamic";
 
 export default async function UsersPage() {
   const { t } = await getServerLanguage();
+  // getCurrentRole() resolves to null both when auth isn't configured yet
+  // and for a genuine platform administrator whose profile predates the
+  // role backfill — either way this page and the invite action fall back
+  // to allowing access, matching the "honest fallback" pattern used
+  // throughout lib/auth/business-context.ts. Once real accounts exist,
+  // only role === "administrator" sees the invite button.
+  const role = await getCurrentRole();
+  const canManageAdmins = role === null || role === "administrator";
+
   let users;
   try {
     users = await listUserProfiles();
@@ -32,11 +43,14 @@ export default async function UsersPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-serif text-2xl">{t.platformAdmin.usersTitle}</h1>
-        <p className="text-sm text-muted-foreground">
-          {t.platformAdmin.usersSubtitle}
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-serif text-2xl">{t.platformAdmin.usersTitle}</h1>
+          <p className="text-sm text-muted-foreground">
+            {t.platformAdmin.usersSubtitle}
+          </p>
+        </div>
+        {canManageAdmins && <InviteAdministratorDialog />}
       </div>
 
       <Card className="border-dashed">
@@ -68,6 +82,7 @@ export default async function UsersPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>{t.platformAdmin.name}</TableHead>
+                <TableHead>{t.platformAdmin.email}</TableHead>
                 <TableHead>{t.platformAdmin.role}</TableHead>
                 <TableHead>{t.platformAdmin.status}</TableHead>
                 <TableHead>{t.platformAdmin.joined}</TableHead>
@@ -77,6 +92,7 @@ export default async function UsersPage() {
               {users.map((u) => (
                 <TableRow key={u.id}>
                   <TableCell>{u.full_name ?? "—"}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{u.email ?? "—"}</TableCell>
                   <TableCell>
                     <Badge variant="outline">{roleLabels[u.role]}</Badge>
                   </TableCell>

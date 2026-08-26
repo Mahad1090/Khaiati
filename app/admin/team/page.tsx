@@ -10,8 +10,10 @@ import {
 } from "@/components/ui/table";
 import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { InviteEmployeeDialog } from "@/components/admin/team/invite-employee-dialog";
+import { RemoveTeamMemberButton } from "@/components/admin/team/remove-team-member-button";
 import { listMyTeam } from "@/lib/actions/team";
 import { getCurrentAccessContext } from "@/lib/auth/business-context";
+import { roleLabels } from "@/lib/permissions";
 import { formatDate } from "@/lib/format";
 import { getServerLanguage } from "@/lib/i18n/get-server-language";
 
@@ -58,20 +60,28 @@ export default async function TeamPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>{t.platformAdmin.name}</TableHead>
+                <TableHead>{t.platformAdmin.email}</TableHead>
                 <TableHead>{t.platformAdmin.role}</TableHead>
                 <TableHead>{t.platformAdmin.joined}</TableHead>
+                {isOwner && <TableHead className="text-right" />}
               </TableRow>
             </TableHeader>
             <TableBody>
               {team.map((m) => (
                 <TableRow key={m.id}>
                   <TableCell className="font-medium">{m.full_name ?? "—"}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{m.email ?? "—"}</TableCell>
                   <TableCell>
                     <Badge variant={m.is_owner ? "default" : "secondary"}>
-                      {m.is_owner ? t.platformAdmin.owner2 : t.platformAdmin.employee}
+                      {m.is_owner ? t.platformAdmin.owner2 : roleLabels[m.role]}
                     </Badge>
                   </TableCell>
                   <TableCell>{formatDate(m.created_at)}</TableCell>
+                  {isOwner && (
+                    <TableCell className="text-right">
+                      {!m.is_owner && <RemoveTeamMemberButton userId={m.id} />}
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>

@@ -15,6 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -25,40 +26,27 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { inviteEmployeeSchema, inviteableTeamRoles, type InviteEmployeeInput } from "@/lib/validation/team";
-import { inviteEmployee } from "@/lib/actions/team";
+import { inviteAdministratorSchema, type InviteAdministratorInput } from "@/lib/validation/admin-users";
+import { createSubAdministrator } from "@/lib/actions/users";
 import { useLanguage } from "@/lib/i18n/language-context";
 
-export function InviteEmployeeDialog() {
+export function InviteAdministratorDialog() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const { t } = useLanguage();
 
-  const roleLabels: Record<string, string> = {
-    employee: t.platformAdmin.roleWorker,
-    storekeeper: t.platformAdmin.roleStorekeeper,
-    accountant: t.platformAdmin.roleAccountant,
-  };
-
-  const form = useForm<InviteEmployeeInput>({
-    resolver: zodResolver(inviteEmployeeSchema),
-    defaultValues: { name: "", email: "", password: "", role: "employee" },
+  const form = useForm<InviteAdministratorInput>({
+    resolver: zodResolver(inviteAdministratorSchema),
+    defaultValues: { name: "", email: "", password: "" },
   });
 
-  async function onSubmit(values: InviteEmployeeInput) {
-    const result = await inviteEmployee(values);
+  async function onSubmit(values: InviteAdministratorInput) {
+    const result = await createSubAdministrator(values);
     if (!result.ok) {
       toast.error(result.error);
       return;
     }
-    toast.success(t.platformAdmin.teamMemberAdded);
+    toast.success(t.platformAdmin.administratorAdded);
     setOpen(false);
     form.reset();
     router.refresh();
@@ -69,12 +57,13 @@ export function InviteEmployeeDialog() {
       <DialogTrigger asChild>
         <Button>
           <Plus className="h-4 w-4" />
-          {t.platformAdmin.inviteTeamMember}
+          {t.platformAdmin.addAdministrator}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t.platformAdmin.inviteTeamMember}</DialogTitle>
+          <DialogTitle>{t.platformAdmin.addAdministrator}</DialogTitle>
+          <DialogDescription>{t.platformAdmin.addAdministratorDesc}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -87,31 +76,6 @@ export function InviteEmployeeDialog() {
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="role"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.platformAdmin.inviteRole}</FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {inviteableTeamRoles.map((r) => (
-                        <SelectItem key={r} value={r}>
-                          {roleLabels[r]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">{t.platformAdmin.inviteRoleHelp}</p>
                   <FormMessage />
                 </FormItem>
               )}
@@ -144,7 +108,7 @@ export function InviteEmployeeDialog() {
             />
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? t.platformAdmin.adding : t.platformAdmin.addTeamMember}
+                {form.formState.isSubmitting ? t.platformAdmin.adding : t.platformAdmin.addAdministrator}
               </Button>
             </DialogFooter>
           </form>

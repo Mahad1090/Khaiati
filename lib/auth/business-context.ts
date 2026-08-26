@@ -1,6 +1,7 @@
 import "server-only";
 import { query } from "@/lib/db";
 import { createSupabaseServerClient, isSupabaseAuthConfigured } from "@/lib/supabase/server";
+import { can, type Capability, type Role } from "@/lib/permissions";
 
 const DEFAULT_BUSINESS_SLUG = "khaiati-default";
 
@@ -54,7 +55,14 @@ export async function getCurrentBusinessId(): Promise<string> {
 
 export type AccessContext =
   | { kind: "platform_admin" }
-  | { kind: "business_staff"; businessId: string; businessName: string; businessStatus: string; isOwner: boolean }
+  | {
+      kind: "business_staff";
+      businessId: string;
+      businessName: string;
+      businessStatus: string;
+      isOwner: boolean;
+      role: Role;
+    }
   | { kind: "no_business" }; // signed in, but no business assigned yet
 
 /**
@@ -77,8 +85,8 @@ export async function getCurrentAccessContext(): Promise<AccessContext> {
     } = await supabase.auth.getUser();
     if (!user) return { kind: "platform_admin" };
 
-    const { rows } = await query<{ business_id: string | null; is_owner: boolean }>(
-      `select business_id, is_owner from user_profiles where id = $1`,
+    const { rows } = await query<{ business_id: string | null; is_owner: boolean; role: Role }>(
+      `select business_id, is_owner, role from user_profiles where id = $1`,
       [user.id]
     );
     const businessId = rows[0]?.business_id;
@@ -96,6 +104,7 @@ export async function getCurrentAccessContext(): Promise<AccessContext> {
       businessName: bizRows[0].name,
       businessStatus: bizRows[0].status,
       isOwner: rows[0]?.is_owner ?? false,
+      role: rows[0]?.role ?? "employee",
     };
   } catch {
     return { kind: "platform_admin" };
@@ -112,5 +121,54 @@ export async function requireOwner(): Promise<void> {
   const access = await getCurrentAccessContext();
   if (access.kind === "business_staff" && !access.isOwner) {
     throw new Error("OWNER_ONLY");
+  }
+}
+
+/**
+ * Resolves the signed-in user's role row (administrator / manager /
+ * accountant / storekeeper / employee), or null if auth isn't configured
+ * yet, nobody is signed in, or they have no profile row — matching the
+ * honest-fallback pattern used throughout this file.
+ */
+export async function getCurrentRole(): Promise<Role | null> {
+  if (!isSupabaseAuthConfigured()) return null;
+  try {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return null;
+    const { rows } = await query<{ role: Role }>(`select role from user_profiles where id = $1`, [user.id]);
+    return rows[0]?.role ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Throws unless the current user is a platform Administrator. Only a real
+ * Administrator can approve/deny businesses or add sub-administrators — an
+ * owner (Manager) of a single store never counts, no matter how the rest of
+ * their access resolves. Falls through (allows) when auth isn't configured
+ * yet, same as requireOwner, so local/dev setups aren't locked out before
+ * Supabase Auth is wired up.
+ */
+export async function requireAdministrator(): Promise<void> {
+  const role = await getCurrentRole();
+  if (role !== null && role !== "administrator") {
+    throw new Error("ADMINISTRATOR_ONLY");
+  }
+}
+
+/**
+ * Throws unless the current user's role has the given capability. Falls
+ * through (allows) when auth isn't configured yet, or the user has no
+ * profile row, so this never locks out a not-yet-wired-up local setup —
+ * only ever tightens access once real accounts/roles exist.
+ */
+export async function requireCapability(capability: Capability): Promise<void> {
+  const role = await getCurrentRole();
+  if (role !== null && !can(role, capability)) {
+    throw new Error("FORBIDDEN");
   }
 }
