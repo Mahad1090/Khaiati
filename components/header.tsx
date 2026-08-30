@@ -38,26 +38,23 @@ export function Header({ customer }: { customer?: HeaderCustomer }) {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
-      <nav className="max-w-[1800px] mx-auto px-6 md:px-12">
-        <div className="flex items-center justify-between gap-6 h-16 md:h-20">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/85 backdrop-blur-md border-b border-border/50">
+      <nav className="w-full px-4 sm:px-6 md:px-8">
+        <div className="flex items-center justify-between gap-6 h-20 md:h-24">
           {/* Logo - Left */}
-          <Link href="/" className="flex flex-shrink-0 items-center gap-3">
+          <Link href="/" className="flex flex-shrink-0 items-center">
             <Image
               src="/logo.png"
               alt="Khaiati"
-              width={80}
-              height={80}
-              className="h-16 w-16 md:h-20 md:w-20 object-contain"
+              width={240}
+              height={120}
+              className="h-16 sm:h-18 md:h-20 lg:h-22 w-auto object-contain"
               priority
             />
-            <h1 className="font-serif text-xl md:text-2xl tracking-[0.2em] text-foreground">
-              KHAIATI
-            </h1>
           </Link>
 
-          {/* Desktop Navigation - Right */}
-          <div className="hidden md:flex items-center gap-6 lg:gap-8">
+          {/* Desktop Navigation - Right (shifted further right with spacing) */}
+          <div className="hidden md:flex items-center gap-6 lg:gap-8 ml-8 lg:ml-12">
             {navItems.map((item) => (
               <a
                 key={item.id}

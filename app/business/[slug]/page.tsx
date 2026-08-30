@@ -49,8 +49,8 @@ export default async function BusinessStorefrontPage({
     <div className="min-h-screen bg-background px-6 py-16 md:py-24">
       <div className="mx-auto max-w-5xl">
         <Link href="/businesses" className="mb-8 inline-flex items-center gap-3">
-          <Image src="/logo.png" alt="Khaiati" width={48} height={48} className="h-12 w-12 object-contain" />
-          <span className="font-serif text-lg tracking-[0.15em]">KHAIATI</span>
+          <Image src="/logo.png" alt="Khaiati" width={72} height={72} className="h-16 w-16 object-contain" />
+          <span className="font-serif text-2xl tracking-[0.15em]">KHAIATI</span>
         </Link>
 
         <div className="mb-10 flex flex-col gap-4 border-b border-border pb-10 md:flex-row md:items-start md:justify-between">

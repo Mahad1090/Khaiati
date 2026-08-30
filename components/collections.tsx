@@ -4,11 +4,11 @@ import { ArrowUpRight } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
 
 const images = [
-  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=800&fit=crop",
-  "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&h=800&fit=crop",
-  "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=800&fit=crop",
-  "https://images.unsplash.com/photo-1541643600914-78b084683601?w=600&h=800&fit=crop",
-  "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=600&h=800&fit=crop",
+  "/images/tailoring-shears-machine.jpg",
+  "/images/fabric-shopping-rolls.jpg",
+  "/images/tailoring-tools-fabric.png",
+  "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=85",
+  "/images/tailoring-machine-tape.png",
 ];
 
 const itemCounts = [24, 18, 32, 12, 28];
@@ -23,15 +23,15 @@ export function Collections() {
   }));
 
   return (
-    <section id="collections" className="py-24 md:py-32 bg-secondary/30">
-      <div className="max-w-[1800px] mx-auto px-6 md:px-12">
+    <section id="collections" className="py-12 md:py-16 bg-secondary/30">
+      <div className="max-w-6xl mx-auto px-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
-          <div className="space-y-4">
-            <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+          <div className="space-y-1">
+            <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground">
               {t.collections.eyebrow}
             </p>
-            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl tracking-tight">
+            <h2 className="font-serif text-2xl md:text-4xl tracking-tight">
               {t.collections.titleLine1}
               <span className="italic text-accent"> {t.collections.titleAccent}</span>
             </h2>
@@ -39,27 +39,27 @@ export function Collections() {
           <button
             type="button"
             onClick={() => document.getElementById("businesses")?.scrollIntoView({ behavior: "smooth" })}
-            className="group inline-flex items-center gap-2 text-sm tracking-[0.2em] uppercase hover:text-accent transition-colors duration-300 self-start md:self-auto"
+            className="group inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase hover:text-accent transition-colors duration-300 self-start sm:self-auto"
           >
             {t.collections.browseBusinesses}
-            <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
+            <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
           </button>
         </div>
 
-        {/* Grid - Asymmetric */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        {/* Grid - Asymmetric Compact */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {collections.map((collection, index) => (
             <div
               key={collection.id}
-              className={`group relative overflow-hidden cursor-pointer ${
-                index === 0 ? "md:col-span-2 md:row-span-2" : ""
+              className={`group relative overflow-hidden cursor-pointer rounded-sm ${
+                index === 0 ? "sm:col-span-2 sm:row-span-2" : ""
               }`}
             >
               <div
                 className={`relative overflow-hidden ${
                   index === 0
-                    ? "aspect-square md:aspect-auto md:h-full"
-                    : "aspect-[3/4]"
+                    ? "aspect-[4/3] sm:aspect-auto sm:h-full min-h-[220px]"
+                    : "aspect-[16/10] sm:aspect-[4/3]"
                 }`}
               >
                 <img
@@ -68,29 +68,29 @@ export function Collections() {
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 {/* Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />
 
                 {/* Content */}
-                <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-end">
-                  <p className="text-[10px] tracking-[0.3em] uppercase text-background/70 mb-2">
+                <div className="absolute inset-0 p-4 md:p-5 flex flex-col justify-end">
+                  <p className="text-[9px] tracking-[0.25em] uppercase text-background/75 mb-1">
                     {collection.itemCount} {t.collections.businessesSuffix}
                   </p>
                   <h3
-                    className={`font-serif text-background mb-2 ${
+                    className={`font-serif text-background mb-1 ${
                       index === 0
-                        ? "text-3xl md:text-4xl lg:text-5xl"
-                        : "text-2xl md:text-3xl"
+                        ? "text-xl md:text-2xl lg:text-3xl"
+                        : "text-base md:text-lg"
                     }`}
                   >
                     {collection.name}
                   </h3>
-                  <p className="text-background/70 text-sm max-w-xs">
+                  <p className="text-background/75 text-xs line-clamp-1 max-w-xs">
                     {collection.description}
                   </p>
 
                   {/* Hover arrow */}
-                  <div className="absolute top-6 right-6 w-10 h-10 border border-background/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <ArrowUpRight className="w-5 h-5 text-background" />
+                  <div className="absolute top-3 right-3 w-7 h-7 border border-background/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <ArrowUpRight className="w-3.5 h-3.5 text-background" />
                   </div>
                 </div>
               </div>

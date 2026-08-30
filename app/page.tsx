@@ -11,7 +11,6 @@ import { Sustainability } from "@/components/sustainability";
 import { Press } from "@/components/press";
 import { Services } from "@/components/services";
 import { Testimonials } from "@/components/testimonials";
-import { Journal } from "@/components/journal";
 import { Newsletter } from "@/components/newsletter";
 import { Footer } from "@/components/footer";
 
@@ -32,7 +31,6 @@ export default async function Home() {
       <Press />
       <Services />
       <Testimonials />
-      <Journal />
       <Newsletter />
       <Footer />
     </main>

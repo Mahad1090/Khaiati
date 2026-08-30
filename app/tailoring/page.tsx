@@ -33,8 +33,8 @@ export default async function TailoringPage() {
     <div className="min-h-screen bg-background px-6 py-16 md:py-24">
       <div className="mx-auto max-w-6xl space-y-10">
         <Link href="/" className="flex items-center gap-3">
-          <Image src="/logo.png" alt="Khaiati" width={56} height={56} className="h-14 w-14 object-contain" />
-          <span className="font-serif text-xl tracking-[0.15em]">KHAIATI</span>
+          <Image src="/logo.png" alt="Khaiati" width={72} height={72} className="h-16 w-16 object-contain" />
+          <span className="font-serif text-2xl tracking-[0.15em]">KHAIATI</span>
         </Link>
 
         <div className="space-y-3">
