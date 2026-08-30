@@ -2,21 +2,38 @@
 
 import Link from "next/link";
 import { ArrowRight, Search, MapPin, ShieldCheck, QrCode, Users } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/lib/i18n/language-context";
 
 export function Hero() {
-  const [scrollY, setScrollY] = useState(0);
   const [query, setQuery] = useState("");
   const [location, setLocation] = useState("");
   const { t } = useLanguage();
   const router = useRouter();
+  const parallaxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const el = parallaxRef.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      // Write straight to the DOM node on a compositor-friendly property so
+      // scrolling never triggers a React re-render of the video subtree.
+      el.style.transform = `translate3d(0, ${window.scrollY * 0.3}px, 0)`;
+    };
+    const onScroll = () => {
+      if (!raf) raf = window.requestAnimationFrame(update);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    update();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) window.cancelAnimationFrame(raf);
+    };
   }, []);
 
   function handleSearch(e: React.FormEvent) {
@@ -29,18 +46,22 @@ export function Hero() {
     <section className="relative h-screen overflow-hidden">
       {/* Full-bleed background video with parallax */}
       <div
-        className="absolute inset-0"
-        style={{ transform: `translateY(${scrollY * 0.3}px)` }}
+        ref={parallaxRef}
+        className="absolute inset-0 will-change-transform"
       >
         <video
           autoPlay
           loop
           muted
           playsInline
-          preload="auto"
-          className="absolute inset-0 w-full h-[120%] object-cover"
-          src="/videos/hero.mp4"
-        />
+          preload="metadata"
+          disablePictureInPicture
+          poster="/videos/hero-poster.jpg"
+          className="absolute inset-0 w-full h-[120%] object-cover bg-[#1a1a1a] [transform:translateZ(0)]"
+        >
+          <source src="/videos/hero.webm" type="video/webm" />
+          <source src="/videos/hero.mp4" type="video/mp4" />
+        </video>
         <div className="absolute inset-0 bg-black/30" />
       </div>
 

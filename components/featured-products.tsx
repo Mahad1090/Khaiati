@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Heart, ShoppingBag } from "lucide-react";
 import { InquiryDialog } from "@/components/public/inquiry-dialog";
 import { useLanguage } from "@/lib/i18n/language-context";
@@ -58,11 +59,15 @@ export function FeaturedProducts() {
             >
               <div className="relative overflow-hidden mb-2 rounded-sm">
                 {/* Image */}
-                <div className="aspect-[4/5] bg-secondary overflow-hidden">
-                  <img
+                <div className="relative aspect-[4/5] bg-secondary overflow-hidden">
+                  <Image
                     src={product.image || "/placeholder.svg"}
                     alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
+                    quality={85}
+                    loading="lazy"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 </div>
 

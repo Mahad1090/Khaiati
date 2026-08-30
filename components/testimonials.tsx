@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
 
@@ -81,9 +82,13 @@ export function Testimonials() {
                 </p>
 
                 <div className="flex items-center gap-3 pt-3 border-t border-border">
-                  <img
+                  <Image
                     src={current.image || "/placeholder.svg"}
                     alt={current.author}
+                    width={40}
+                    height={40}
+                    quality={85}
+                    loading="lazy"
                     className="w-10 h-10 object-cover rounded-full"
                   />
                   <div>

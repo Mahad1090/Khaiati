@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
 
@@ -62,10 +63,15 @@ export function Collections() {
                     : "aspect-[16/10] sm:aspect-[4/3]"
                 }`}
               >
-                <img
+                <Image
                   src={collection.image || "/placeholder.svg"}
                   alt={collection.name}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  fill
+                  sizes={index === 0 ? "(max-width: 640px) 100vw, 50vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"}
+                  quality={85}
+                  priority={index === 0}
+                  loading={index === 0 ? undefined : "lazy"}
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 {/* Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />

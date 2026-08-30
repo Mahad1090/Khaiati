@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Package, Truck, RotateCcw, Headphones } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
 
@@ -22,10 +23,14 @@ export function Services() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-3">
                 <div className="aspect-[4/3] relative overflow-hidden rounded-sm" style={cardShadow}>
-                  <img
+                  <Image
                     src="/images/tailoring-tools-fabric.png"
                     alt="Luxury tailoring craftsmanship"
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 1024px) 50vw, 25vw"
+                    quality={85}
+                    loading="lazy"
+                    className="object-cover"
                   />
                 </div>
                 <div className="bg-accent p-4 rounded-sm" style={cardShadow}>
@@ -43,10 +48,14 @@ export function Services() {
                   </p>
                 </div>
                 <div className="aspect-[4/3] relative overflow-hidden rounded-sm" style={cardShadow}>
-                  <img
+                  <Image
                     src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=85"
                     alt="Bespoke tailored fitting"
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 1024px) 50vw, 25vw"
+                    quality={85}
+                    loading="lazy"
+                    className="object-cover"
                   />
                 </div>
               </div>

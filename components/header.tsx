@@ -38,7 +38,7 @@ export function Header({ customer }: { customer?: HeaderCustomer }) {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/85 backdrop-blur-md border-b border-border/50">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/85 backdrop-blur-md border-b border-border/50 [transform:translateZ(0)] [will-change:transform]">
       <nav className="w-full px-4 sm:px-6 md:px-8">
         <div className="flex items-center justify-between gap-6 h-20 md:h-24">
           {/* Logo - Left */}

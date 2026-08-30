@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useLanguage } from "@/lib/i18n/language-context";
 
 export function Heritage() {
@@ -59,10 +60,14 @@ export function Heritage() {
           {/* Right - Visual */}
           <div className="relative">
             <div className="relative aspect-[4/3] max-h-[340px] overflow-hidden rounded-sm">
-              <img
+              <Image
                 src="/images/our-mission-atelier.png"
                 alt="Master tailor atelier and bespoke craftsmanship"
-                className="w-full h-full object-cover"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                quality={85}
+                loading="lazy"
+                className="object-cover"
               />
 
               {/* Decorative quote */}

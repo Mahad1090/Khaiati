@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { MessageSquare, Clock } from "lucide-react";
 import { InquiryDialog } from "@/components/public/inquiry-dialog";
 import { useLanguage } from "@/lib/i18n/language-context";
@@ -34,10 +35,14 @@ export function Personalization() {
           {/* Large Feature Card */}
           <div className="md:col-span-2 lg:col-span-2 relative group overflow-hidden rounded-sm min-h-[280px]" style={cardShadow}>
             <div className="relative h-full min-h-[280px]">
-              <img
+              <Image
                 src="/images/tailoring-machine-tape.png"
                 alt="Bespoke tailoring and personalized craftsmanship"
-                className="w-full h-full object-cover"
+                fill
+                sizes="(max-width: 768px) 100vw, 66vw"
+                quality={85}
+                loading="lazy"
+                className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/35 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6 text-background">
