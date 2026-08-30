@@ -9,17 +9,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { SearchBox } from "@/components/admin/search-box";
 import { GlobalAssignmentFormDialog } from "@/components/admin/workers/global-assignment-form-dialog";
+import { AssignmentStatusSelect } from "@/components/admin/workers/assignment-status-select";
 import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { getAllAssignments } from "@/lib/actions/workers";
-import {
-  assignmentStatusLabels,
-  workTypeLabels,
-  type AssignmentStatus,
-  type WorkType,
-} from "@/lib/validation/worker";
+import { workTypeLabels, type AssignmentStatus, type WorkType } from "@/lib/validation/worker";
 import { garmentTypeLabels, type GarmentType } from "@/lib/validation/design";
 import { formatDate, formatMoney } from "@/lib/format";
 import { getServerLanguage } from "@/lib/i18n/get-server-language";
@@ -76,9 +71,7 @@ async function AssignmentsTable({ q }: { q: string }) {
               <TableCell>{formatDate(a.submitted_date)}</TableCell>
               <TableCell>{formatDate(a.due_date)}</TableCell>
               <TableCell>
-                <Badge variant="secondary">
-                  {assignmentStatusLabels[a.status as AssignmentStatus] ?? a.status}
-                </Badge>
+                <AssignmentStatusSelect assignmentId={a.id} status={a.status as AssignmentStatus} />
               </TableCell>
               <TableCell className="text-right">{formatMoney(a.wage)}</TableCell>
             </TableRow>

@@ -8,6 +8,8 @@ import {
   assignmentSchema,
   workerPaymentSchema,
   workerAdvanceSchema,
+  assignmentStatuses,
+  type AssignmentStatus,
 } from "@/lib/validation/worker";
 import type { ActionResult } from "./customers";
 
@@ -241,6 +243,46 @@ export async function getWorkerAssignments(workerId: string): Promise<Assignment
     [workerId, businessId]
   );
   return rows;
+}
+
+/**
+ * Moves a work assignment through assigned -> in_progress -> completed (or
+ * canceled). This is what the "no option shown" gap on
+ * /admin/work-assignments was missing — createAssignment could only set the
+ * initial status, nothing could change it afterwards.
+ */
+export async function updateAssignmentStatus(
+  assignmentId: string,
+  status: AssignmentStatus
+): Promise<ActionResult> {
+  if (!assignmentStatuses.includes(status)) {
+    return { ok: false, error: "Invalid status." };
+  }
+  try {
+    await requireCapability("workers:edit");
+  } catch {
+    return { ok: false, error: "You don't have permission to update work assignments." };
+  }
+  try {
+    const businessId = await getCurrentBusinessId();
+    const { rows } = await query<{ id: string; worker_id: string; order_id: string | null }>(
+      `update worker_assignments wa set status = $1
+       from workers w
+       where wa.id = $2 and wa.worker_id = w.id and w.business_id = $3
+       returning wa.id, wa.worker_id, wa.order_id`,
+      [status, assignmentId, businessId]
+    );
+    if (rows.length === 0) {
+      return { ok: false, error: "Assignment not found." };
+    }
+    revalidatePath("/admin/work-assignments");
+    revalidatePath(`/admin/workers/${rows[0].worker_id}`);
+    if (rows[0].order_id) revalidatePath(`/admin/orders/${rows[0].order_id}`);
+    return { ok: true, data: undefined };
+  } catch (err) {
+    console.error("updateAssignmentStatus failed", err);
+    return { ok: false, error: "Could not update the assignment status." };
+  }
 }
 
 // ---------------------------------------------------------------------------

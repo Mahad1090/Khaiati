@@ -12,7 +12,8 @@ import { listPublicDesigns } from "@/lib/actions/designs";
 import { listPublicProducts } from "@/lib/actions/products";
 import { listPublicServices } from "@/lib/actions/services";
 import { getCurrentCustomer } from "@/lib/actions/customer-auth";
-import { getPublicReviews } from "@/lib/actions/reviews";
+import { getPublicReviews, getMyReviewableOrders } from "@/lib/actions/reviews";
+import { ReviewDialog } from "@/components/account/review-dialog";
 import { garmentTypeLabels, type GarmentType } from "@/lib/validation/design";
 import { formatDate, formatMoney } from "@/lib/format";
 import { getServerLanguage } from "@/lib/i18n/get-server-language";
@@ -44,6 +45,9 @@ export default async function BusinessStorefrontPage({
   ]);
   const isSignedIn = Boolean(customer);
   const { reviews, average } = reviewData;
+  const reviewableOrders = isSignedIn
+    ? await getMyReviewableOrders(business.id).catch(() => [])
+    : [];
 
   return (
     <div className="min-h-screen bg-background px-6 py-16 md:py-24">
@@ -154,7 +158,25 @@ export default async function BusinessStorefrontPage({
           </div>
 
           <div>
-            <h2 className="mb-4 font-serif text-2xl">{t.businessStorefront.reviews}</h2>
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <h2 className="font-serif text-2xl">{t.businessStorefront.reviews}</h2>
+              {isSignedIn && reviewableOrders.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {reviewableOrders.map((o) => (
+                    <ReviewDialog
+                      key={o.id}
+                      orderId={o.id}
+                      businessName={business.name}
+                      triggerLabel={
+                        o.hasReview
+                          ? `${t.businessStorefront.editReview} — ${o.order_no}`
+                          : `${t.businessStorefront.writeReview} — ${o.order_no}`
+                      }
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
             {reviews.length === 0 ? (
               <p className="text-sm text-muted-foreground">{t.businessStorefront.noReviewsYet}</p>
             ) : (

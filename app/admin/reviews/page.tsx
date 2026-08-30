@@ -21,6 +21,8 @@ export default async function ReviewsPage() {
   const access = await getCurrentAccessContext();
   const { t } = await getServerLanguage();
   const isPlatformAdmin = access.kind === "platform_admin";
+  const isBusinessOwner = access.kind === "business_staff" && access.isOwner;
+  const canModerate = isPlatformAdmin || isBusinessOwner;
 
   let reviews;
   try {
@@ -62,7 +64,7 @@ export default async function ReviewsPage() {
                 <TableHead>{t.reviews.comment}</TableHead>
                 <TableHead>{t.reviews.date}</TableHead>
                 <TableHead>{t.reviews.status}</TableHead>
-                {isPlatformAdmin && <TableHead />}
+                {canModerate && <TableHead />}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -76,7 +78,7 @@ export default async function ReviewsPage() {
                   <TableCell>
                     <Badge variant={r.status === "published" ? "default" : "secondary"}>{r.status}</Badge>
                   </TableCell>
-                  {isPlatformAdmin && (
+                  {canModerate && (
                     <TableCell>
                       <ModerateReviewButton id={r.id} status={r.status} />
                     </TableCell>

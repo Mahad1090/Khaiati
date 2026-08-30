@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { query, withTransaction } from "@/lib/db";
 import { orderSchema, orderStatuses, orderStatusLabels, type OrderStatus } from "@/lib/validation/order";
-import { getCurrentBusinessId } from "@/lib/auth/business-context";
+import { getCurrentBusinessId, requireCapability } from "@/lib/auth/business-context";
 import { createNotification } from "./notifications";
 import type { ActionResult } from "./customers";
 
@@ -177,6 +177,13 @@ export async function updateOrderStatus(
 ): Promise<ActionResult> {
   if (!orderStatuses.includes(status)) {
     return { ok: false, error: "Invalid status." };
+  }
+  try {
+    // Progressing an order's stage (this is what the /track/[token] page
+    // reads live) — Manager and Employee handle this; Storekeeper/Accountant do not.
+    await requireCapability("orders:edit");
+  } catch {
+    return { ok: false, error: "You don't have permission to update order status." };
   }
   try {
     const businessId = await getCurrentBusinessId();

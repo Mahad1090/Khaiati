@@ -17,7 +17,15 @@ import {
 import { submitReview } from "@/lib/actions/reviews";
 import { cn } from "@/lib/utils";
 
-export function ReviewDialog({ orderId, businessName }: { orderId: string; businessName: string }) {
+export function ReviewDialog({
+  orderId,
+  businessName,
+  triggerLabel,
+}: {
+  orderId: string;
+  businessName: string;
+  triggerLabel?: string;
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(5);
@@ -32,7 +40,7 @@ export function ReviewDialog({ orderId, businessName }: { orderId: string; busin
         toast.error(result.error);
         return;
       }
-      toast.success("Thank you for your review");
+      toast.success("Thank you! Your review will appear once the store approves it.");
       setOpen(false);
       router.refresh();
     } finally {
@@ -44,7 +52,7 @@ export function ReviewDialog({ orderId, businessName }: { orderId: string; busin
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm">
-          Leave a Review
+          {triggerLabel ?? "Leave a Review"}
         </Button>
       </DialogTrigger>
       <DialogContent>

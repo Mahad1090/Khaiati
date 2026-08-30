@@ -15,6 +15,7 @@ import {
 import { DbUnconfigured } from "@/components/admin/db-unconfigured";
 import { WorkerFormDialog } from "@/components/admin/workers/worker-form-dialog";
 import { AssignmentFormDialog } from "@/components/admin/workers/assignment-form-dialog";
+import { AssignmentStatusSelect } from "@/components/admin/workers/assignment-status-select";
 import { PaymentFormDialog } from "@/components/admin/workers/payment-form-dialog";
 import { AdvanceFormDialog } from "@/components/admin/workers/advance-form-dialog";
 import {
@@ -25,7 +26,6 @@ import {
   getWorkerFinancialSummary,
 } from "@/lib/actions/workers";
 import {
-  assignmentStatusLabels,
   workTypeLabels,
   payModelLabels,
   type AssignmentStatus,
@@ -170,9 +170,7 @@ export default async function WorkerDetailPage({
                     <TableCell>{formatDate(a.submitted_date)}</TableCell>
                     <TableCell>{formatDate(a.due_date)}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary">
-                        {assignmentStatusLabels[a.status as AssignmentStatus] ?? a.status}
-                      </Badge>
+                      <AssignmentStatusSelect assignmentId={a.id} status={a.status as AssignmentStatus} />
                     </TableCell>
                     <TableCell className="text-right">{formatMoney(a.wage)}</TableCell>
                   </TableRow>
