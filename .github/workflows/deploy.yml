@@ -75,37 +75,56 @@ jobs:
           size=$(stat -c%s app.zip)
           dest="${UPLOAD_URL}/app.zip?override=true"
 
-          # Step 1: create the upload. HTTP/2 responses print status lines like
-          # "HTTP/2 201" with no reason phrase — match on the numeric code only.
-          create_headers=$(curl -sS -i -X POST "$dest" \
-            -H "X-Auth: ${AUTH_KEY}" \
-            -H "X-Auth-Rest: ${REST_AUTH_KEY}" \
-            -H "Tus-Resumable: 1.0.0" \
-            -H "Upload-Length: ${size}" \
-            -H "Upload-Offset: 0")
+          # The Hostinger per-account file host (srv####-files.hstgr.io) is
+          # occasionally unreachable from GitHub runners. Bound each attempt with
+          # connect/transfer timeouts and retry the create+patch pair a few times
+          # instead of hanging until the job's own timeout.
+          common_opts=(-sS --connect-timeout 20 --max-time 300 \
+            --retry 3 --retry-delay 10 --retry-connrefused --retry-all-errors)
 
-          if ! echo "$create_headers" | grep -qE '^HTTP/[0-9.]+ 201'; then
-            echo "::error::TUS create-upload did not return 201:"
-            echo "$create_headers"
-            exit 1
-          fi
+          attempt=1
+          max_attempts=4
+          while :; do
+            echo "TUS upload attempt ${attempt}/${max_attempts}"
+            ok=1
 
-          # Step 2: send the file bytes.
-          patch_headers=$(curl -sS -i -X PATCH "$dest" \
-            -H "X-Auth: ${AUTH_KEY}" \
-            -H "X-Auth-Rest: ${REST_AUTH_KEY}" \
-            -H "Tus-Resumable: 1.0.0" \
-            -H "Content-Type: application/offset+octet-stream" \
-            -H "Upload-Offset: 0" \
-            --data-binary "@app.zip" \
-            --dump-header /dev/stdout \
-            -o /dev/null)
+            # Step 1: create the upload. HTTP/2 responses print status lines like
+            # "HTTP/2 201" with no reason phrase — match on the numeric code only.
+            create_headers=$(curl "${common_opts[@]}" -i -X POST "$dest" \
+              -H "X-Auth: ${AUTH_KEY}" \
+              -H "X-Auth-Rest: ${REST_AUTH_KEY}" \
+              -H "Tus-Resumable: 1.0.0" \
+              -H "Upload-Length: ${size}" \
+              -H "Upload-Offset: 0") || ok=0
 
-          if ! echo "$patch_headers" | grep -qE '^HTTP/[0-9.]+ 204'; then
-            echo "::error::TUS file upload did not return 204:"
-            echo "$patch_headers"
-            exit 1
-          fi
+            if [ "$ok" -eq 1 ] && echo "$create_headers" | grep -qE '^HTTP/[0-9.]+ 201'; then
+              # Step 2: send the file bytes.
+              patch_headers=$(curl "${common_opts[@]}" -i -X PATCH "$dest" \
+                -H "X-Auth: ${AUTH_KEY}" \
+                -H "X-Auth-Rest: ${REST_AUTH_KEY}" \
+                -H "Tus-Resumable: 1.0.0" \
+                -H "Content-Type: application/offset+octet-stream" \
+                -H "Upload-Offset: 0" \
+                --data-binary "@app.zip" \
+                --dump-header /dev/stdout \
+                -o /dev/null) || ok=0
+
+              if [ "$ok" -eq 1 ] && echo "$patch_headers" | grep -qE '^HTTP/[0-9.]+ 204'; then
+                echo "TUS upload succeeded"
+                break
+              fi
+            fi
+
+            if [ "$attempt" -ge "$max_attempts" ]; then
+              echo "::error::TUS upload failed after ${max_attempts} attempts"
+              echo "${create_headers:-<no create response>}"
+              echo "${patch_headers:-<no patch response>}"
+              exit 1
+            fi
+
+            attempt=$((attempt + 1))
+            sleep 30
+          done
 
       - name: Start Node.js build
         id: start_build
