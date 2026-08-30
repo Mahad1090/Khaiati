@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { MessageSquare, Clock } from "lucide-react";
 import { InquiryDialog } from "@/components/public/inquiry-dialog";
 import { useLanguage } from "@/lib/i18n/language-context";
@@ -13,38 +14,42 @@ export function Personalization() {
   const { t } = useLanguage();
 
   return (
-    <section className="py-24 md:py-32 bg-background">
-      <div className="max-w-[1800px] mx-auto px-6 md:px-12">
+    <section className="py-12 md:py-16 bg-background">
+      <div className="max-w-6xl mx-auto px-6">
         {/* Header */}
-        <div className="max-w-3xl mb-20 md:mb-28">
-          <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4">
+        <div className="max-w-2xl mb-8">
+          <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-1">
             {t.personalization.eyebrow}
           </p>
-          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[1.1] mb-6">
+          <h2 className="font-serif text-2xl md:text-4xl tracking-tight leading-[1.1] mb-2">
             {t.personalization.titleLine1}
             <span className="italic text-accent"> {t.personalization.titleAccent}</span>
           </h2>
-          <p className="text-muted-foreground text-lg leading-relaxed">
+          <p className="text-muted-foreground text-xs md:text-sm leading-relaxed">
             {t.personalization.subtitle}
           </p>
         </div>
 
         {/* Grid Layout */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Large Feature Card */}
-          <div className="md:col-span-2 lg:col-span-2 lg:row-span-2 relative group overflow-hidden" style={cardShadow}>
-            <div className="aspect-[16/9] lg:aspect-auto lg:h-full relative">
-              <img
-                src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=900&h=600&fit=crop"
-                alt="Monogram engraving"
-                className="w-full h-full object-cover"
+          <div className="md:col-span-2 lg:col-span-2 relative group overflow-hidden rounded-sm min-h-[280px]" style={cardShadow}>
+            <div className="relative h-full min-h-[280px]">
+              <Image
+                src="/images/tailoring-machine-tape.png"
+                alt="Bespoke tailoring and personalized craftsmanship"
+                fill
+                sizes="(max-width: 768px) 100vw, 66vw"
+                quality={85}
+                loading="lazy"
+                className="object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12 text-background">
-                <h3 className="font-serif text-3xl md:text-4xl mb-3">
+              <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/35 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6 text-background">
+                <h3 className="font-serif text-xl md:text-2xl mb-1.5">
                   {t.personalization.monogramTitle}
                 </h3>
-                <p className="text-background/80 leading-relaxed mb-6 max-w-xl">
+                <p className="text-background/80 text-xs md:text-sm leading-relaxed mb-3 max-w-lg">
                   {t.personalization.monogramDesc}
                 </p>
                 <InquiryDialog
@@ -52,9 +57,9 @@ export function Personalization() {
                   trigger={
                     <button
                       type="button"
-                      className="inline-flex items-center text-sm tracking-[0.2em] uppercase hover:text-accent transition-colors duration-300"
+                      className="inline-flex items-center text-xs tracking-[0.2em] uppercase hover:text-accent transition-colors duration-300"
                     >
-                      {t.personalization.learnMore} <span className="ml-2">→</span>
+                      {t.personalization.learnMore} <span className="ml-1.5">→</span>
                     </button>
                   }
                 />
@@ -62,51 +67,50 @@ export function Personalization() {
             </div>
           </div>
 
-          {/* Service Cards */}
-          <div className="bg-card p-8 lg:p-10 space-y-6" style={cardShadow}>
-            <MessageSquare className="w-10 h-10 text-accent" />
-            <h3 className="font-serif text-2xl md:text-3xl">
-              {t.personalization.bringOwnTitle}
-            </h3>
-            <p className="text-muted-foreground leading-relaxed">
-              {t.personalization.bringOwnDesc}
-            </p>
-            <InquiryDialog
-              title={t.personalization.bringOwnTitle}
-              trigger={
-                <button
-                  type="button"
-                  className="inline-flex items-center text-sm tracking-[0.15em] uppercase hover:text-accent transition-colors duration-300 pt-2"
-                >
-                  {t.personalization.getStarted}
-                </button>
-              }
-            />
-          </div>
+          {/* Service Cards (stacked side-by-side or in column) */}
+          <div className="flex flex-col gap-4">
+            <div className="bg-card p-5 space-y-2.5 rounded-sm flex-1" style={cardShadow}>
+              <MessageSquare className="w-6 h-6 text-accent" />
+              <h3 className="font-serif text-lg">
+                {t.personalization.bringOwnTitle}
+              </h3>
+              <p className="text-muted-foreground text-xs leading-relaxed">
+                {t.personalization.bringOwnDesc}
+              </p>
+              <InquiryDialog
+                title={t.personalization.bringOwnTitle}
+                trigger={
+                  <button
+                    type="button"
+                    className="inline-flex items-center text-xs tracking-[0.15em] uppercase hover:text-accent transition-colors duration-300 pt-1"
+                  >
+                    {t.personalization.getStarted}
+                  </button>
+                }
+              />
+            </div>
 
-          <div className="bg-accent text-accent-foreground p-8 lg:p-10 space-y-6" style={cardShadow}>
-            <Clock className="w-10 h-10" />
-            <h3 className="font-serif text-2xl md:text-3xl">
-              {t.personalization.buyFabricTitle}
-            </h3>
-            <p className="text-accent-foreground/80 leading-relaxed">
-              {t.personalization.buyFabricDesc}
-            </p>
-            <InquiryDialog
-              title={t.personalization.buyFabricTitle}
-              trigger={
-                <button
-                  type="button"
-                  className="inline-flex items-center text-sm tracking-[0.15em] uppercase hover:opacity-80 transition-opacity duration-300 pt-2"
-                >
-                  {t.personalization.getStarted}
-                </button>
-              }
-            />
+            <div className="bg-accent text-accent-foreground p-5 space-y-2.5 rounded-sm flex-1" style={cardShadow}>
+              <Clock className="w-6 h-6" />
+              <h3 className="font-serif text-lg">
+                {t.personalization.buyFabricTitle}
+              </h3>
+              <p className="text-accent-foreground/80 text-xs leading-relaxed">
+                {t.personalization.buyFabricDesc}
+              </p>
+              <InquiryDialog
+                title={t.personalization.buyFabricTitle}
+                trigger={
+                  <button
+                    type="button"
+                    className="inline-flex items-center text-xs tracking-[0.15em] uppercase hover:opacity-80 transition-opacity duration-300 pt-1"
+                  >
+                    {t.personalization.getStarted}
+                  </button>
+                }
+              />
+            </div>
           </div>
-
-          {/* Image Card */}
-          <div className="md:col-span-2 lg:col-span-1 relative group overflow-hidden" style={cardShadow} />
         </div>
       </div>
     </section>

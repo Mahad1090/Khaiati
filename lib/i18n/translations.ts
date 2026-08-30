@@ -122,8 +122,8 @@ export const translations = {
       titleAccent: "Your Way",
       subtitle:
         "Bring your own fabric for stitching, or buy fabric and add stitching in the same order — either way, add your measurements and we take it from there.",
-      monogramTitle: "Monogram & Embroidery",
-      monogramDesc: "Add your initials or a personal detail. Our tailors finish each mark by hand with precision.",
+      monogramTitle: "Custom Tailoring & Finishing",
+      monogramDesc: "From precise measurements to handcrafted finishes, our master tailors craft garments tailored perfectly to your style.",
       learnMore: "Learn More",
       bringOwnTitle: "Bring Your Own Fabric",
       bringOwnDesc:
@@ -1216,8 +1216,8 @@ export const translations = {
       titleAccent: "سفارش دهید",
       subtitle:
         "پارچه خودتان را برای دوخت بیاورید یا پارچه بخرید و دوخت را در همان سفارش اضافه کنید — در هر صورت، اندازه‌های خود را اضافه کنید و بقیه را به ما بسپارید.",
-      monogramTitle: "مونوگرام و گلدوزی",
-      monogramDesc: "حروف اول نام یا یک جزئیات شخصی اضافه کنید. خیاطان ما هر نشان را با دقت و به‌صورت دستی نهایی می‌کنند.",
+      monogramTitle: "خیاطی سفارشی و پرداخت نهایی",
+      monogramDesc: "از اندازه‌گیری دقیق تا دوخت‌های دست‌دوز، خیاطان ماهر ما لباس‌هایی را متناسب با استایل شما آماده می‌کنند.",
       learnMore: "بیشتر بدانید",
       bringOwnTitle: "پارچه خودتان را بیاورید",
       bringOwnDesc: "پارچه دارید؟ یک کسب‌وکار انتخاب کنید، خدمت دوخت را انتخاب کنید، اندازه‌های خود را اضافه کنید و سفارش دهید.",
@@ -2306,8 +2306,8 @@ export const translations = {
       titleAccent: "امر ورکړئ",
       subtitle:
         "خپله پارچه د دوزلو لپاره راوړئ، یا پارچه واخلئ او دوزل یې په ورته امر کې زیات کړئ — په هر صورت، خپلې اندازې زیاتې کړئ او پاتې کار پر موږ پریږدئ.",
-      monogramTitle: "مونوګرام او ګلدوزي",
-      monogramDesc: "خپل لومړي توري یا یو شخصي توضیح زیات کړئ. زموږ خیاطان هره نښه په لاس او د دقت سره بشپړوي.",
+      monogramTitle: "ځانګړی خیاطي او پای ته رسول",
+      monogramDesc: "له کره اندازې څخه تر لاسي کار پورې، زموږ ماهر خیاطان ستاسو د خوښې او اندازې سره سم جامې چمتو کوي.",
       learnMore: "نور زده کړئ",
       bringOwnTitle: "خپله پارچه راوړئ",
       bringOwnDesc: "پارچه لرئ؟ یو کاروبار غوره کړئ، د دوزلو خدمت غوره کړئ، خپلې اندازې زیاتې کړئ، او امر ورکړئ.",

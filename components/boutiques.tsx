@@ -12,7 +12,7 @@ const boutiques = [
     phone: "Contact us to schedule a visit",
     hours: "By appointment",
     image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Boutique%20Paris-Ds9XeWSdUztVjHSz6JYUMoW4pz7kHM.png",
+      "https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?auto=format&fit=crop&w=1000&q=85",
     flagship: true,
   },
 ];

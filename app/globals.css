@@ -124,3 +124,23 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  /* Skip layout/paint for offscreen sections so long-page scrolling stays smooth.
+     contain-intrinsic-size keeps the scrollbar stable before a section is rendered. */
+  .cv-section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 720px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

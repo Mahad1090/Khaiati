@@ -8,20 +8,20 @@ export function Footer() {
   const { t } = useLanguage();
   return (
     <footer id="contact" className="bg-primary text-primary-foreground">
-      <div className="max-w-[1800px] mx-auto px-6 md:px-12">
+      <div className="max-w-6xl mx-auto px-6">
         {/* Main footer */}
-        <div className="py-16 md:py-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-8">
+        <div className="py-10 md:py-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-6">
           {/* Brand */}
           <div className="lg:col-span-1 space-y-6">
             <Link href="/" className="flex items-center gap-3">
               <Image
                 src="/logo.png"
                 alt="Khaiati"
-                width={56}
-                height={56}
-                className="h-14 w-14 object-contain"
+                width={80}
+                height={80}
+                className="h-18 w-18 md:h-20 md:w-20 object-contain"
               />
-              <h2 className="font-serif text-2xl tracking-[0.2em]">KHAIATI</h2>
+              <h2 className="font-serif text-2xl md:text-3xl tracking-[0.2em]">KHAIATI</h2>
             </Link>
             <p className="text-primary-foreground/70 text-sm leading-relaxed max-w-xs">
               {t.footer.tagline}

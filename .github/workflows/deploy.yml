@@ -1,0 +1,200 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-hostinger-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  HOSTINGER_USERNAME: u133929820
+  HOSTINGER_DOMAIN: khaiati.com
+  NODE_VERSION: 22
+  APP_TYPE: next
+  OUTPUT_DIRECTORY: .next
+  BUILD_SCRIPT: build
+  SMOKE_TEST_URL: https://khaiati.com/
+  SMOKE_TEST_EXPECTED_STATUS: 200
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Archive tracked files only
+        run: git archive --format=zip -o app.zip HEAD
+
+      - name: Request upload URL
+        id: upload_url
+        env:
+          HOSTINGER_API_TOKEN: ${{ secrets.HOSTINGER_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          response=$(curl -sS -w '\n%{http_code}' \
+            -X POST "https://developers.hostinger.com/api/hosting/v1/files/upload-urls" \
+            -H "Authorization: Bearer ${HOSTINGER_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{\"username\": \"${HOSTINGER_USERNAME}\", \"domain\": \"${HOSTINGER_DOMAIN}\"}")
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+
+          if [ "$http_code" != "200" ] && [ "$http_code" != "201" ]; then
+            echo "::error::Failed to get upload URL (HTTP $http_code): $body"
+            exit 1
+          fi
+
+          url=$(echo "$body" | jq -r '.url // empty')
+          auth_key=$(echo "$body" | jq -r '.auth_key // empty')
+          rest_auth_key=$(echo "$body" | jq -r '.rest_auth_key // empty')
+
+          if [ -z "$url" ] || [ -z "$auth_key" ] || [ -z "$rest_auth_key" ]; then
+            echo "::error::Upload URL response missing url/auth_key/rest_auth_key: $body"
+            exit 1
+          fi
+
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          # Mask secrets in logs, then expose to later steps.
+          echo "::add-mask::$auth_key"
+          echo "::add-mask::$rest_auth_key"
+          echo "auth_key=$auth_key" >> "$GITHUB_OUTPUT"
+          echo "rest_auth_key=$rest_auth_key" >> "$GITHUB_OUTPUT"
+
+      - name: Upload archive via TUS
+        env:
+          UPLOAD_URL: ${{ steps.upload_url.outputs.url }}
+          AUTH_KEY: ${{ steps.upload_url.outputs.auth_key }}
+          REST_AUTH_KEY: ${{ steps.upload_url.outputs.rest_auth_key }}
+        run: |
+          set -euo pipefail
+          size=$(stat -c%s app.zip)
+          dest="${UPLOAD_URL}/app.zip?override=true"
+
+          # Step 1: create the upload. HTTP/2 responses print status lines like
+          # "HTTP/2 201" with no reason phrase — match on the numeric code only.
+          create_headers=$(curl -sS -i -X POST "$dest" \
+            -H "X-Auth: ${AUTH_KEY}" \
+            -H "X-Auth-Rest: ${REST_AUTH_KEY}" \
+            -H "Tus-Resumable: 1.0.0" \
+            -H "Upload-Length: ${size}" \
+            -H "Upload-Offset: 0")
+
+          if ! echo "$create_headers" | grep -qE '^HTTP/[0-9.]+ 201'; then
+            echo "::error::TUS create-upload did not return 201:"
+            echo "$create_headers"
+            exit 1
+          fi
+
+          # Step 2: send the file bytes.
+          patch_headers=$(curl -sS -i -X PATCH "$dest" \
+            -H "X-Auth: ${AUTH_KEY}" \
+            -H "X-Auth-Rest: ${REST_AUTH_KEY}" \
+            -H "Tus-Resumable: 1.0.0" \
+            -H "Content-Type: application/offset+octet-stream" \
+            -H "Upload-Offset: 0" \
+            --data-binary "@app.zip" \
+            --dump-header /dev/stdout \
+            -o /dev/null)
+
+          if ! echo "$patch_headers" | grep -qE '^HTTP/[0-9.]+ 204'; then
+            echo "::error::TUS file upload did not return 204:"
+            echo "$patch_headers"
+            exit 1
+          fi
+
+      - name: Start Node.js build
+        id: start_build
+        env:
+          HOSTINGER_API_TOKEN: ${{ secrets.HOSTINGER_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          response=$(curl -sS -w '\n%{http_code}' \
+            -X POST "https://developers.hostinger.com/api/hosting/v1/accounts/${HOSTINGER_USERNAME}/websites/${HOSTINGER_DOMAIN}/nodejs/builds" \
+            -H "Authorization: Bearer ${HOSTINGER_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"node_version\": ${NODE_VERSION},
+              \"app_type\": \"${APP_TYPE}\",
+              \"output_directory\": \"${OUTPUT_DIRECTORY}\",
+              \"build_script\": \"${BUILD_SCRIPT}\",
+              \"source_type\": \"archive\",
+              \"source_options\": { \"archive_path\": \"app.zip\" }
+            }")
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+
+          if [ "$http_code" != "200" ] && [ "$http_code" != "201" ]; then
+            echo "::error::Failed to start build (HTTP $http_code): $body"
+            exit 1
+          fi
+
+          uuid=$(echo "$body" | jq -r '.uuid // empty')
+          if [ -z "$uuid" ]; then
+            echo "::error::Build response missing uuid: $body"
+            exit 1
+          fi
+
+          echo "Started build $uuid"
+          echo "uuid=$uuid" >> "$GITHUB_OUTPUT"
+
+      - name: Poll build status
+        env:
+          HOSTINGER_API_TOKEN: ${{ secrets.HOSTINGER_API_TOKEN }}
+          BUILD_UUID: ${{ steps.start_build.outputs.uuid }}
+        run: |
+          set -euo pipefail
+          deadline=$((SECONDS + 600))
+
+          while [ "$SECONDS" -lt "$deadline" ]; do
+            response=$(curl -sS -w '\n%{http_code}' \
+              -X GET "https://developers.hostinger.com/api/hosting/v1/accounts/${HOSTINGER_USERNAME}/websites/${HOSTINGER_DOMAIN}/nodejs/builds" \
+              -H "Authorization: Bearer ${HOSTINGER_API_TOKEN}")
+
+            http_code=$(echo "$response" | tail -n1)
+            body=$(echo "$response" | sed '$d')
+
+            if [ "$http_code" != "200" ]; then
+              echo "::error::Failed to list builds (HTTP $http_code): $body"
+              exit 1
+            fi
+
+            state=$(echo "$body" | jq -r --arg uuid "$BUILD_UUID" \
+              '(.data // .)[] | select(.uuid == $uuid) | .state // empty')
+
+            if [ -z "$state" ]; then
+              echo "::error::Build $BUILD_UUID not found in builds list: $body"
+              exit 1
+            fi
+
+            echo "Build $BUILD_UUID state: $state"
+
+            if [ "$state" = "completed" ]; then
+              exit 0
+            fi
+
+            if [ "$state" = "failed" ]; then
+              echo "::error::Build $BUILD_UUID failed"
+              exit 1
+            fi
+
+            sleep 15
+          done
+
+          echo "::error::Timed out waiting for build $BUILD_UUID to complete"
+          exit 1
+
+      - name: Smoke test
+        run: |
+          set -euo pipefail
+          status=$(curl -sS -o /dev/null -w '%{http_code}' "${SMOKE_TEST_URL}" --max-time 30)
+          echo "Smoke test status: $status"
+          if [ "$status" != "${SMOKE_TEST_EXPECTED_STATUS}" ]; then
+            echo "::error::Smoke test expected ${SMOKE_TEST_EXPECTED_STATUS} but got $status"
+            exit 1
+          fi

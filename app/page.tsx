@@ -11,7 +11,6 @@ import { Sustainability } from "@/components/sustainability";
 import { Press } from "@/components/press";
 import { Services } from "@/components/services";
 import { Testimonials } from "@/components/testimonials";
-import { Journal } from "@/components/journal";
 import { Newsletter } from "@/components/newsletter";
 import { Footer } from "@/components/footer";
 
@@ -24,16 +23,15 @@ export default async function Home() {
       <Hero />
       <Collections />
       <FeaturedBusinesses />
-      <FeaturedProducts />
-      <HowItWorks />
-      <Heritage />
-      <Personalization />
-      <Sustainability />
-      <Press />
-      <Services />
-      <Testimonials />
-      <Journal />
-      <Newsletter />
+      <div className="cv-section"><FeaturedProducts /></div>
+      <div className="cv-section"><HowItWorks /></div>
+      <div className="cv-section"><Heritage /></div>
+      <div className="cv-section"><Personalization /></div>
+      <div className="cv-section"><Sustainability /></div>
+      <div className="cv-section"><Press /></div>
+      <div className="cv-section"><Services /></div>
+      <div className="cv-section"><Testimonials /></div>
+      <div className="cv-section"><Newsletter /></div>
       <Footer />
     </main>
   );
